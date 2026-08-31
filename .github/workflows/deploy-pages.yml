@@ -1,0 +1,46 @@
+# 部署市场静态站到 GitHub Pages。
+# 站点数据不依赖已提交的 index/v1/index.json——构建前现场重跑 build-index，
+# 避免 publish-index 的 [skip ci] bot 提交导致站点落后一版。
+name: deploy-pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # build-index 从 git 历史取 published_at/updated_at
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 重建索引（不提交，仅供建站）
+        run: node scripts/build-index.mjs
+      - name: 构建静态站
+        run: node scripts/build-site.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
