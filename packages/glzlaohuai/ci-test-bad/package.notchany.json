@@ -1,0 +1,25 @@
+{
+  "action": {
+    "default_locale": "zh-Hans",
+    "icon_type": "symbol",
+    "icon_value": "wifi",
+    "id": "notchany.custom.shell.30ee7201-ea59-4280-8666-c9e71c2292c1",
+    "input_kind": "none",
+    "kind": "shell",
+    "locales": [
+      "zh-Hans",
+      "en"
+    ],
+    "names": {
+      "en": "Wi-Fi Name",
+      "zh-Hans": "Wi-Fi \u540d\u79f0"
+    },
+    "presentation_mode": "button",
+    "script": "# \u663e\u793a\u5f53\u524d Wi-Fi \u7f51\u7edc\u540d\u79f0\uff08en0 \u4e3a\u5185\u7f6e\u65e0\u7ebf\u7f51\u5361\uff09\noutput=$(networksetup -getairportnetwork en0 2>&1)\nif [[ \"$output\" == *\": \"* ]]; then\n  name=\"${output#*: }\"\n  notch_result --summary \"$name\" --details \"$output\"\nelse\n  notch_result --summary \"\u672a\u8fde\u63a5 Wi-Fi\" --details \"$output\"\nfi",
+    "timeout_seconds": 10,
+    "parameter_values": {
+      "token": "sk-fake"
+    }
+  },
+  "notchany_export": 2
+}
