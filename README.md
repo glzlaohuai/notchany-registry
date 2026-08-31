@@ -79,6 +79,20 @@ node scripts/build-index.mjs   # 重新生成 index（maintainer 用）
 4. **版本可追溯**：包目录的全部历史即 git 历史；`version` 严格递增，index 的
    `published_at` / `updated_at` 取自 commit 时间。
 
+## Web 市场
+
+`scripts/build-site.mjs`（零依赖，Node ≥18）读取 `index/v1/index.json` 与各包截图，
+生成纯静态市场站到 `site/dist/`：首页搜索 + 类型筛选，详情页双语描述、截图与
+「用 NotchAny 安装」深链按钮（`notchany://market/package/<owner>/<slug>`）。
+构建与 Cloudflare Pages 部署说明见 [site/README.md](site/README.md)。
+
+## 下载计数
+
+[worker/](worker/) 是一个 Cloudflare Worker：`GET /pkg/<owner>/<slug>` 透传
+GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各包安装量供
+市场站展示；不记录任何请求者信息（无 IP/UA）。部署步骤见
+[worker/README.md](worker/README.md)。
+
 ## 本仓库文件
 
 | 路径 | 说明 |
@@ -88,4 +102,7 @@ node scripts/build-index.mjs   # 重新生成 index（maintainer 用）
 | `schema/manifest.schema.json` | manifest 的 JSON Schema（draft-07） |
 | `scripts/check-pr.mjs` | PR / 本地校验脚本（Node ≥18，零依赖） |
 | `scripts/build-index.mjs` | index 生成脚本（Node ≥18，零依赖） |
+| `scripts/build-site.mjs` | Web 市场静态站生成脚本（Node ≥18，零依赖） |
+| `site/` | 市场站部署说明（产物 `site/dist/` 不入库） |
+| `worker/` | 下载计数 Cloudflare Worker（代码 + wrangler 配置） |
 | `MAINTAINERS` | maintainer 用户名列表（可跨 owner 目录提交） |
