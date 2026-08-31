@@ -1,0 +1,228 @@
+{
+  "index_schema": 1,
+  "generated_at": "2026-08-31T11:36:29+08:00",
+  "packages": [
+    {
+      "names": {
+        "zh-Hans": "CPU 占用",
+        "en": "CPU Usage"
+      },
+      "summaries": {
+        "zh-Hans": "实时显示 CPU 占用率的托盘小组件，视觉与内置 CPU 件一致，可自由改造。",
+        "en": "Tray widget showing live CPU usage, visually matching the built-in CPU widget."
+      },
+      "descriptions": {
+        "zh-Hans": "指标风格的 CPU 占用小组件：\n\n- 数据源为全进程 `%cpu` 求和 / 核数的近似值（`ps` + `awk`，零依赖）\n- 可见时每秒刷新，收起自动停表\n- 带趋势条与阈值配色（≥75% 变黄、≥90% 变红）\n- 响应式布局（container query）：1×1 到 1×8 均可摆放\n\n源码与内置 CPU 件同款，导入后可在设置 > 小组件里随意改造脚本与样式。",
+        "en": "Metric-style CPU usage widget:\n\n- Data source approximates usage as the sum of per-process `%cpu` divided by core count (`ps` + `awk`, zero dependencies)\n- Refreshes every second while visible, pauses when hidden\n- Trend bars with threshold colors (yellow at 75%, red at 90%)\n- Responsive layout (container queries) from 1x1 up to 1x8\n\nSame source as the built-in CPU widget; tweak the script and styles freely after importing."
+      },
+      "version": "1.0.0",
+      "tags": [
+        "monitor",
+        "system",
+        "widget"
+      ],
+      "license": "MIT",
+      "package_id": "glzlaohuai/cpu-monitor",
+      "path": "packages/glzlaohuai/cpu-monitor/package.notchany.json",
+      "id": "notchany.custom.shell.b9986988-9d50-4a0f-ad50-3d5f0e17c7d0",
+      "kind": "widget",
+      "action_kind": "shell",
+      "input_kind": "none",
+      "envelope_version": 2,
+      "sha256": "e7129b441c6601fbf5b28f5eeeaaaec5c002e9c41a0ddad8c04b2a5556ebeb33",
+      "size_bytes": 4788,
+      "requires": [],
+      "has_parameters": false,
+      "has_live": false,
+      "interpreter": "shell",
+      "screenshots": [],
+      "published_at": "2026-08-31T11:36:29+08:00",
+      "updated_at": "2026-08-31T11:36:29+08:00"
+    },
+    {
+      "names": {
+        "zh-Hans": "系统盘占用",
+        "en": "System Disk Usage"
+      },
+      "summaries": {
+        "zh-Hans": "显示系统盘已用百分比的托盘小组件，5 秒一刷，同内置系统盘件。",
+        "en": "Tray widget showing system disk usage percentage, refreshed every 5 seconds."
+      },
+      "descriptions": {
+        "zh-Hans": "指标风格的系统盘占用小组件：\n\n- 数据源用 `df -k /` 取根分区已用百分比（零依赖）\n- 磁盘变化慢，可见时 5 秒一刷即可，收起自动停表\n- 阈值配色与内置件一致（≥75% 变黄、≥90% 变红）\n\n源码与内置系统盘件同款，把脚本里的挂载点换掉即可监控其它磁盘。",
+        "en": "Metric-style system disk usage widget:\n\n- Data source reads the root partition usage percentage via `df -k /` (zero dependencies)\n- Disks change slowly, so it refreshes every 5 seconds while visible and pauses when hidden\n- Same threshold colors as the built-in widget (yellow at 75%, red at 90%)\n\nSame source as the built-in disk widget; change the mount point in the script to watch another disk."
+      },
+      "version": "1.0.0",
+      "tags": [
+        "monitor",
+        "system",
+        "widget"
+      ],
+      "license": "MIT",
+      "package_id": "glzlaohuai/disk-monitor",
+      "path": "packages/glzlaohuai/disk-monitor/package.notchany.json",
+      "id": "notchany.custom.shell.99befc86-e9a7-47cf-82a5-3c5688ed7544",
+      "kind": "widget",
+      "action_kind": "shell",
+      "input_kind": "none",
+      "envelope_version": 2,
+      "sha256": "1112976ba0ed883cdd13cc7e006f3a4f3b57e0ab778512dccf7477db7e0952e8",
+      "size_bytes": 4811,
+      "requires": [],
+      "has_parameters": false,
+      "has_live": false,
+      "interpreter": "shell",
+      "screenshots": [],
+      "published_at": "2026-08-31T11:36:29+08:00",
+      "updated_at": "2026-08-31T11:36:29+08:00"
+    },
+    {
+      "names": {
+        "zh-Hans": "图片转 JPG",
+        "en": "Image to JPG"
+      },
+      "summaries": {
+        "zh-Hans": "把拖进刘海的图片批量转成 JPEG，用 macOS 自带 sips，零第三方依赖。",
+        "en": "Convert images dropped on the notch to JPEG with the built-in sips tool."
+      },
+      "descriptions": {
+        "zh-Hans": "带文件输入的 shell 动作示例：\n\n- `input_kind` 为 filesOnly——把图片拖到刘海投放到本动作即可\n- 用 macOS 自带的 `sips` 转为 JPEG，写入 NotchAny 解析的输出目录（`$NOTCH_OUTPUT_DIR`），重名自动加序号\n- 产物经 `notch_result --output` 逐个上报，完成后可直接在反馈里拖走\n- 支持多文件批量转换\n\n配合拖放规则（match: kinds=image）可以做到「拖图片进刘海自动转 JPG」。",
+        "en": "A shell action example with file input:\n\n- `input_kind` is filesOnly: drop images onto the notch and route them to this action\n- Converts to JPEG with the built-in `sips`, writing into the output directory resolved by NotchAny (`$NOTCH_OUTPUT_DIR`) and auto-suffixing on name clashes\n- Each product is reported via `notch_result --output`, ready to drag away from the feedback\n- Handles multiple files in one drop\n\nPair it with a drop rule (match: kinds=image) to convert any dropped image automatically."
+      },
+      "version": "1.0.0",
+      "tags": [
+        "files",
+        "image",
+        "example"
+      ],
+      "license": "MIT",
+      "package_id": "glzlaohuai/image-to-jpg",
+      "path": "packages/glzlaohuai/image-to-jpg/package.notchany.json",
+      "id": "notchany.custom.shell.ffec896b-fcd4-4587-9ab9-bb2d70486386",
+      "kind": "action",
+      "action_kind": "shell",
+      "input_kind": "filesOnly",
+      "envelope_version": 4,
+      "sha256": "22d28576e0dd9ad3c3647ea60124b6906e82c69932864ed39635919625538903",
+      "size_bytes": 1315,
+      "requires": [
+        "sips"
+      ],
+      "has_parameters": false,
+      "has_live": false,
+      "interpreter": "shell",
+      "screenshots": [],
+      "published_at": "2026-08-31T11:36:29+08:00",
+      "updated_at": "2026-08-31T11:36:29+08:00"
+    },
+    {
+      "names": {
+        "zh-Hans": "内存占用",
+        "en": "Memory Usage"
+      },
+      "summaries": {
+        "zh-Hans": "实时显示内存占用的托盘小组件（active + wired + compressor），同内置内存件。",
+        "en": "Tray widget showing live memory usage (active + wired + compressor pages)."
+      },
+      "descriptions": {
+        "zh-Hans": "指标风格的内存占用小组件：\n\n- 数据源用 `vm_stat` 统计 active + wired + compressor 页数 × 页大小，除以物理内存\n- 详情行显示「已用 / 总量 GB」\n- 可见时每秒刷新，收起自动停表；阈值配色与内置件一致\n\n源码与内置内存件同款，导入后可自由改造。",
+        "en": "Metric-style memory usage widget:\n\n- Data source sums active + wired + compressor pages from `vm_stat`, multiplied by page size, divided by physical memory\n- Detail line shows used / total in GB\n- Refreshes every second while visible, pauses when hidden; same threshold colors as the built-in widget\n\nSame source as the built-in memory widget; customize freely after importing."
+      },
+      "version": "1.0.0",
+      "tags": [
+        "monitor",
+        "system",
+        "widget"
+      ],
+      "license": "MIT",
+      "package_id": "glzlaohuai/memory-monitor",
+      "path": "packages/glzlaohuai/memory-monitor/package.notchany.json",
+      "id": "notchany.custom.shell.3ee5260c-6c30-46f3-88ee-3cb0beb6617e",
+      "kind": "widget",
+      "action_kind": "shell",
+      "input_kind": "none",
+      "envelope_version": 2,
+      "sha256": "ae96034cd92cd1406b16f3c9c21b1e47bfc168a2f1cf6b586f4979ff376d8c7a",
+      "size_bytes": 5077,
+      "requires": [],
+      "has_parameters": false,
+      "has_live": false,
+      "interpreter": "shell",
+      "screenshots": [],
+      "published_at": "2026-08-31T11:36:29+08:00",
+      "updated_at": "2026-08-31T11:36:29+08:00"
+    },
+    {
+      "names": {
+        "zh-Hans": "指标模板",
+        "en": "Metric Template"
+      },
+      "summaries": {
+        "zh-Hans": "指标风格小组件起手模板：换掉数据脚本即可做出自己的百分比指标件。",
+        "en": "Starter template for metric widgets: swap the data script to build your own."
+      },
+      "descriptions": {
+        "zh-Hans": "做自己的指标小组件的起手模板，视觉对齐内置 CPU/内存/系统盘件：\n\n- HTML/CSS/JS 即官方指标模板（趋势条、阈值配色、container query 响应式）\n- 数据脚本是占位示例，把它换成你的采集逻辑，经 `notch_result --widget-json` 回传 `{\"fraction\": 0.42, \"detail\": \"说明文字\", \"name\": \"可选标题\", \"trend\": [0.1, 0.5]}` 即可\n- `fraction`（0–1）驱动百分比与进度条；`trend` 数组驱动趋势条；都可省略",
+        "en": "Starter template for building your own metric widget, visually aligned with the built-in CPU/memory/disk widgets:\n\n- HTML/CSS/JS is the official metric template (trend bars, threshold colors, responsive container queries)\n- The data script is a placeholder: replace it with your own collector and report `{\"fraction\": 0.42, \"detail\": \"caption\", \"name\": \"optional title\", \"trend\": [0.1, 0.5]}` via `notch_result --widget-json`\n- `fraction` (0-1) drives the percentage and progress bar; the `trend` array drives the trend bars; both are optional"
+      },
+      "version": "1.0.0",
+      "tags": [
+        "template",
+        "widget"
+      ],
+      "license": "MIT",
+      "package_id": "glzlaohuai/metric-template",
+      "path": "packages/glzlaohuai/metric-template/package.notchany.json",
+      "id": "notchany.custom.shell.167f568a-fc11-4ecf-995a-0234b49f9995",
+      "kind": "widget",
+      "action_kind": "shell",
+      "input_kind": "none",
+      "envelope_version": 2,
+      "sha256": "aaf683455e853408d1fa8cc689f7b5c8cf02b3e412083d37db0074c23c8f6f88",
+      "size_bytes": 4651,
+      "requires": [],
+      "has_parameters": false,
+      "has_live": false,
+      "interpreter": "shell",
+      "screenshots": [],
+      "published_at": "2026-08-31T11:36:29+08:00",
+      "updated_at": "2026-08-31T11:36:29+08:00"
+    },
+    {
+      "names": {
+        "zh-Hans": "Wi-Fi 名称",
+        "en": "Wi-Fi Name"
+      },
+      "summaries": {
+        "zh-Hans": "一键查看当前连接的 Wi-Fi 网络名称，简单 shell 动作示例。",
+        "en": "Show the name of the Wi-Fi network you are connected to, in one click."
+      },
+      "descriptions": {
+        "zh-Hans": "最小可用的 shell 动作示例：\n\n- 点击后用 macOS 自带的 `networksetup -getairportnetwork en0` 查询当前 Wi-Fi\n- 结果经 `notch_result --summary` 显示在刘海反馈里，详情里保留原始输出\n- 未连接时显示「未连接 Wi-Fi」\n\n也适合当作学习动作脚本契约（环境变量 + `notch_result`）的起点。",
+        "en": "A minimal shell action example:\n\n- On click, queries the current Wi-Fi via the built-in `networksetup -getairportnetwork en0`\n- Reports the result through `notch_result --summary`, keeping the raw output in the details\n- Shows a \"not connected\" summary when there is no Wi-Fi\n\nAlso a good starting point for learning the action script contract (environment variables + `notch_result`)."
+      },
+      "version": "1.0.0",
+      "tags": [
+        "network",
+        "example"
+      ],
+      "license": "MIT",
+      "package_id": "glzlaohuai/wifi-name",
+      "path": "packages/glzlaohuai/wifi-name/package.notchany.json",
+      "id": "notchany.custom.shell.30ee7201-ea59-4280-8666-c9e71c2292c1",
+      "kind": "action",
+      "action_kind": "shell",
+      "input_kind": "none",
+      "envelope_version": 2,
+      "sha256": "4fd2c49208d2d46957251a081166d0288fe1bb3d593a63f41d4a765e0f41e1e0",
+      "size_bytes": 780,
+      "requires": [],
+      "has_parameters": false,
+      "has_live": false,
+      "interpreter": "shell",
+      "screenshots": [],
+      "published_at": "2026-08-31T11:36:29+08:00",
+      "updated_at": "2026-08-31T11:36:29+08:00"
+    }
+  ]
+}
