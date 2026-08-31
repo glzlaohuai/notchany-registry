@@ -1,0 +1,27 @@
+name: PR 校验
+
+on:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 校验变更
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          CHANGED_FILES="$(git diff --name-only "origin/${BASE_REF}...HEAD")"
+          export CHANGED_FILES
+          echo "变更文件："
+          echo "${CHANGED_FILES}"
+          node scripts/check-pr.mjs

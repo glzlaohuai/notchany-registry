@@ -1,0 +1,25 @@
+{
+  "action": {
+    "default_locale": "zh-Hans",
+    "icon_type": "symbol",
+    "icon_value": "photo",
+    "id": "notchany.custom.shell.ffec896b-fcd4-4587-9ab9-bb2d70486386",
+    "input_kind": "filesOnly",
+    "kind": "shell",
+    "locales": [
+      "zh-Hans",
+      "en"
+    ],
+    "names": {
+      "en": "Image to JPG",
+      "zh-Hans": "图片转 JPG"
+    },
+    "presentation_mode": "button",
+    "requires": [
+      "sips"
+    ],
+    "script": "# 把拖入的图片批量转换为 JPEG（sips 为 macOS 自带）\nif [[ -z \"$NOTCH_OUTPUT_DIR\" ]]; then\n  echo \"无法确定输出目录\" >&2\n  exit 1\nfi\noutputs=()\nwhile IFS= read -r file; do\n  [[ -n \"$file\" ]] || continue\n  base=\"${file##*/}\"\n  stem=\"${base%.*}\"\n  target=\"$NOTCH_OUTPUT_DIR/${stem}.jpg\"\n  n=1\n  while [[ -e \"$target\" ]]; do\n    target=\"$NOTCH_OUTPUT_DIR/${stem}-$n.jpg\"\n    (( n++ ))\n  done\n  sips -s format jpeg \"$file\" --out \"$target\" >/dev/null\n  outputs+=(\"$target\")\ndone <<< \"$NOTCH_FILES\"\nif (( ${#outputs[@]} == 0 )); then\n  echo \"没有可转换的输入文件\" >&2\n  exit 1\nfi\nargs=()\nfor f in \"${outputs[@]}\"; do args+=(--output \"$f\"); done\nnotch_result --summary \"已转换 ${#outputs[@]} 张为 JPEG\" \"${args[@]}\"",
+    "timeout_seconds": 120
+  },
+  "notchany_export": 4
+}

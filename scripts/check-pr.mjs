@@ -1,0 +1,361 @@
+#!/usr/bin/env node
+// PR 校验：pr-validate.yml 调用；也可本地全量自检（node scripts/check-pr.mjs）。
+// 零第三方依赖，Node ≥18。所有违规聚合输出后 exit 1。
+//
+// 两种模式：
+// - PR 模式：环境变量 CHANGED_FILES（换行分隔的变更文件列表）存在时，只校验被改的包，
+//   并附加「变更范围」「版本递增」检查；PR_AUTHOR 存在时校验作者与 owner 目录一致
+//   （MAINTAINERS 文件中的用户名豁免）。
+// - 本地模式：CHANGED_FILES 缺席时扫描全部包（跳过变更范围/作者/版本递增检查）。
+
+import { execFileSync } from "node:child_process";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+import process from "node:process";
+
+const ROOT = process.cwd();
+const PACKAGES_DIR = join(ROOT, "packages");
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
+// GitHub 用户名：1–39 位字母/数字/连字符，不得以连字符开头/结尾或连续连字符。
+const OWNER_PATTERN = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
+const TAG_PATTERN = /^[a-z0-9-]{1,24}$/;
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
+const MAX_SCREENSHOTS = 4;
+const MAX_SCREENSHOT_BYTES = 1024 * 1024;
+
+const violations = [];
+function violate(message) {
+  violations.push(message);
+}
+
+function readJSON(path) {
+  return JSON.parse(readFileSync(path, "utf8"));
+}
+
+function isDecodableBase64(text) {
+  return typeof text === "string" && text.length % 4 === 0 && BASE64_PATTERN.test(text);
+}
+
+function compareSemver(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (pa[i] !== pb[i]) return pa[i] - pb[i];
+  }
+  return 0;
+}
+
+function maintainers() {
+  const path = join(ROOT, "MAINTAINERS");
+  if (!existsSync(path)) return new Set();
+  return new Set(
+    readFileSync(path, "utf8")
+      .split("\n")
+      .map((line) => line.trim().toLowerCase())
+      .filter((line) => line && !line.startsWith("#"))
+  );
+}
+
+// ---------- manifest 校验（手写零依赖，对齐 schema/manifest.schema.json） ----------
+
+const MANIFEST_KEYS = new Set([
+  "manifest_version",
+  "names",
+  "summaries",
+  "descriptions",
+  "version",
+  "tags",
+  "homepage",
+  "license",
+  "min_app_version",
+]);
+
+function validateManifest(manifest, label) {
+  if (typeof manifest !== "object" || manifest === null || Array.isArray(manifest)) {
+    violate(`${label}：manifest 必须是 JSON 对象`);
+    return;
+  }
+  for (const key of Object.keys(manifest)) {
+    if (!MANIFEST_KEYS.has(key)) violate(`${label}：不允许的字段 ${key}`);
+  }
+  if (manifest.manifest_version !== 1) {
+    violate(`${label}：manifest_version 必须为 1`);
+  }
+  validateLocaleMap(manifest.names, `${label}：names`, { required: true });
+  validateLocaleMap(manifest.summaries, `${label}：summaries`, {
+    required: true,
+    maxLength: 80,
+  });
+  if (manifest.descriptions !== undefined) {
+    validateLocaleMap(manifest.descriptions, `${label}：descriptions`, {
+      allowEmptyValues: true,
+    });
+  }
+  if (typeof manifest.version !== "string" || !VERSION_PATTERN.test(manifest.version)) {
+    violate(`${label}：version 必须是 x.y.z 形状的字符串`);
+  }
+  if (manifest.tags !== undefined) {
+    if (!Array.isArray(manifest.tags) || manifest.tags.length > 5) {
+      violate(`${label}：tags 必须是最多 5 项的数组`);
+    } else {
+      for (const tag of manifest.tags) {
+        if (typeof tag !== "string" || !TAG_PATTERN.test(tag)) {
+          violate(`${label}：tag ${JSON.stringify(tag)} 不符合 ^[a-z0-9-]{1,24}$`);
+        }
+      }
+    }
+  }
+  if (manifest.homepage !== undefined) {
+    let ok = typeof manifest.homepage === "string";
+    if (ok) {
+      try {
+        new URL(manifest.homepage);
+      } catch {
+        ok = false;
+      }
+    }
+    if (!ok) violate(`${label}：homepage 必须是合法 URL 字符串`);
+  }
+  if (typeof manifest.license !== "string" || manifest.license.length === 0) {
+    violate(`${label}：license 必须是非空字符串（SPDX 标识，如 MIT）`);
+  }
+  if (
+    manifest.min_app_version !== undefined &&
+    (typeof manifest.min_app_version !== "string" ||
+      !VERSION_PATTERN.test(manifest.min_app_version))
+  ) {
+    violate(`${label}：min_app_version 必须是 x.y.z 形状的字符串`);
+  }
+}
+
+function validateLocaleMap(value, label, { required = false, maxLength, allowEmptyValues = false } = {}) {
+  if (value === undefined) {
+    if (required) violate(`${label} 是必填字段`);
+    return;
+  }
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    violate(`${label} 必须是 {语言码: 文案} 对象`);
+    return;
+  }
+  const keys = Object.keys(value);
+  if (required && keys.length === 0) {
+    violate(`${label} 至少要有一个语言条目`);
+  }
+  for (const key of keys) {
+    const text = value[key];
+    if (typeof text !== "string") {
+      violate(`${label}.${key} 必须是字符串`);
+      continue;
+    }
+    if (!allowEmptyValues && text.length === 0) {
+      violate(`${label}.${key} 不能为空`);
+    }
+    // 按 Unicode 码点计数（对齐 JSON Schema 的 maxLength 语义）
+    if (maxLength !== undefined && [...text].length > maxLength) {
+      violate(`${label}.${key} 超过 ${maxLength} 字符（现 ${[...text].length}）`);
+    }
+  }
+}
+
+// ---------- package.notchany.json 校验 ----------
+
+function validatePackageFile(envelope, label) {
+  if (typeof envelope !== "object" || envelope === null || Array.isArray(envelope)) {
+    violate(`${label}：必须是 JSON 对象`);
+    return;
+  }
+  const version = envelope.notchany_export;
+  if (!Number.isInteger(version) || version < 2 || version > 5) {
+    violate(`${label}：notchany_export 必须是 2–5 的整数（现 ${JSON.stringify(version)}）`);
+  }
+  const action = envelope.action;
+  if (typeof action !== "object" || action === null || Array.isArray(action)) {
+    violate(`${label}：action 必须是对象`);
+    return;
+  }
+  if (typeof action.id !== "string" || action.id.length === 0) {
+    violate(`${label}：action.id 必须是非空字符串`);
+  }
+  if (typeof action.kind !== "string" || action.kind.length === 0) {
+    violate(`${label}：action.kind 必须是非空字符串`);
+  }
+  // 脱敏硬校验：parameter_values 是使用者的本机参数值（可能含路径/密钥），禁止入库。
+  if ("parameter_values" in action) {
+    violate(`${label}：action.parameter_values 必须移除（脱敏要求：不得携带个人参数值）`);
+  }
+  if (action.icon_type === "image") {
+    const data = envelope.icon_image?.data_base64;
+    if (data === undefined) {
+      violate(`${label}：icon_type 为 image 但缺少 icon_image.data_base64`);
+    } else if (!isDecodableBase64(data)) {
+      violate(`${label}：icon_image.data_base64 不是可解码的 base64`);
+    }
+  }
+  const icons = action.icons;
+  if (typeof icons === "object" && icons !== null && !Array.isArray(icons)) {
+    for (const [key, icon] of Object.entries(icons)) {
+      if (icon?.icon_type !== "image") continue;
+      const data = envelope.state_icon_images?.[key]?.data_base64;
+      if (data === undefined) {
+        violate(`${label}：状态图标 ${key} 为 image 但缺少 state_icon_images.${key}.data_base64`);
+      } else if (!isDecodableBase64(data)) {
+        violate(`${label}：state_icon_images.${key}.data_base64 不是可解码的 base64`);
+      }
+    }
+  }
+}
+
+// ---------- 截图校验 ----------
+
+function validateScreenshots(packageDir, label) {
+  const dir = join(packageDir, "screenshots");
+  if (!existsSync(dir)) return;
+  const files = readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isFile());
+  if (files.length > MAX_SCREENSHOTS) {
+    violate(`${label}：截图最多 ${MAX_SCREENSHOTS} 张（现 ${files.length} 张）`);
+  }
+  for (const file of files) {
+    if (!/\.(png|jpg)$/.test(file.name)) {
+      violate(`${label}：截图 ${file.name} 只允许 .png/.jpg`);
+      continue;
+    }
+    const size = statSync(join(dir, file.name)).size;
+    if (size > MAX_SCREENSHOT_BYTES) {
+      violate(`${label}：截图 ${file.name} 超过 1MB（现 ${size} 字节）`);
+    }
+  }
+}
+
+// ---------- 单个包的完整校验 ----------
+
+function validatePackage(owner, slug, { checkVersionBump }) {
+  const label = `packages/${owner}/${slug}`;
+  if (!OWNER_PATTERN.test(owner)) {
+    violate(`${label}：owner 目录名 ${owner} 不符合 GitHub 用户名规则`);
+  }
+  if (!SLUG_PATTERN.test(slug)) {
+    violate(`${label}：slug ${slug} 不符合 ^[a-z0-9][a-z0-9-]{1,63}$`);
+  }
+
+  const packageDir = join(PACKAGES_DIR, owner, slug);
+  const packagePath = join(packageDir, "package.notchany.json");
+  const manifestPath = join(packageDir, "manifest.json");
+  let complete = true;
+  if (!existsSync(packagePath)) {
+    violate(`${label}：缺少 package.notchany.json`);
+    complete = false;
+  }
+  if (!existsSync(manifestPath)) {
+    violate(`${label}：缺少 manifest.json`);
+    complete = false;
+  }
+  if (!complete) return;
+
+  try {
+    validateManifest(readJSON(manifestPath), `${label}/manifest.json`);
+  } catch (error) {
+    violate(`${label}/manifest.json 不是合法 JSON：${error.message}`);
+  }
+  let envelope;
+  try {
+    envelope = readJSON(packagePath);
+  } catch (error) {
+    violate(`${label}/package.notchany.json 不是合法 JSON：${error.message}`);
+  }
+  if (envelope !== undefined) {
+    validatePackageFile(envelope, `${label}/package.notchany.json`);
+  }
+  validateScreenshots(packageDir, label);
+
+  // 版本递增（仅 PR 模式）：origin/main 上已有同名包时，新 version 必须严格大于旧值。
+  if (checkVersionBump) {
+    let oldManifestText;
+    try {
+      oldManifestText = execFileSync(
+        "git",
+        ["show", `origin/main:packages/${owner}/${slug}/manifest.json`],
+        { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
+      );
+    } catch {
+      oldManifestText = undefined; // 新包，跳过
+    }
+    if (oldManifestText !== undefined) {
+      try {
+        const oldVersion = JSON.parse(oldManifestText).version;
+        const newVersion = readJSON(manifestPath).version;
+        if (
+          typeof oldVersion === "string" &&
+          typeof newVersion === "string" &&
+          VERSION_PATTERN.test(oldVersion) &&
+          VERSION_PATTERN.test(newVersion) &&
+          compareSemver(newVersion, oldVersion) <= 0
+        ) {
+          violate(`${label}：version 必须严格大于 origin/main 上的 ${oldVersion}（现 ${newVersion}）`);
+        }
+      } catch {
+        // 新旧 manifest 解析失败已由其它检查报告
+      }
+    }
+  }
+}
+
+// ---------- 入口 ----------
+
+const changedFilesEnv = process.env.CHANGED_FILES;
+const prAuthor = process.env.PR_AUTHOR;
+const targets = new Map(); // "owner/slug" -> {owner, slug}
+
+if (changedFilesEnv !== undefined) {
+  // PR 模式：变更只允许出现在 packages/**。
+  const changedFiles = changedFilesEnv.split("\n").map((line) => line.trim()).filter(Boolean);
+  for (const file of changedFiles) {
+    if (!file.startsWith("packages/")) {
+      if (/^(index|schema|scripts)\//.test(file)) {
+        violate(`变更 ${file}：index/、schema/、scripts/ 由 maintainer 直接维护，PR 请勿改动`);
+      } else {
+        violate(`变更 ${file}：PR 只允许改动 packages/** 下的文件`);
+      }
+      continue;
+    }
+    const parts = file.split("/");
+    if (parts.length < 4) {
+      violate(`变更 ${file}：不符合 packages/<owner>/<slug>/… 目录规范`);
+      continue;
+    }
+    const [, owner, slug] = parts;
+    targets.set(`${owner}/${slug}`, { owner, slug });
+  }
+  // 作者校验：PR_AUTHOR 必须与 owner 目录一致（MAINTAINERS 豁免）。
+  if (prAuthor !== undefined && !maintainers().has(prAuthor.toLowerCase())) {
+    for (const { owner } of targets.values()) {
+      if (owner.toLowerCase() !== prAuthor.toLowerCase()) {
+        violate(`packages/${owner}：PR 作者 ${prAuthor} 只能改动 packages/${prAuthor}/ 下自己的包`);
+      }
+    }
+  }
+  for (const { owner, slug } of targets.values()) {
+    // 整目录被删除的包视为下架请求，内容检查自然跳过。
+    if (!existsSync(join(PACKAGES_DIR, owner, slug))) continue;
+    validatePackage(owner, slug, { checkVersionBump: true });
+  }
+} else {
+  // 本地全量模式：扫描全部包（跳过变更范围/作者/版本递增检查）。
+  if (existsSync(PACKAGES_DIR)) {
+    for (const owner of readdirSync(PACKAGES_DIR, { withFileTypes: true })) {
+      if (!owner.isDirectory()) continue;
+      for (const slug of readdirSync(join(PACKAGES_DIR, owner.name), { withFileTypes: true })) {
+        if (!slug.isDirectory()) continue;
+        targets.set(`${owner.name}/${slug.name}`, { owner: owner.name, slug: slug.name });
+        validatePackage(owner.name, slug.name, { checkVersionBump: false });
+      }
+    }
+  }
+}
+
+if (violations.length > 0) {
+  console.error(`发现 ${violations.length} 处违规：\n`);
+  for (const message of violations) console.error(`  ✗ ${message}`);
+  process.exit(1);
+}
+console.log(`校验通过（${targets.size} 个包）`);
