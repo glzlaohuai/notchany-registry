@@ -166,8 +166,8 @@ function validatePackageFile(envelope, label) {
     return;
   }
   const version = envelope.notchany_export;
-  if (!Number.isInteger(version) || version < 2 || version > 5) {
-    violate(`${label}：notchany_export 必须是 2–5 的整数（现 ${JSON.stringify(version)}）`);
+  if (!Number.isInteger(version) || version < 2 || version > 6) {
+    violate(`${label}：notchany_export 必须是 2–6 的整数（现 ${JSON.stringify(version)}）`);
   }
   const action = envelope.action;
   if (typeof action !== "object" || action === null || Array.isArray(action)) {

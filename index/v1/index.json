@@ -1,6 +1,6 @@
 {
   "index_schema": 1,
-  "generated_at": "2026-08-31T11:36:29+08:00",
+  "generated_at": "2026-08-31T11:36:51+08:00",
   "packages": [
     {
       "names": {
@@ -33,7 +33,7 @@
       "size_bytes": 4788,
       "requires": [],
       "has_parameters": false,
-      "has_live": false,
+      "has_notification": false,
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
@@ -70,7 +70,7 @@
       "size_bytes": 4811,
       "requires": [],
       "has_parameters": false,
-      "has_live": false,
+      "has_notification": false,
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
@@ -109,7 +109,7 @@
         "sips"
       ],
       "has_parameters": false,
-      "has_live": false,
+      "has_notification": false,
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
@@ -146,7 +146,7 @@
       "size_bytes": 5077,
       "requires": [],
       "has_parameters": false,
-      "has_live": false,
+      "has_notification": false,
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
@@ -182,7 +182,7 @@
       "size_bytes": 4651,
       "requires": [],
       "has_parameters": false,
-      "has_live": false,
+      "has_notification": false,
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
@@ -218,7 +218,7 @@
       "size_bytes": 780,
       "requires": [],
       "has_parameters": false,
-      "has_live": false,
+      "has_notification": false,
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",

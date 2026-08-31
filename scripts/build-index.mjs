@@ -120,7 +120,7 @@ for (const owner of listDirs(PACKAGES_DIR)) {
       size_bytes: bytes.length,
       requires: Array.isArray(action.requires) ? action.requires : [],
       has_parameters: Array.isArray(action.parameters) && action.parameters.length > 0,
-      has_live: action.live !== undefined && action.live !== null,
+      has_notification: action.notification !== undefined && action.notification !== null,
       ...(action.kind === "shell" && { interpreter: action.interpreter ?? "shell" }),
       screenshots,
       published_at: published,
