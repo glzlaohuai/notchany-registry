@@ -132,7 +132,13 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
   box-shadow: var(--shadow); outline: 0;
 }
 .search-box input:focus { border-color: var(--signal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 18%, transparent); }
-.search-key { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--secondary); font: 11px ui-monospace, "SF Mono", Menlo, monospace; }
+.search-key {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--secondary); font: 11px ui-monospace, "SF Mono", Menlo, monospace;
+  pointer-events: none; transition: opacity .12s ease;
+}
+.search-box:has(.search-key) input:not(:placeholder-shown) { padding-right: 40px; }
+.search-box input:not(:placeholder-shown) ~ .search-key { opacity: 0; }
 .search-key kbd { padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); }
 
 .mac-scene { width: 100%; margin-top: 34px; display: grid; place-items: center; }
@@ -297,8 +303,8 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 }
 .keyboard-deck {
   position: relative;
-  width: 96%; height: 190px;
-  margin: -1px auto -112px;
+  width: 96%; height: 212px;
+  margin: -1px auto -125px;
   padding: 14px 42px 18px;
   overflow: hidden;
   clip-path: polygon(4% 0, 96% 0, 100% 94%, 96% 100%, 4% 100%, 0 94%);
@@ -351,8 +357,8 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .speaker-right { right: 4%; }
 .trackpad {
   position: absolute;
-  left: 50%; bottom: 13px;
-  width: 40%; height: 48px;
+  left: 50%; bottom: 12px;
+  width: 34%; height: 36px;
   transform: translateX(-50%);
   border: 1px solid rgba(85, 88, 93, .42);
   border-radius: 5px;
@@ -374,6 +380,7 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 }
 
 .section { padding: 56px 0; }
+#catalog { scroll-margin-top: 56px; }
 .section + .section { border-top: 1px solid var(--line); }
 .section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
 .section-head h2 { margin: 0; font-size: 24px; line-height: 1.2; }
@@ -518,8 +525,8 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
   .dock-app-paper { box-shadow: 5px 0 0 #6fa492 inset, 0 2px 4px rgba(0, 0, 0, .2); }
   .mac-hinge { height: 3px; }
   .keyboard-deck {
-    height: 96px;
-    margin-bottom: -57px;
+    height: 108px;
+    margin-bottom: -65px;
     padding: 7px 20px 9px;
     transform: perspective(380px) rotateX(58deg);
   }
@@ -528,9 +535,10 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
   .mac-key { height: 10px; border-radius: 1px; box-shadow: 0 1px 0 #050506; }
   .mac-key span { font-size: 3px; }
   .speaker { top: 10px; height: 52px; background-size: 3px 3px; }
-  .trackpad { bottom: 6px; height: 24px; border-radius: 3px; }
+  .trackpad { bottom: 6px; height: 20px; border-radius: 3px; }
   .mac-lip { height: 3px; }
   .section { padding: 42px 0; }
+  #catalog { scroll-margin-top: 52px; }
   .section-head { align-items: start; flex-direction: column; gap: 16px; }
   .catalog-search { width: 100%; }
   .catalog-list { grid-template-columns: 1fr; }

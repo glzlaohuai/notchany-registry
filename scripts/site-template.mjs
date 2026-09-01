@@ -262,7 +262,7 @@ ${nav({ lang, root })}
       <div class="tool-row"><span class="tool-label">${copy.type}</span><div class="segment" aria-label="${copy.type}"><button type="button" data-kind="all">${copy.all}</button><button type="button" data-kind="widget">${copy.widget}</button><button type="button" data-kind="action">${copy.action}</button></div></div>
       <div class="tool-row"><span class="tool-label">${copy.tags}</span>${tags.map((tag) => `<button class="chip" type="button" data-tag="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`).join("")}<button class="clear-button" id="clear-filters" type="button">${copy.clear}</button></div>
     </div>
-    <div class="result-line"><span id="result-count"></span><span class="popular-status" id="popular-status"></span></div>
+    <div class="result-line"><span id="result-count" aria-live="polite"></span><span class="popular-status" id="popular-status"></span></div>
     <div class="catalog-list" id="catalog-list"></div><nav class="pagination" id="pagination" aria-label="${lang === "zh" ? "分页" : "Pagination"}"></nav>
   </div></section>
 </main>

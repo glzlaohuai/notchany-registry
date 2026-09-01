@@ -72,6 +72,7 @@ test("home navigation uses icon controls, a language menu, and two synchronized 
   assert.match(html, /href="en\/" role="menuitem" lang="en">English<\/a>/);
   assert.equal((html.match(/data-store-search/g) || []).length, 2);
   assert.match(html, /id="library-search"/);
+  assert.match(html, /id="result-count" aria-live="polite"/);
 });
 
 test("detail navigation language menu preserves the package route", () => {
@@ -87,4 +88,19 @@ test("notch intro is session-scoped and does not schedule repeating cycles", () 
   assert.match(source, /sessionStorage\.getItem\(introStorageKey\)/);
   assert.match(source, /notchany-store-intro/);
   assert.doesNotMatch(source, /scheduleCycle/);
+});
+
+test("pressing Enter in either search reveals the catalog", () => {
+  const source = readFileSync(new URL("../site/store.js", import.meta.url), "utf8");
+
+  assert.match(source, /event\.key !== "Enter"/);
+  assert.match(source, /requestAnimationFrame\(revealCatalog\)/);
+  assert.match(source, /behavior: reducedMotion \? "auto" : "smooth"/);
+});
+
+test("typing hides the hero shortcut hint so the native clear button stays usable", () => {
+  const source = readFileSync(new URL("../site/styles.css", import.meta.url), "utf8");
+
+  assert.match(source, /input:not\(:placeholder-shown\) ~ \.search-key \{ opacity: 0; \}/);
+  assert.match(source, /pointer-events: none/);
 });

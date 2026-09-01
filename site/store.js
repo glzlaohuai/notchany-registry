@@ -4,6 +4,7 @@
 
   const byId = (id) => document.getElementById(id);
   const locale = config.language === "zh" ? "zh-CN" : "en-US";
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const text = config.copy;
   let counts = null;
   let countsStatus = "loading";
@@ -182,7 +183,19 @@
 
   const searches = [...document.querySelectorAll("[data-store-search]")];
   const primarySearch = byId("store-search") || searches[0];
-  searches.forEach((search) => search.addEventListener("input", () => update({ q: search.value, page: 1 })));
+  const revealCatalog = () => byId("catalog")?.scrollIntoView({
+    behavior: reducedMotion ? "auto" : "smooth",
+    block: "start",
+  });
+  searches.forEach((search) => {
+    search.addEventListener("input", () => update({ q: search.value, page: 1 }));
+    search.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      update({ q: search.value, page: 1 }, "push");
+      requestAnimationFrame(revealCatalog);
+    });
+  });
 
   const languageMenu = byId("language-menu");
   const languageToggle = byId("language-toggle");
@@ -267,7 +280,6 @@
   }
 
   const notch = byId("demo-notch");
-  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (notch) {
     let engaged = false;
     let introTimer;
