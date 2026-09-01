@@ -1,6 +1,6 @@
 # NotchAny Registry
 
-[NotchAny](https://github.com/glzlaohuai)（macOS 刘海工具）的动作 / 小组件市场后端：本仓库即 registry——PR 上架、CI 校验、静态 index，App 直接拉 GitHub raw 文件安装。
+[NotchAny](https://github.com/glzlaohuai/NotchAny)（macOS 刘海工具）的动作 / 小组件市场后端：本仓库即 registry——PR 上架、CI 校验、静态 index、公开 Web Store 与匿名下载计数。
 
 - **索引**：`index/v1/index.json`（由 CI 自动生成，App 定期拉取）
 - **包体**：`packages/<owner>/<slug>/package.notchany.json`（NotchAny 导出封套原样）
@@ -14,6 +14,7 @@ packages/
     <slug>/                   # 包目录名：^[a-z0-9][a-z0-9-]{1,63}$
       package.notchany.json   # NotchAny 设置页导出的 .notchany.json 原样
       manifest.json           # 上架元数据（格式见 schema/manifest.schema.json）
+      icon.png                # 可选：方形 PNG，256–1024px，≤512KB
       screenshots/            # 可选：最多 4 张 .png/.jpg，单张 ≤1MB
 ```
 
@@ -35,7 +36,8 @@ packages/
 
 1. 在 NotchAny 设置页导出你的动作/小组件，得到 `.notchany.json` 封套文件。
 2. Fork 本仓库，在 `packages/<你的 GitHub 用户名>/<slug>/` 下放入
-   `package.notchany.json`（导出文件原样改名）与 `manifest.json`，截图可选。
+   `package.notchany.json`（导出文件原样改名）与 `manifest.json`；建议同时提供独立
+   `icon.png` 与真实 NotchAny 运行界面截图。
 3. 提交 PR。CI（`scripts/check-pr.mjs`）自动校验，全绿后由 maintainer 审核合并。
 4. 合并进 main 后 CI 自动重建 `index/v1/index.json`，App 侧即可发现新包。
 5. 更新包 = 再次 PR 同一目录，`manifest.json` 的 `version` **必须严格递增**。
@@ -71,7 +73,8 @@ node scripts/build-index.mjs   # 重新生成 index（maintainer 用）
 
 1. **PR 审核**：所有包经 CI 机器校验 + maintainer 人工审核脚本全文后才进入 main。
 2. **sha256 锁定**：`index/v1/index.json` 记录每个包文件的 `sha256` 与 `size_bytes`；
-   App 按 index 里的 `path` 拉取 raw 文件后**先校验 sha256** 再解析——index 与包体
+   App 优先经匿名计数 Worker、失败时经 GitHub raw 拉取包体；每个来源都必须
+   **先校验 sha256** 再解析——index 与包体
    不一致（如 CDN 缓存不同步、中间人篡改）时拒绝安装。
 3. **安装前脚本全文确认**：NotchAny 导入市场包时向用户展示动作的**完整脚本源码**、
    依赖声明与权限面（文件输入/实况/触发器），用户确认后才落库。脚本以用户身份在本机
@@ -81,15 +84,16 @@ node scripts/build-index.mjs   # 重新生成 index（maintainer 用）
 
 ## Web 市场
 
-`scripts/build-site.mjs`（零依赖，Node ≥18）读取 `index/v1/index.json` 与各包截图，
-生成纯静态市场站到 `site/dist/`：首页搜索 + 类型筛选，详情页双语描述、截图与
-「用 NotchAny 安装」深链按钮（`notchany://market/package/<owner>/<slug>`）。
-构建与 Cloudflare Pages 部署说明见 [site/README.md](site/README.md)。
+`scripts/build-site.mjs`（零依赖，Node ≥18）读取 index、`site/curation.json` 与包素材，
+生成中文根路径和 `/en/` 英文镜像到 `site/dist/`。首页包含精选、搜索、全部/最新/热门、
+类型/标签筛选与查询参数恢复；详情页包含真实截图、依赖、脚本风险、源码/反馈和相关推荐。
+「在 NotchAny 中打开」只定位 App 详情页，安装仍需用户确认。构建与 GitHub Pages
+部署说明见 [site/README.md](site/README.md)。精选配置最多 3 个，未知/重复 ID 会让构建失败。
 
 ## 下载计数
 
 [worker/](worker/) 是一个 Cloudflare Worker：`GET /pkg/<owner>/<slug>` 透传
-GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各包安装量供
+GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各包下载量供
 市场站展示；不记录任何请求者信息（无 IP/UA）。部署步骤见
 [worker/README.md](worker/README.md)。
 
@@ -103,6 +107,8 @@ GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各�
 | `scripts/check-pr.mjs` | PR / 本地校验脚本（Node ≥18，零依赖） |
 | `scripts/build-index.mjs` | index 生成脚本（Node ≥18，零依赖） |
 | `scripts/build-site.mjs` | Web 市场静态站生成脚本（Node ≥18，零依赖） |
+| `site/curation.json` | 维护者精选包配置（最多 3 个） |
+| `site/styles.css` / `site/store.js` | 构建时内联的样式与客户端交互 |
 | `site/` | 市场站部署说明（产物 `site/dist/` 不入库） |
 | `worker/` | 下载计数 Cloudflare Worker（代码 + wrangler 配置） |
 | `MAINTAINERS` | maintainer 用户名列表（可跨 owner 目录提交） |

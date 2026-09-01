@@ -63,6 +63,7 @@ for (const owner of listDirs(PACKAGES_DIR)) {
     const packageDir = join(PACKAGES_DIR, owner, slug);
     const packagePath = join(packageDir, "package.notchany.json");
     const manifestPath = join(packageDir, "manifest.json");
+    const iconPath = join(packageDir, "icon.png");
     if (!existsSync(packagePath)) fail(`${relativeDir} 缺少 package.notchany.json`);
     if (!existsSync(manifestPath)) fail(`${relativeDir} 缺少 manifest.json`);
 
@@ -111,6 +112,7 @@ for (const owner of listDirs(PACKAGES_DIR)) {
       }),
       package_id: `${owner}/${slug}`,
       path: `${relativeDir}/package.notchany.json`,
+      ...(existsSync(iconPath) && { icon_path: `${relativeDir}/icon.png` }),
       id: action.id,
       kind: action.presentation_mode === "widget" ? "widget" : "action",
       action_kind: action.kind,

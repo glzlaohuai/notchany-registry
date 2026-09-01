@@ -7,12 +7,12 @@ Cloudflare Worker：透传包体下载并做匿名安装计数。
   （`Content-Type: application/json` + CORS `*`），成功时对 KV key
   `<owner>/<slug>` 计数 +1；KV 写失败不影响响应。
 - `GET /counts.json` — 聚合返回 `{ "<owner>/<slug>": n, ... }`
-  （CORS `*`，`cache-control: max-age=300`），供市场静态站展示「安装量 N」。
+  （CORS `*`，`cache-control: max-age=300`），供市场静态站展示下载量并执行热门排序。
 - 其他路径 404。
 
 **隐私**：不记录任何请求者信息——无 IP、无 UA、无时间戳日志；KV 里只有
 `<owner>/<slug> -> 累计次数`，无法关联到任何个人。计数是 KV 读-改-写，
-并发下偶有少计，定位是「大致安装量」而非精确账本。
+并发下偶有少计，定位是「下载量」趋势而非精确安装数。
 
 ## 部署步骤
 
@@ -42,13 +42,9 @@ Cloudflare Worker：透传包体下载并做匿名安装计数。
    curl https://notchany-market.<你的子域>.workers.dev/counts.json
    ```
 
-4. 回填静态站：把 `scripts/build-site.mjs` 顶部的 `COUNTS_URL` 常量里的
-   `REPLACE_ME` 换成你的实际子域，重新 `node scripts/build-site.mjs` 并部署
-   site（见 [site/README.md](../site/README.md)）。页面即显示「安装量 N」。
+4. 回填静态站：把 `<Worker URL>/counts.json` 写入 GitHub Actions variable
+   `NOTCHANY_COUNTS_URL`，再触发 Pages workflow（见 [site/README.md](../site/README.md)）。
 
-5. App 侧切换（可选但推荐，否则安装不计数）：把 NotchAny 里市场包体的下载
-   base 从 `https://raw.githubusercontent.com/glzlaohuai/notchany-registry/main/packages/`
-   切换为 `https://notchany-market.<你的子域>.workers.dev/pkg/`（路径从
-   `<owner>/<slug>/package.notchany.json` 变为 `<owner>/<slug>`）。Worker 只做
-   透传，App 侧按 index 的 sha256 校验包体的逻辑不变；Worker 不可用时可回落
-   raw 直连，仅损失计数。
+5. App 侧把 `<Worker URL>/pkg/` 写入 `NOTCHANY_MARKET_PACKAGE_PROXY_BASE_URL`。
+   App 会依次尝试 Worker 与 GitHub raw；网络、HTTP 或 hash 异常均回退，任何来源都必须
+   通过 index 的 sha256 校验，Worker 不可用只会损失本次计数。

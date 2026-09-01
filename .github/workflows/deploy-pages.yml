@@ -31,6 +31,8 @@ jobs:
         run: node scripts/build-index.mjs
       - name: 构建静态站
         run: node scripts/build-site.mjs
+        env:
+          NOTCHANY_COUNTS_URL: ${{ vars.NOTCHANY_COUNTS_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist

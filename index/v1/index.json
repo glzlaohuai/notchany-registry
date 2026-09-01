@@ -1,6 +1,6 @@
 {
   "index_schema": 1,
-  "generated_at": "2026-08-31T11:36:51+08:00",
+  "generated_at": "2026-08-31T15:52:51+08:00",
   "packages": [
     {
       "names": {
@@ -24,6 +24,7 @@
       "license": "MIT",
       "package_id": "glzlaohuai/cpu-monitor",
       "path": "packages/glzlaohuai/cpu-monitor/package.notchany.json",
+      "icon_path": "packages/glzlaohuai/cpu-monitor/icon.png",
       "id": "notchany.custom.shell.b9986988-9d50-4a0f-ad50-3d5f0e17c7d0",
       "kind": "widget",
       "action_kind": "shell",
@@ -35,7 +36,9 @@
       "has_parameters": false,
       "has_notification": false,
       "interpreter": "shell",
-      "screenshots": [],
+      "screenshots": [
+        "packages/glzlaohuai/cpu-monitor/screenshots/market-detail.jpg"
+      ],
       "published_at": "2026-08-31T11:36:29+08:00",
       "updated_at": "2026-08-31T11:36:29+08:00"
     },
@@ -61,6 +64,7 @@
       "license": "MIT",
       "package_id": "glzlaohuai/disk-monitor",
       "path": "packages/glzlaohuai/disk-monitor/package.notchany.json",
+      "icon_path": "packages/glzlaohuai/disk-monitor/icon.png",
       "id": "notchany.custom.shell.99befc86-e9a7-47cf-82a5-3c5688ed7544",
       "kind": "widget",
       "action_kind": "shell",
@@ -98,6 +102,7 @@
       "license": "MIT",
       "package_id": "glzlaohuai/image-to-jpg",
       "path": "packages/glzlaohuai/image-to-jpg/package.notchany.json",
+      "icon_path": "packages/glzlaohuai/image-to-jpg/icon.png",
       "id": "notchany.custom.shell.ffec896b-fcd4-4587-9ab9-bb2d70486386",
       "kind": "action",
       "action_kind": "shell",
@@ -111,7 +116,9 @@
       "has_parameters": false,
       "has_notification": false,
       "interpreter": "shell",
-      "screenshots": [],
+      "screenshots": [
+        "packages/glzlaohuai/image-to-jpg/screenshots/market-detail.jpg"
+      ],
       "published_at": "2026-08-31T11:36:29+08:00",
       "updated_at": "2026-08-31T11:36:29+08:00"
     },
@@ -137,6 +144,7 @@
       "license": "MIT",
       "package_id": "glzlaohuai/memory-monitor",
       "path": "packages/glzlaohuai/memory-monitor/package.notchany.json",
+      "icon_path": "packages/glzlaohuai/memory-monitor/icon.png",
       "id": "notchany.custom.shell.3ee5260c-6c30-46f3-88ee-3cb0beb6617e",
       "kind": "widget",
       "action_kind": "shell",
@@ -173,6 +181,7 @@
       "license": "MIT",
       "package_id": "glzlaohuai/metric-template",
       "path": "packages/glzlaohuai/metric-template/package.notchany.json",
+      "icon_path": "packages/glzlaohuai/metric-template/icon.png",
       "id": "notchany.custom.shell.167f568a-fc11-4ecf-995a-0234b49f9995",
       "kind": "widget",
       "action_kind": "shell",
@@ -209,6 +218,7 @@
       "license": "MIT",
       "package_id": "glzlaohuai/wifi-name",
       "path": "packages/glzlaohuai/wifi-name/package.notchany.json",
+      "icon_path": "packages/glzlaohuai/wifi-name/icon.png",
       "id": "notchany.custom.shell.30ee7201-ea59-4280-8666-c9e71c2292c1",
       "kind": "action",
       "action_kind": "shell",
@@ -220,7 +230,9 @@
       "has_parameters": false,
       "has_notification": false,
       "interpreter": "shell",
-      "screenshots": [],
+      "screenshots": [
+        "packages/glzlaohuai/wifi-name/screenshots/market-detail.jpg"
+      ],
       "published_at": "2026-08-31T11:36:29+08:00",
       "updated_at": "2026-08-31T11:36:29+08:00"
     }

@@ -13,6 +13,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 
+import { readPngDimensions } from "./png.mjs";
+
 const ROOT = process.cwd();
 const PACKAGES_DIR = join(ROOT, "packages");
 const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
@@ -23,6 +25,7 @@ const TAG_PATTERN = /^[a-z0-9-]{1,24}$/;
 const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
 const MAX_SCREENSHOTS = 4;
 const MAX_SCREENSHOT_BYTES = 1024 * 1024;
+const MAX_ICON_BYTES = 512 * 1024;
 
 const violations = [];
 function violate(message) {
@@ -227,6 +230,26 @@ function validateScreenshots(packageDir, label) {
   }
 }
 
+function validateIcon(packageDir, label) {
+  const path = join(packageDir, "icon.png");
+  if (!existsSync(path)) return;
+  const size = statSync(path).size;
+  if (size > MAX_ICON_BYTES) {
+    violate(`${label}：icon.png 超过 512KB（现 ${size} 字节）`);
+  }
+  try {
+    const { width, height } = readPngDimensions(readFileSync(path));
+    if (width !== height) {
+      violate(`${label}：icon.png 必须为方形（现 ${width}×${height}）`);
+    }
+    if (width < 256 || width > 1024 || height < 256 || height > 1024) {
+      violate(`${label}：icon.png 宽高必须在 256–1024px（现 ${width}×${height}）`);
+    }
+  } catch (error) {
+    violate(`${label}：icon.png 无效：${error.message}`);
+  }
+}
+
 // ---------- 单个包的完整校验 ----------
 
 function validatePackage(owner, slug, { checkVersionBump }) {
@@ -267,6 +290,7 @@ function validatePackage(owner, slug, { checkVersionBump }) {
     validatePackageFile(envelope, `${label}/package.notchany.json`);
   }
   validateScreenshots(packageDir, label);
+  validateIcon(packageDir, label);
 
   // 版本递增（仅 PR 模式）：origin/main 上已有同名包时，新 version 必须严格大于旧值。
   if (checkVersionBump) {

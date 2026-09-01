@@ -9,7 +9,7 @@
 // KV 里只有 "<owner>/<slug>" -> 累计次数 这一种数据，无法关联到任何个人。
 //
 // 计数语义：KV 读-改-写不是原子操作，并发下偶有少计——这是「大致安装量」而非精确
-// 账本，够用且换来零个人信息存储。KV 写失败不影响包体响应（安装永远优先于计数）。
+// 账本，够用且换来零个人信息存储。KV 写失败不影响包体响应（下载永远优先于计数）。
 
 const RAW_BASE = "https://raw.githubusercontent.com/glzlaohuai/notchany-registry/main";
 
@@ -45,13 +45,18 @@ async function bumpCount(env, key) {
   }
 }
 
-async function handlePackage(owner, slug, env, ctx) {
+async function handlePackage(owner, slug, env, ctx, fetchImpl, rawBase) {
   if (!OWNER_PATTERN.test(owner) || !SLUG_PATTERN.test(slug)) {
     return json({ error: "invalid owner or slug" }, 400);
   }
-  const upstream = await fetch(
-    `${RAW_BASE}/packages/${owner}/${slug}/package.notchany.json`
-  );
+  let upstream;
+  try {
+    upstream = await fetchImpl(
+      `${rawBase}/packages/${owner}/${slug}/package.notchany.json`
+    );
+  } catch {
+    return json({ error: "package upstream unavailable" }, 502);
+  }
   if (!upstream.ok) {
     return json({ error: "package not found" }, 404);
   }
@@ -88,8 +93,9 @@ async function handleCounts(env) {
   return json(sorted, 200, { "cache-control": "public, max-age=300" });
 }
 
-export default {
-  async fetch(request, env, ctx) {
+export function createWorker(fetchImpl = fetch, rawBase = RAW_BASE) {
+  return {
+    async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
@@ -102,8 +108,11 @@ export default {
     }
     const match = url.pathname.match(/^\/pkg\/([^/]+)\/([^/]+)$/);
     if (match) {
-      return handlePackage(match[1], match[2], env, ctx);
+      return handlePackage(match[1], match[2], env, ctx, fetchImpl, rawBase);
     }
     return json({ error: "not found" }, 404);
-  },
-};
+    },
+  };
+}
+
+export default createWorker();
