@@ -72,6 +72,14 @@ img { display: block; max-width: 100%; }
 .nav-icon-button:hover, .nav-icon-button[aria-expanded="true"] { color: var(--ink); background: var(--surface-2); }
 .nav-icon-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .nav-icon-button svg path[d^="M12 2C"] { fill: currentColor; stroke: none; }
+.nav-download-button {
+  min-height: 34px; padding: 0 12px; display: inline-flex; align-items: center; gap: 7px;
+  border-radius: 6px; color: white; background: var(--signal); font-size: 12px; font-weight: 650;
+}
+.nav-download-button:hover { background: #3479ed; }
+.nav-download-button svg, .download-primary svg {
+  width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+}
 .language-menu { position: relative; }
 .language-popover {
   position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
@@ -451,8 +459,19 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .detail-meta { display: flex; gap: 14px; margin-top: 11px; color: var(--secondary); font-size: 12px; }
 .primary-button { min-height: 42px; padding: 0 17px; display: inline-grid; place-items: center; border: 0; border-radius: 7px; color: white; background: var(--signal); font-weight: 650; cursor: pointer; }
 .primary-button:hover { background: #3479ed; }
-.launch-help { max-width: 300px; margin: 10px 0 0 auto; color: var(--secondary); font-size: 12px; text-align: right; }
-.launch-help a { color: var(--signal); }
+.primary-button:disabled { color: var(--secondary); background: var(--surface-2); cursor: default; }
+.download-main { min-height: calc(100svh - 169px); display: grid; place-items: center; }
+.download-hero { padding: 76px 0 88px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.download-app-icon { width: 96px; height: 96px; margin-bottom: 24px; border-radius: 22px; box-shadow: var(--shadow); }
+.download-kicker { margin: 0 0 9px; color: var(--signal); font-size: 13px; font-weight: 650; }
+.download-hero h1 { margin: 0; font-size: 42px; line-height: 1.1; }
+.download-body { max-width: 610px; margin: 17px auto 0; color: var(--secondary); font-size: 17px; line-height: 1.65; }
+.download-actions { margin-top: 29px; display: flex; align-items: center; gap: 18px; }
+.download-primary { min-width: 190px; display: inline-flex; grid-auto-flow: column; gap: 8px; }
+.download-project-link { color: var(--signal); font-size: 13px; font-weight: 600; }
+.download-project-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.download-note { margin: 17px 0 0; color: var(--secondary); font-size: 12px; }
+.download-requirement { margin: 32px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--secondary); font-size: 12px; }
 .detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 60px; padding-top: 42px; }
 .screenshots { display: grid; gap: 14px; margin-bottom: 38px; }
 .screenshot { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
@@ -551,7 +570,13 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
   .detail-title h1 { font-size: 26px; }
   .detail-action { grid-column: 1 / -1; }
   .primary-button { width: 100%; }
-  .launch-help { max-width: none; margin-left: 0; text-align: left; }
+  .download-main { min-height: calc(100svh - 157px); }
+  .download-hero { padding: 52px 0 64px; }
+  .download-app-icon { width: 82px; height: 82px; border-radius: 19px; }
+  .download-hero h1 { font-size: 34px; }
+  .download-body { font-size: 15px; }
+  .download-actions { width: 100%; flex-direction: column; gap: 14px; }
+  .download-primary { width: min(100%, 320px); }
   .detail-layout { grid-template-columns: 1fr; gap: 38px; }
   .side-info { border-top: 1px solid var(--line); padding-top: 24px; }
   .related-list { grid-template-columns: 1fr; }
@@ -565,4 +590,6 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
   .search-box input { padding-right: 14px; }
   .package-row { padding-inline: 5px; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 10px; }
   .package-icon { width: 50px; height: 50px; border-radius: 12px; }
+  .nav-download-button { width: 32px; padding: 0; justify-content: center; }
+  .nav-download-button span { display: none; }
 }

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import { readFileSync } from "node:fs";
 
-import { detailPage, homePage } from "../scripts/site-template.mjs";
+import { detailPage, downloadPage, homePage } from "../scripts/site-template.mjs";
 
 const packages = ["cpu", "image", "wifi"].map((slug, index) => ({
   package_id: `owner/${slug}`,
@@ -73,6 +73,7 @@ test("home navigation uses icon controls, a language menu, and two synchronized 
   assert.equal((html.match(/data-store-search/g) || []).length, 2);
   assert.match(html, /id="library-search"/);
   assert.match(html, /id="result-count" aria-live="polite"/);
+  assert.match(html, /class="nav-download-button" href="download\/" aria-label="下载 App"/);
 });
 
 test("detail navigation language menu preserves the package route", () => {
@@ -80,6 +81,25 @@ test("detail navigation language menu preserves the package route", () => {
 
   assert.match(html, /href="\.\.\/\.\.\/\.\.\/\.\.\/packages\/owner\/cpu\/" role="menuitem" lang="zh-Hans">中文<\/a>/);
   assert.match(html, /href="\.\.\/\.\.\/\.\.\/\.\.\/en\/packages\/owner\/cpu\/" role="menuitem" lang="en" aria-current="page">English<\/a>/);
+});
+
+test("download page keeps the release control disabled until a URL is configured", () => {
+  const pending = downloadPage({ lang: "zh", css: "", js: "" });
+  const ready = downloadPage({ lang: "en", css: "", js: "", downloadURL: "https://example.com/NotchAny.dmg" });
+
+  assert.match(pending, /class="primary-button download-primary" type="button" disabled aria-disabled="true"/);
+  assert.match(pending, /下载地址准备中/);
+  assert.match(ready, /class="primary-button download-primary" href="https:\/\/example\.com\/NotchAny\.dmg"/);
+  assert.match(ready, /Download NotchAny/);
+  assert.match(ready, /href="\.\.\/\.\.\/download\/" role="menuitem" lang="zh-Hans"/);
+  assert.match(ready, /href="\.\.\/\.\.\/en\/download\/" role="menuitem" lang="en" aria-current="page"/);
+});
+
+test("package deep links include a local download fallback", () => {
+  const html = detailPage({ lang: "zh", item: packages[0], packages, countsURL: "", css: "", js: "" });
+
+  assert.match(html, /id="open-in-notchany"[^>]+data-fallback-url="\.\.\/\.\.\/\.\.\/download\/"/);
+  assert.doesNotMatch(html, /id="launch-help"/);
 });
 
 test("notch intro is session-scoped and does not schedule repeating cycles", () => {
@@ -103,4 +123,13 @@ test("typing hides the hero shortcut hint so the native clear button stays usabl
 
   assert.match(source, /input:not\(:placeholder-shown\) ~ \.search-key \{ opacity: 0; \}/);
   assert.match(source, /pointer-events: none/);
+});
+
+test("failed app launches redirect to the download guide", () => {
+  const source = readFileSync(new URL("../site/store.js", import.meta.url), "utf8");
+
+  assert.match(source, /launch\.dataset\.fallbackUrl/);
+  assert.match(source, /location\.assign\(fallbackURL\)/);
+  assert.match(source, /!document\.hidden && document\.hasFocus\(\)/);
+  assert.match(source, /addEventListener\("blur", cancel/);
 });

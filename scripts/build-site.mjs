@@ -7,13 +7,14 @@ import { dirname, join } from "node:path";
 import process from "node:process";
 
 import { validateCuration } from "./site-lib.mjs";
-import { detailPage, homePage } from "./site-template.mjs";
+import { detailPage, downloadPage, homePage } from "./site-template.mjs";
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, "site", "dist");
 const INDEX_PATH = join(ROOT, "index", "v1", "index.json");
 const CURATION_PATH = join(ROOT, "site", "curation.json");
 const COUNTS_URL = process.env.NOTCHANY_COUNTS_URL?.trim() || "";
+const APP_DOWNLOAD_URL = process.env.NOTCHANY_APP_DOWNLOAD_URL?.trim() || "";
 
 function fail(message) {
   console.error(`build-site: ${message}`);
@@ -70,6 +71,8 @@ for (const item of packages) {
 
 write("index.html", homePage({ lang: "zh", packages, featuredIDs, countsURL: COUNTS_URL, css, js }));
 write("en/index.html", homePage({ lang: "en", packages, featuredIDs, countsURL: COUNTS_URL, css, js }));
+write("download/index.html", downloadPage({ lang: "zh", css, js, downloadURL: APP_DOWNLOAD_URL }));
+write("en/download/index.html", downloadPage({ lang: "en", css, js, downloadURL: APP_DOWNLOAD_URL }));
 for (const item of packages) {
   write(`packages/${item.package_id}/index.html`, detailPage({ lang: "zh", item, packages, countsURL: COUNTS_URL, css, js }));
   write(`en/packages/${item.package_id}/index.html`, detailPage({ lang: "en", item, packages, countsURL: COUNTS_URL, css, js }));
@@ -77,4 +80,4 @@ for (const item of packages) {
 
 write(".nojekyll", "");
 write("404.html", homePage({ lang: "zh", packages, featuredIDs, countsURL: COUNTS_URL, css, js }));
-console.log(`已生成 site/dist（2 个首页，${packages.length * 2} 个详情页，counts=${COUNTS_URL || "未配置"}）`);
+console.log(`已生成 site/dist（2 个首页，2 个下载页，${packages.length * 2} 个详情页，counts=${COUNTS_URL || "未配置"}，app=${APP_DOWNLOAD_URL || "未配置"}）`);

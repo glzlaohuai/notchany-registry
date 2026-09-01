@@ -361,14 +361,23 @@
 
   const launch = byId("open-in-notchany");
   launch?.addEventListener("click", () => {
-    const help = byId("launch-help");
-    help.hidden = true;
-    let timer = setTimeout(() => { help.hidden = false; }, 1400);
+    const fallbackURL = launch.dataset.fallbackUrl;
+    if (!fallbackURL) return;
+    const timer = setTimeout(() => {
+      if (!document.hidden && document.hasFocus()) location.assign(fallbackURL);
+    }, 1600);
+    const onVisibilityChange = () => {
+      if (document.hidden) cancel();
+    };
     const cancel = () => {
       clearTimeout(timer);
-      document.removeEventListener("visibilitychange", cancel);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      removeEventListener("blur", cancel);
+      removeEventListener("pagehide", cancel);
     };
-    document.addEventListener("visibilitychange", cancel, { once: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    addEventListener("blur", cancel, { once: true });
+    addEventListener("pagehide", cancel, { once: true });
   });
 
   render();

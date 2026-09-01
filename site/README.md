@@ -13,7 +13,8 @@ python3 -m http.server 4173 --directory site/dist
 - 首页、精选、列表和详情统一显示发布包的 `icon.png`；该文件由 NotchAny 发布向导按安装后的真实图标生成
 - `q/sort/kind/tag/page` 同步到查询参数，刷新、分享和浏览器返回可恢复
 - 详情页包含真实截图、双语正文、依赖/风险、源码/反馈、同标签推荐与 canonical/hreflang/OG
-- 「在 NotchAny 中打开」只打开 App 详情页，1.4 秒未唤起时引导到项目主页，不暗示静默安装
+- 全站「下载 App」进入双语下载提示页；通过 `NOTCHANY_APP_DOWNLOAD_URL` 注入正式下载地址，未配置时按钮显示准备中而不产生死链接
+- 「在 NotchAny 中打开」只打开 App 详情页，1.6 秒未唤起时自动进入下载提示页，不暗示静默安装
 - 无外部资源：CSS/JS 全部内联，系统字体栈，深浅色自适应
 - 下载计数为渐进增强：构建时通过 `NOTCHANY_COUNTS_URL` 注入 Worker 地址；失败时热门入口
   显示可重试状态，其他浏览能力不受影响。页面始终称为「下载量」。
@@ -28,4 +29,12 @@ Worker 部署后，在仓库 Actions variables 设置：
 gh variable set NOTCHANY_COUNTS_URL \
   --repo glzlaohuai/notchany-registry \
   --body 'https://notchany-market.<subdomain>.workers.dev/counts.json'
+```
+
+正式下载地址确定后，再配置站点构建变量：
+
+```bash
+gh variable set NOTCHANY_APP_DOWNLOAD_URL \
+  --repo glzlaohuai/notchany-registry \
+  --body 'https://example.com/NotchAny.dmg'
 ```

@@ -33,6 +33,7 @@ jobs:
         run: node scripts/build-site.mjs
         env:
           NOTCHANY_COUNTS_URL: ${{ vars.NOTCHANY_COUNTS_URL }}
+          NOTCHANY_APP_DOWNLOAD_URL: ${{ vars.NOTCHANY_APP_DOWNLOAD_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist

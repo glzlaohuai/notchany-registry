@@ -6,31 +6,35 @@ const APP_URL = "https://github.com/glzlaohuai/NotchAny";
 
 const COPY = {
   zh: {
-    browse: "浏览内容库", submit: "提交作品", github: "GitHub 源码", language: "English", language_menu: "切换语言", featured: "精选", featured_note: "来自不同使用场景的三个起点。",
+    browse: "浏览内容库", submit: "提交作品", github: "GitHub 源码", language: "English", language_menu: "切换语言", download_app: "下载 App", featured: "精选", featured_note: "来自不同使用场景的三个起点。",
     hero_kicker: "为 macOS 刘海而生", hero_title: "NotchAny Store", hero_body: "发现小组件与动作，把常用信息和工作流放进刘海。每个包都可检查、可调整、由你确认安装。",
     search: "搜索名称、简介、作者、包 ID 或标签", all_packages: "内容库", all_packages_note: "浏览社区发布的小组件与动作。",
     sort: "排序", all: "全部", recent: "最新", popular: "热门", type: "类型", widget: "小组件", action: "动作", tags: "标签",
     clear: "清除条件", result: "找到 {count} 个包", downloads: "下载", open: "打开", retry: "重试",
     popular_loading: "正在读取下载量…", popular_unavailable: "热门排序暂不可用。", popular_unavailable_title: "暂时无法读取热门排序", popular_unavailable_body: "下载计数服务没有响应。你仍可使用全部、最新、搜索和筛选。",
     empty_title: "没有匹配的包", empty_body: "换个关键词，或清除一项筛选条件。", featured_kind: "精选",
-    footer: "NotchAny Store · 公开 registry 的静态视图", source: "源码", privacy: "隐私与发布规则",
+    footer: "NotchAny Store", source: "源码", privacy: "隐私与发布规则",
     back: "返回 Store", by: "作者", version: "版本", updated: "更新", size: "包大小", license: "许可", requirements: "依赖", none: "无额外依赖",
-    open_app: "在 NotchAny 中打开", launch_help: "没有唤起 NotchAny？请先从项目主页获取 App，再返回此页重试。", project_home: "项目主页",
+    open_app: "在 NotchAny 中打开", project_home: "项目主页",
+    download_kicker: "NotchAny for Mac", download_title: "先安装 NotchAny", download_body: "NotchAny Store 中的小组件与动作需要通过 Mac App 查看和安装。安装完成后，返回 Store 再次打开即可。",
+    download_now: "下载 NotchAny", download_pending: "下载地址准备中", download_pending_note: "正式版本开放下载后，此按钮会直接提供最新版 App。", download_requirement: "需要 macOS 15 Sequoia 或更高版本",
     about: "关于这个包", safety: "运行与安全", safety_shell: "此包包含可执行脚本。NotchAny 会在安装前展示完整脚本，并要求你确认；请只运行你已阅读并信任的内容。",
     safety_plain: "安装前可检查包内容，NotchAny 仍会要求你确认安装。", screenshots: "实际界面", no_screenshot: "该包尚未提供界面截图",
     info: "包信息", package_id: "包 ID", source_code: "查看包源码", report: "反馈问题", improve: "提出改进", related: "你可能也需要",
   },
   en: {
-    browse: "Browse library", submit: "Submit a package", github: "GitHub source", language: "中文", language_menu: "Change language", featured: "Featured", featured_note: "Three starting points for different workflows.",
+    browse: "Browse library", submit: "Submit a package", github: "GitHub source", language: "中文", language_menu: "Change language", download_app: "Download App", featured: "Featured", featured_note: "Three starting points for different workflows.",
     hero_kicker: "Built for the macOS notch", hero_title: "NotchAny Store", hero_body: "Discover widgets and actions that put useful information and workflows in the notch. Every package stays inspectable, editable, and yours to approve.",
     search: "Search names, descriptions, authors, package IDs, or tags", all_packages: "Library", all_packages_note: "Browse community widgets and actions.",
     sort: "Sort", all: "All", recent: "Latest", popular: "Popular", type: "Type", widget: "Widgets", action: "Actions", tags: "Tags",
     clear: "Clear filters", result: "{count} packages", downloads: "downloads", open: "Open", retry: "Retry",
     popular_loading: "Loading download counts…", popular_unavailable: "Popular sorting is unavailable.", popular_unavailable_title: "Popular sorting is temporarily unavailable", popular_unavailable_body: "The download-count service did not respond. All, Latest, search, and filters still work.",
     empty_title: "No matching packages", empty_body: "Try another term or clear one of the filters.", featured_kind: "Featured",
-    footer: "NotchAny Store · A static view of the public registry", source: "Source", privacy: "Privacy and publishing rules",
+    footer: "NotchAny Store", source: "Source", privacy: "Privacy and publishing rules",
     back: "Back to Store", by: "By", version: "Version", updated: "Updated", size: "Package size", license: "License", requirements: "Requirements", none: "No extra requirements",
-    open_app: "Open in NotchAny", launch_help: "NotchAny did not open? Get the app from the project page, then return here and try again.", project_home: "Project page",
+    open_app: "Open in NotchAny", project_home: "Project page",
+    download_kicker: "NotchAny for Mac", download_title: "Install NotchAny first", download_body: "Widgets and actions from NotchAny Store are viewed and installed through the Mac app. Once installed, return to the Store and open the package again.",
+    download_now: "Download NotchAny", download_pending: "Download coming soon", download_pending_note: "This button will provide the latest app as soon as the release is available.", download_requirement: "Requires macOS 15 Sequoia or later",
     about: "About this package", safety: "Runtime and safety", safety_shell: "This package contains an executable script. NotchAny shows the full script and asks for confirmation before installation. Run only code you have read and trust.",
     safety_plain: "You can inspect the package before installing, and NotchAny still asks you to confirm.", screenshots: "Actual interface", no_screenshot: "No interface screenshot has been provided yet",
     info: "Package information", package_id: "Package ID", source_code: "View package source", report: "Report an issue", improve: "Suggest an improvement", related: "You may also need",
@@ -114,13 +118,15 @@ const NAV_ICONS = {
   submit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l3 1.71"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>',
   github: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.91-2.78.62-3.37-1.2-3.37-1.2-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.94a9.3 9.3 0 0 1 2.5.35c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.59.69.49A10.23 10.23 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z"/></svg>',
   language: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>',
+  download: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
 };
 
-function nav({ lang, root, detailPackageID = "" }) {
+function nav({ lang, root, detailPackageID = "", sectionPath = "" }) {
   const copy = COPY[lang];
   const home = `${root}${lang === "en" ? "en/" : ""}`;
-  const pagePath = detailPackageID ? `packages/${detailPackageID}/` : "";
+  const pagePath = detailPackageID ? `packages/${detailPackageID}/` : sectionPath;
   const languageLinks = { zh: `${root}${pagePath}`, en: `${root}en/${pagePath}` };
+  const download = `${root}${lang === "en" ? "en/" : ""}download/`;
   return `<header class="site-nav"><nav class="shell nav-inner" aria-label="${lang === "zh" ? "主导航" : "Main navigation"}">
     <a class="brand" href="${home}"><img src="${root}assets/app-icon.png" alt="" width="26" height="26"><strong>NotchAny</strong><span>Store</span></a>
     <div class="nav-links">
@@ -134,6 +140,7 @@ function nav({ lang, root, detailPackageID = "" }) {
           <a href="${languageLinks.en}" role="menuitem" lang="en"${lang === "en" ? ' aria-current="page"' : ""}>English</a>
         </div>
       </div>
+      <a class="nav-download-button" href="${download}" aria-label="${copy.download_app}" title="${copy.download_app}">${NAV_ICONS.download}<span>${copy.download_app}</span></a>
     </div>
   </nav></header>`;
 }
@@ -272,6 +279,34 @@ ${footer({ lang, root })}
 </body></html>`;
 }
 
+export function downloadPage({ lang, css, js, downloadURL = "" }) {
+  const copy = COPY[lang];
+  const root = lang === "zh" ? "../" : "../../";
+  const current = `${lang === "zh" ? "" : "/en"}/download/`;
+  const alternate = `${lang === "zh" ? "/en" : ""}/download/`;
+  const downloadControl = downloadURL
+    ? `<a class="primary-button download-primary" href="${escapeHTML(downloadURL)}">${NAV_ICONS.download}<span>${copy.download_now}</span></a>`
+    : `<button class="primary-button download-primary" type="button" disabled aria-disabled="true">${NAV_ICONS.download}<span>${copy.download_pending}</span></button>`;
+  return `${pageHead({ lang, title: `${copy.download_title} · NotchAny`, description: copy.download_body, canonicalPath: current, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
+<body>
+${nav({ lang, root, sectionPath: "download/" })}
+<main class="download-main">
+  <section class="shell download-hero">
+    <img class="download-app-icon" src="${root}assets/app-icon.png" alt="" width="96" height="96">
+    <p class="download-kicker">${copy.download_kicker}</p>
+    <h1>${copy.download_title}</h1>
+    <p class="download-body">${copy.download_body}</p>
+    <div class="download-actions">${downloadControl}<a class="download-project-link" href="${APP_URL}">${copy.project_home}</a></div>
+    <p class="download-note">${downloadURL ? copy.download_requirement : copy.download_pending_note}</p>
+    <p class="download-requirement">${copy.download_requirement}</p>
+  </section>
+</main>
+${footer({ lang, root })}
+<script>window.__NOTCHANY_STORE__=${inlineJSON({ language: lang, copy, packages: [], counts_url: "" })};</script>
+<script>${js}</script>
+</body></html>`;
+}
+
 export function detailPage({ lang, item, packages, countsURL, css, js }) {
   const copy = COPY[lang];
   const root = lang === "zh" ? "../../../" : "../../../../";
@@ -288,6 +323,7 @@ export function detailPage({ lang, item, packages, countsURL, css, js }) {
   const sourceURL = `${REPO_URL}/tree/main/packages/${item.package_id}`;
   const issueURL = `${REPO_URL}/issues/new?title=${encodeURIComponent(`[${item.package_id}] `)}`;
   const home = `${root}${lang === "en" ? "en/" : ""}`;
+  const download = `${root}${lang === "en" ? "en/" : ""}download/`;
   const description = pick(item.descriptions, lang) || summary;
   return `${pageHead({ lang, title: `${name} · NotchAny Store`, description: summary, canonicalPath: path, alternatePath: alternate, imagePath: `assets/${item.icon_path || "app-icon.png"}`, css })}
 <body>
@@ -297,7 +333,7 @@ ${nav({ lang, root, detailPackageID: item.package_id })}
   <header class="detail-hero">
     ${icon(item, root)}
     <div class="detail-title"><h1>${escapeHTML(name)}</h1><p>${escapeHTML(summary)}</p><div class="detail-meta"><span>${copy.by} ${escapeHTML(owner)}</span><span data-download-count="${escapeHTML(item.package_id)}"></span></div></div>
-    <div class="detail-action"><a class="primary-button" id="open-in-notchany" href="notchany://market/package/${escapeHTML(item.package_id)}">${copy.open_app}</a><p class="launch-help" id="launch-help" hidden>${copy.launch_help} <a href="${APP_URL}">${copy.project_home}</a></p></div>
+    <div class="detail-action"><a class="primary-button" id="open-in-notchany" href="notchany://market/package/${escapeHTML(item.package_id)}" data-fallback-url="${download}">${copy.open_app}</a></div>
   </header>
   <div class="detail-layout"><article>
     <section aria-labelledby="screenshots-title"><h2 id="screenshots-title">${copy.screenshots}</h2><div class="screenshots">${screenshots}</div></section>

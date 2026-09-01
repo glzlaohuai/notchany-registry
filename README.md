@@ -88,7 +88,9 @@ node scripts/build-index.mjs   # 重新生成 index（maintainer 用）
 `scripts/build-site.mjs`（零依赖，Node ≥18）读取 index、`site/curation.json` 与包素材，
 生成中文根路径和 `/en/` 英文镜像到 `site/dist/`。首页包含精选、搜索、全部/最新/热门、
 类型/标签筛选与查询参数恢复；详情页包含真实截图、依赖、脚本风险、源码/反馈和相关推荐。
-「在 NotchAny 中打开」只定位 App 详情页，安装仍需用户确认。构建与 GitHub Pages
+全站「下载 App」进入下载提示页，正式下载地址通过 `NOTCHANY_APP_DOWNLOAD_URL` 构建变量注入；
+未配置时显示准备中，不输出空链接。「在 NotchAny 中打开」只定位 App 详情页，未唤起时自动
+进入下载提示页，安装仍需用户确认。构建与 GitHub Pages
 部署说明见 [site/README.md](site/README.md)。精选配置最多 3 个，未知/重复 ID 会让构建失败。
 
 ## 下载计数
