@@ -14,7 +14,7 @@ packages/
     <slug>/                   # 包目录名：^[a-z0-9][a-z0-9-]{1,63}$
       package.notchany.json   # NotchAny 设置页导出的 .notchany.json 原样
       manifest.json           # 上架元数据（格式见 schema/manifest.schema.json）
-      icon.png                # 可选：方形 PNG，256–1024px，≤512KB
+      icon.png                # 必需：安装后的真实图标，方形 PNG，256–1024px，≤512KB
       screenshots/            # 可选：最多 4 张 .png/.jpg，单张 ≤1MB
 ```
 
@@ -36,8 +36,9 @@ packages/
 
 1. 在 NotchAny 设置页导出你的动作/小组件，得到 `.notchany.json` 封套文件。
 2. Fork 本仓库，在 `packages/<你的 GitHub 用户名>/<slug>/` 下放入
-   `package.notchany.json`（导出文件原样改名）与 `manifest.json`；建议同时提供独立
-   `icon.png` 与真实 NotchAny 运行界面截图。
+   `package.notchany.json`（导出文件原样改名）、`manifest.json` 与发布向导自动生成的
+   `icon.png`；建议同时提供真实 NotchAny 运行界面截图。`icon.png` 与动作/小组件安装后
+   的 `symbol`、文字或图片图标同源，不要另做一套市场封面。
 3. 提交 PR。CI（`scripts/check-pr.mjs`）自动校验，全绿后由 maintainer 审核合并。
 4. 合并进 main 后 CI 自动重建 `index/v1/index.json`，App 侧即可发现新包。
 5. 更新包 = 再次 PR 同一目录，`manifest.json` 的 `version` **必须严格递增**。

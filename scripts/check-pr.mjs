@@ -232,7 +232,10 @@ function validateScreenshots(packageDir, label) {
 
 function validateIcon(packageDir, label) {
   const path = join(packageDir, "icon.png");
-  if (!existsSync(path)) return;
+  if (!existsSync(path)) {
+    violate(`${label}：缺少 icon.png；请使用 NotchAny 发布向导重新产出，确保市场展示与安装后的真实图标一致`);
+    return;
+  }
   const size = statSync(path).size;
   if (size > MAX_ICON_BYTES) {
     violate(`${label}：icon.png 超过 512KB（现 ${size} 字节）`);

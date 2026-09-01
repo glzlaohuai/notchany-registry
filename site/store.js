@@ -119,12 +119,12 @@
       renderDetailCount();
       return;
     }
-    const input = byId("store-search");
-    if (input && input.value !== state.q) input.value = state.q;
+    document.querySelectorAll("[data-store-search]").forEach((input) => {
+      if (input.value !== state.q) input.value = state.q;
+    });
     document.querySelectorAll("[data-sort]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.sort === state.sort)));
     document.querySelectorAll("[data-kind]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.kind === state.kind)));
     document.querySelectorAll("[data-tag]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.tag === state.tag)));
-    byId("featured-section").hidden = Boolean(state.q);
     byId("clear-filters").hidden = !state.q && state.sort === "all" && state.kind === "all" && !state.tag;
 
     const result = catalog();
@@ -180,9 +180,27 @@
     render();
   }
 
-  const search = byId("store-search");
-  search?.addEventListener("input", () => update({ q: search.value, page: 1 }));
+  const searches = [...document.querySelectorAll("[data-store-search]")];
+  const primarySearch = byId("store-search") || searches[0];
+  searches.forEach((search) => search.addEventListener("input", () => update({ q: search.value, page: 1 })));
+
+  const languageMenu = byId("language-menu");
+  const languageToggle = byId("language-toggle");
+  const languagePopover = byId("language-popover");
+  const languageOptions = [...(languagePopover?.querySelectorAll('[role="menuitem"]') || [])];
+  const setLanguageMenuOpen = (open, focusOption = false) => {
+    if (!languageToggle || !languagePopover) return;
+    languageToggle.setAttribute("aria-expanded", String(open));
+    languagePopover.hidden = !open;
+    if (open && focusOption) (languagePopover.querySelector('[aria-current="page"]') || languageOptions[0])?.focus();
+  };
+
   document.addEventListener("click", (event) => {
+    if (event.target.closest("#language-toggle")) {
+      setLanguageMenuOpen(languageToggle?.getAttribute("aria-expanded") !== "true");
+      return;
+    }
+    if (languageMenu && !languageMenu.contains(event.target)) setLanguageMenuOpen(false);
     const sort = event.target.closest("[data-sort]");
     if (sort) update({ sort: sort.dataset.sort, page: 1 }, "push");
     const kind = event.target.closest("[data-kind]");
@@ -198,15 +216,35 @@
     if (event.target.closest("#retry-counts")) loadCounts();
   });
   document.addEventListener("keydown", (event) => {
+    const languageMenuOpen = languageToggle?.getAttribute("aria-expanded") === "true";
+    if (event.key === "Escape" && languageMenuOpen) {
+      event.preventDefault();
+      setLanguageMenuOpen(false);
+      languageToggle.focus();
+      return;
+    }
+    if (languageToggle && document.activeElement === languageToggle && ["ArrowDown", "Enter", " "].includes(event.key)) {
+      event.preventDefault();
+      setLanguageMenuOpen(true, true);
+      return;
+    }
+    if (languageMenuOpen && languageOptions.includes(document.activeElement) && ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+      const current = languageOptions.indexOf(document.activeElement);
+      const next = event.key === "Home" ? 0 : event.key === "End" ? languageOptions.length - 1 : (current + (event.key === "ArrowDown" ? 1 : -1) + languageOptions.length) % languageOptions.length;
+      languageOptions[next]?.focus();
+      return;
+    }
     if ((event.key === "/" && !/input|textarea|select/i.test(document.activeElement?.tagName)) || ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k")) {
       event.preventDefault();
-      search?.focus();
-      search?.select();
+      primarySearch?.focus();
+      primarySearch?.select();
     }
-    if (event.key === "Escape" && search && (document.activeElement === search || state.q)) {
+    const activeSearch = searches.includes(document.activeElement) ? document.activeElement : primarySearch;
+    if (event.key === "Escape" && activeSearch && (searches.includes(document.activeElement) || state.q)) {
       event.preventDefault();
       update({ q: "", page: 1 }, "push");
-      search.focus();
+      activeSearch.focus();
     }
   });
   addEventListener("popstate", () => {
@@ -214,11 +252,99 @@
     render();
   });
 
-  const stage = byId("notch-stage");
-  if (stage && !matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("notchany-store-intro")) {
-    sessionStorage.setItem("notchany-store-intro", "1");
-    requestAnimationFrame(() => stage.classList.add("intro"));
-    setTimeout(() => stage.classList.remove("intro"), 360);
+  const menuDate = byId("mac-menu-date");
+  const menuTime = byId("mac-menu-time");
+  if (menuDate && menuTime) {
+    const dateFormatter = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", weekday: "short" });
+    const timeFormatter = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    const updateClock = () => {
+      const now = new Date();
+      menuDate.textContent = dateFormatter.format(now);
+      menuTime.textContent = timeFormatter.format(now);
+    };
+    updateClock();
+    setInterval(updateClock, 1000);
+  }
+
+  const notch = byId("demo-notch");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (notch) {
+    let engaged = false;
+    let introTimer;
+    let closeTimer;
+    const setOpen = (open) => {
+      notch.classList.toggle("is-open", open);
+      notch.setAttribute("aria-expanded", String(open));
+    };
+    const clearTimers = () => {
+      clearTimeout(introTimer);
+      clearTimeout(closeTimer);
+    };
+    const introStorageKey = "notchany-store-intro";
+    let shouldPlayIntro = !reducedMotion;
+    try {
+      shouldPlayIntro = shouldPlayIntro && sessionStorage.getItem(introStorageKey) !== "shown";
+      sessionStorage.setItem(introStorageKey, "shown");
+    } catch {
+      // sessionStorage 被禁用时，本次页面仍只自动演示一次。
+    }
+    if (shouldPlayIntro && !document.hidden) {
+      introTimer = setTimeout(() => {
+        if (engaged) return;
+        setOpen(true);
+        closeTimer = setTimeout(() => {
+          if (!engaged) setOpen(false);
+        }, 2600);
+      }, 900);
+    }
+    notch.addEventListener("pointerenter", () => {
+      engaged = true;
+      clearTimers();
+      setOpen(true);
+    });
+    notch.addEventListener("pointerleave", () => {
+      engaged = false;
+      clearTimers();
+      closeTimer = setTimeout(() => {
+        if (!engaged) setOpen(false);
+      }, 220);
+    });
+    notch.addEventListener("focusin", () => {
+      engaged = true;
+      clearTimers();
+      setOpen(true);
+    });
+    notch.addEventListener("focusout", (event) => {
+      if (notch.contains(event.relatedTarget)) return;
+      engaged = false;
+      clearTimers();
+      closeTimer = setTimeout(() => setOpen(false), 220);
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        clearTimers();
+        setOpen(false);
+      }
+    });
+  }
+
+  const demoKeys = [...document.querySelectorAll(".mac-key")];
+  const keysByCode = new Map(demoKeys.map((key) => [key.dataset.code, key]));
+  const releaseKey = (key) => key?.classList.remove("pressed");
+  demoKeys.forEach((key) => {
+    key.addEventListener("pointerdown", () => key.classList.add("pressed"));
+    key.addEventListener("pointerup", () => releaseKey(key));
+    key.addEventListener("pointercancel", () => releaseKey(key));
+    key.addEventListener("pointerleave", () => releaseKey(key));
+  });
+  document.addEventListener("keydown", (event) => keysByCode.get(event.code)?.classList.add("pressed"));
+  document.addEventListener("keyup", (event) => releaseKey(keysByCode.get(event.code)));
+  addEventListener("blur", () => demoKeys.forEach(releaseKey));
+
+  const trackpad = byId("trackpad");
+  trackpad?.addEventListener("pointerdown", () => trackpad.classList.add("pressed"));
+  for (const eventName of ["pointerup", "pointercancel", "pointerleave"]) {
+    trackpad?.addEventListener(eventName, () => trackpad.classList.remove("pressed"));
   }
 
   const launch = byId("open-in-notchany");

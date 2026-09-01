@@ -59,6 +59,10 @@ function copy(relativePath) {
 }
 
 copyFileSync(join(ROOT, "site", "assets", "app-icon.png"), join(DIST, "assets", "app-icon.png"));
+copyFileSync(
+  join(ROOT, "site", "assets", "macos-desktop-wallpaper.webp"),
+  join(DIST, "assets", "macos-desktop-wallpaper.webp")
+);
 for (const item of packages) {
   if (item.icon_path) copy(item.icon_path);
   for (const screenshot of item.screenshots || []) copy(screenshot);
