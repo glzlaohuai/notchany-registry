@@ -1,6 +1,6 @@
 {
   "index_schema": 1,
-  "generated_at": "2026-08-31T15:52:51+08:00",
+  "generated_at": "2026-09-01T10:37:30+08:00",
   "packages": [
     {
       "names": {
@@ -40,7 +40,7 @@
         "packages/glzlaohuai/cpu-monitor/screenshots/market-detail.jpg"
       ],
       "published_at": "2026-08-31T11:36:29+08:00",
-      "updated_at": "2026-08-31T11:36:29+08:00"
+      "updated_at": "2026-09-01T10:37:30+08:00"
     },
     {
       "names": {
@@ -78,7 +78,7 @@
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
-      "updated_at": "2026-08-31T11:36:29+08:00"
+      "updated_at": "2026-09-01T10:37:30+08:00"
     },
     {
       "names": {
@@ -120,7 +120,7 @@
         "packages/glzlaohuai/image-to-jpg/screenshots/market-detail.jpg"
       ],
       "published_at": "2026-08-31T11:36:29+08:00",
-      "updated_at": "2026-08-31T11:36:29+08:00"
+      "updated_at": "2026-09-01T10:37:30+08:00"
     },
     {
       "names": {
@@ -158,7 +158,7 @@
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
-      "updated_at": "2026-08-31T11:36:29+08:00"
+      "updated_at": "2026-09-01T10:37:30+08:00"
     },
     {
       "names": {
@@ -195,7 +195,7 @@
       "interpreter": "shell",
       "screenshots": [],
       "published_at": "2026-08-31T11:36:29+08:00",
-      "updated_at": "2026-08-31T11:36:29+08:00"
+      "updated_at": "2026-09-01T10:37:30+08:00"
     },
     {
       "names": {
@@ -234,7 +234,7 @@
         "packages/glzlaohuai/wifi-name/screenshots/market-detail.jpg"
       ],
       "published_at": "2026-08-31T11:36:29+08:00",
-      "updated_at": "2026-08-31T11:36:29+08:00"
+      "updated_at": "2026-09-01T10:37:30+08:00"
     }
   ]
 }
