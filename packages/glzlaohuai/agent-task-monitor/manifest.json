@@ -1,0 +1,24 @@
+{
+  "descriptions": {
+    "en": "Keep every parallel AI coding session in view from the notch tray — **Claude Code** and **Codex (CLI and desktop app)** side by side.\n\n**The list**\n\n- Grouped by project (the git repo root found by walking up from the session cwd), collapsible and scrollable, with an `active/total` badge and a summary dot when collapsed\n- Each row: agent logo, status dot, task prompt, current step, progress, elapsed time\n- Claude Code rows show a `done/total` step bar (from TodoWrite / TaskCreate)\n- Codex rows carry an `App` / `CLI` / `Exec` origin tag; it has no todo list, so a live turn shows `▸commands Δfiles-changed ⑂subagents` plus the running command\n- Finished, ended and stalled rows can be dismissed one by one or all at once\n\n**Notifications**\n\nOne ongoing notification per live session (it switches to paused while the agent waits for approval), plus an unread event when a task finishes — progress and results are readable straight from the notch.\n\n**Click a row to jump back to the session**\n\n- Codex desktop app: the official `codex://threads/<id>` deep link\n- Codex CLI / exec: finds the process holding the session file, then its tty and hosting app\n- Terminal / iTerm2: AppleScript selects the exact tab by tty\n- Warp: official session deep link first, falling back to an OSC2 title marker plus tab cycling (needs Accessibility permission)\n- VS Code / Cursor: focuses the window that has the folder open\n\n**Setup**\n\n- Claude Code: press \"Install hooks\" to write them into `~/.claude/settings.json` (backed up first); they take effect immediately\n- Codex: **nothing to install**. The CLI and the desktop app share the session logs under `~/.codex/sessions`, and this widget only reads them — no hook, no `config.toml` edit, nothing written into `~/.codex`\n\n**Privacy**: all state is read and written locally; nothing leaves the machine.",
+    "zh-Hans": "在刘海托盘里盯住所有并行的 AI 编码会话——**Claude Code** 与 **Codex（CLI 与桌面 App）**同屏。\n\n**列表**\n\n- 按项目分组（从会话 cwd 向上找 git 仓库根），可折叠、可滚动，折叠后显示 `活跃/总数` 与状态汇总点\n- 每行：agent logo + 状态点 + 任务 prompt + 当前步骤 + 进度 + 已运行时长\n- Claude Code 显示 `已完成/总步骤` 进度条（来自 TodoWrite / TaskCreate）\n- Codex 显示 `App` / `CLI` / `Exec` 来源标签；它没有 todo 列表，进行中改用 `▸命令数 Δ改文件数 ⑂子代理数` 与当前命令\n- 完成/结束/无响应的行可逐条 ✕ 或一键清理\n\n**通知**\n\n每个活跃会话一条持续通知（等待授权自动变暂停态），任务完成发一条未读事件——刘海延伸区直接能看到进度和结果。\n\n**点击跳回会话**\n\n- Codex 桌面 App：走官方深链 `codex://threads/<id>`，直达该会话\n- Codex CLI / exec：定位持有会话文件的进程，找到它的 tty 与承载 App\n- Terminal / iTerm2：AppleScript 按 tty 精确选中标签页\n- Warp：优先官方 session 深链，回落 OSC2 标题标记 + 循环切换（需辅助功能授权）\n- VS Code / Cursor：聚焦打开着该目录的窗口\n\n**接入方式**\n\n- Claude Code：点「一键接入」，把 hook 写进 `~/.claude/settings.json`（首次写入前自动备份），当场生效\n- Codex：**不用装任何东西**。CLI 与桌面 App 共用 `~/.codex/sessions` 下的会话日志，组件只读它——不装 hook、不改 `config.toml`、不往 `~/.codex` 写任何东西\n\n**隐私**：所有状态只在本机读写，无任何数据出网。"
+  },
+  "license": "MIT",
+  "manifest_version": 1,
+  "names": {
+    "en": "Agent Task Monitor",
+    "zh-Hans": "Agent 任务监控"
+  },
+  "summaries": {
+    "en": "Track Claude Code and Codex (CLI + app) sessions and task progress in the notch.",
+    "zh-Hans": "在刘海里盯住 Claude Code 与 Codex（CLI + 桌面 App）的并行会话与任务进度。"
+  },
+  "tags": [
+    "agent",
+    "claude-code",
+    "codex",
+    "monitor",
+    "widget"
+  ],
+  "version": "1.0.0"
+}
