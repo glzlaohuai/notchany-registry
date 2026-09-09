@@ -1,0 +1,51 @@
+{
+  "action" : {
+    "default_locale" : "zh-Hans",
+    "icon_type" : "symbol",
+    "icon_value" : "doc.on.clipboard",
+    "id" : "notchany.custom.shell.1080d5f4-11b5-4087-99ec-809aabf8835d",
+    "input_kind" : "none",
+    "kind" : "shell",
+    "locales" : [
+      "zh-Hans"
+    ],
+    "names" : {
+      "zh-Hans" : "剪贴板存为文件"
+    },
+    "parameters" : [
+      {
+        "default" : "~\/Desktop",
+        "key" : "save_dir",
+        "labels" : {
+          "zh-Hans" : "保存到"
+        },
+        "placeholder" : "留空则用 App 输出位置，再回落桌面",
+        "type" : "string"
+      },
+      {
+        "default" : "txt",
+        "key" : "ext",
+        "labels" : {
+          "zh-Hans" : "文件后缀"
+        },
+        "options" : [
+          "txt",
+          "md"
+        ],
+        "type" : "choice"
+      },
+      {
+        "default" : true,
+        "key" : "name_from_text",
+        "labels" : {
+          "zh-Hans" : "用首行文本做文件名"
+        },
+        "type" : "boolean"
+      }
+    ],
+    "presentation_mode" : "button",
+    "script" : "setopt extended_glob\nset -u\n\ntmp=\"$NOTCH_TEMP_DIR\/clipboard.txt\"\npbpaste > \"$tmp\" 2>\/dev\/null\n\n# 剪贴板没有文本（或只有空白 \/ 只有图片文件等）就报失败\nif [ ! -s \"$tmp\" ] || [ -z \"$(tr -d '[:space:]' < \"$tmp\" | head -c 1)\" ]; then\n  echo \"剪贴板里没有可用的文本内容\" >&2\n  exit 1\nfi\n\n# 保存目录：参数 > App 输出位置 > 桌面\ndir=\"${NOTCH_PARAM_SAVE_DIR:-}\"\n[ -z \"$dir\" ] && dir=\"${NOTCH_OUTPUT_DIR:-}\"\n[ -z \"$dir\" ] && dir=\"$HOME\/Desktop\"\ndir=\"${dir\/#\\~\/$HOME}\"\nmkdir -p \"$dir\" || { echo \"无法创建目录：$dir\" >&2; exit 1; }\n\next=\"${NOTCH_PARAM_EXT:-txt}\"\n\n# 文件名：默认取首行文本，清掉非法字符并截断\nbase=\"\"\nif [ \"${NOTCH_PARAM_NAME_FROM_TEXT:-1}\" = \"1\" ]; then\n  base=\"$(head -n 1 \"$tmp\")\"\n  base=\"${base\/\/$'\\r'\/}\"\n  base=\"${base\/\/[\\\/:]\/-}\"\n  base=\"${base\/\/$'\\t'\/ }\"\n  base=\"${base##[[:space:]]#}\"\n  base=\"${base%%[[:space:]]#}\"\n  base=\"${base##.#}\"\n  base=\"${base[1,40]}\"\n  base=\"${base%%[[:space:]]#}\"\nfi\n[ -z \"$base\" ] && base=\"剪贴板-$(date +%Y%m%d-%H%M%S)\"\n\n# 同名不覆盖，自动加序号\ndest=\"$dir\/$base.$ext\"\ni=1\nwhile [ -e \"$dest\" ]; do\n  dest=\"$dir\/$base-$i.$ext\"\n  i=$((i + 1))\ndone\n\nmv \"$tmp\" \"$dest\" || { echo \"写入失败：$dest\" >&2; exit 1; }\n\nbytes=$(wc -c < \"$dest\" | tr -d ' ')\nlines=$(grep -c '' \"$dest\")\nnotch_result \\\n  --summary \"已保存 ${dest:t}\" \\\n  --details \"$dest\n${lines} 行 · ${bytes} 字节\" \\\n  --output \"$dest\"\n",
+    "timeout_seconds" : 20
+  },
+  "notchany_export" : 2
+}
