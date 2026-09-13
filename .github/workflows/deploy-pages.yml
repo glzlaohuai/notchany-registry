@@ -1,6 +1,5 @@
 # 部署市场静态站到 GitHub Pages。
-# 站点数据不依赖已提交的 index/v1/index.json——构建前现场重跑 build-index，
-# 避免 publish-index 的 [skip ci] bot 提交导致站点落后一版。
+# 网站只消费已经提交的发布索引，不从候选包重建。
 name: deploy-pages
 
 on:
@@ -23,17 +22,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0 # build-index 从 git 历史取 published_at/updated_at
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: 重建索引（不提交，仅供建站）
-        run: node scripts/build-index.mjs
+          node-version: 22
       - name: 构建静态站
         run: node scripts/build-site.mjs
         env:
           NOTCHANY_COUNTS_URL: ${{ vars.NOTCHANY_COUNTS_URL }}
           NOTCHANY_APP_DOWNLOAD_URL: ${{ vars.NOTCHANY_APP_DOWNLOAD_URL }}
+          NOTCHANY_MARKET_API_BASE: ${{ vars.MARKET_API_BASE }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist

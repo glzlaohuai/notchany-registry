@@ -8,13 +8,15 @@ import process from "node:process";
 
 import { validateCuration } from "./site-lib.mjs";
 import { detailPage, downloadPage, homePage } from "./site-template.mjs";
+import { verifyPublishedIndex } from "./publication-lib.mjs";
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, "site", "dist");
-const INDEX_PATH = join(ROOT, "index", "v1", "index.json");
+const INDEX_PATH = join(ROOT, "index", "v2", "index.json");
 const CURATION_PATH = join(ROOT, "site", "curation.json");
 const COUNTS_URL = process.env.NOTCHANY_COUNTS_URL?.trim() || "";
 const APP_DOWNLOAD_URL = process.env.NOTCHANY_APP_DOWNLOAD_URL?.trim() || "";
+const MARKET_API_BASE = process.env.NOTCHANY_MARKET_API_BASE?.trim().replace(/\/+$/, "") || "";
 
 function fail(message) {
   console.error(`build-site: ${message}`);
@@ -29,9 +31,10 @@ function readJSON(path, label) {
   }
 }
 
-if (!existsSync(INDEX_PATH)) fail("缺少 index/v1/index.json，请先运行 build:index");
+if (!existsSync(INDEX_PATH)) fail("缺少 index/v2/index.json，请先运行 build:index");
 if (!existsSync(CURATION_PATH)) fail("缺少 site/curation.json");
-const index = readJSON(INDEX_PATH, "index/v1/index.json");
+const index = readJSON(INDEX_PATH, "index/v2/index.json");
+verifyPublishedIndex(index, ROOT);
 const packages = Array.isArray(index.packages) ? index.packages : [];
 let featuredIDs;
 try {
@@ -74,8 +77,11 @@ write("en/index.html", homePage({ lang: "en", packages, featuredIDs, countsURL: 
 write("download/index.html", downloadPage({ lang: "zh", css, js, downloadURL: APP_DOWNLOAD_URL }));
 write("en/download/index.html", downloadPage({ lang: "en", css, js, downloadURL: APP_DOWNLOAD_URL }));
 for (const item of packages) {
-  write(`packages/${item.package_id}/index.html`, detailPage({ lang: "zh", item, packages, countsURL: COUNTS_URL, css, js }));
-  write(`en/packages/${item.package_id}/index.html`, detailPage({ lang: "en", item, packages, countsURL: COUNTS_URL, css, js }));
+  const history = item.history_path && existsSync(join(ROOT, item.history_path))
+    ? readJSON(join(ROOT, item.history_path), item.history_path)
+    : { releases: [], contributors: [] };
+  write(`packages/${item.package_id}/index.html`, detailPage({ lang: "zh", item, packages, history, marketAPIBase: MARKET_API_BASE, countsURL: COUNTS_URL, css, js }));
+  write(`en/packages/${item.package_id}/index.html`, detailPage({ lang: "en", item, packages, history, marketAPIBase: MARKET_API_BASE, countsURL: COUNTS_URL, css, js }));
 }
 
 write(".nojekyll", "");

@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "CPU 占用", "en": "CPU Usage" },
+  "summaries": {
+    "zh-Hans": "实时显示 CPU 占用率的托盘小组件，视觉与内置 CPU 件一致，可自由改造。",
+    "en": "Tray widget showing live CPU usage, visually matching the built-in CPU widget."
+  },
+  "descriptions": {
+    "zh-Hans": "指标风格的 CPU 占用小组件：\n\n- 数据源为全进程 `%cpu` 求和 / 核数的近似值（`ps` + `awk`，零依赖）\n- 可见时每秒刷新，收起自动停表\n- 带趋势条与阈值配色（≥75% 变黄、≥90% 变红）\n- 响应式布局（container query）：1×1 到 1×8 均可摆放\n\n源码与内置 CPU 件同款，导入后可在设置 > 小组件里随意改造脚本与样式。",
+    "en": "Metric-style CPU usage widget:\n\n- Data source approximates usage as the sum of per-process `%cpu` divided by core count (`ps` + `awk`, zero dependencies)\n- Refreshes every second while visible, pauses when hidden\n- Trend bars with threshold colors (yellow at 75%, red at 90%)\n- Responsive layout (container queries) from 1x1 up to 1x8\n\nSame source as the built-in CPU widget; tweak the script and styles freely after importing."
+  },
+  "version": "1.0.0",
+  "tags": ["monitor", "system", "widget"],
+  "license": "MIT"
+}

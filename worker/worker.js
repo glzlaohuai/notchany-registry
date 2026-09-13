@@ -50,17 +50,35 @@ async function handlePackage(owner, slug, env, ctx, fetchImpl, rawBase) {
     return json({ error: "invalid owner or slug" }, 400);
   }
   let upstream;
+  let entry;
   try {
+    let legacy = false;
+    let response = await fetchImpl(`${rawBase}/index/v2/index.json`);
+    if (response.status === 404) {
+      legacy = true;
+      response = await fetchImpl(`${rawBase}/index/v1/index.json`);
+    }
+    if (!response.ok) return json({ error: "published index unavailable" }, 502);
+    const index = await response.json();
+    entry = index.packages?.find(item => item.package_id === `${owner}/${slug}`);
+    if (!entry) return json({ error: "package not found" }, 404);
+    const validPath = entry.path === `published/${owner}/${slug}/package.notchany.json`
+      || (legacy && entry.path === `packages/${owner}/${slug}/package.notchany.json`);
+    if (!validPath || !/^[a-f0-9]{64}$/.test(entry.sha256)) {
+      return json({ error: "invalid published entry" }, 502);
+    }
     upstream = await fetchImpl(
-      `${rawBase}/packages/${owner}/${slug}/package.notchany.json`
+      `${rawBase}/${entry.path}`
     );
   } catch {
     return json({ error: "package upstream unavailable" }, 502);
   }
   if (!upstream.ok) {
-    return json({ error: "package not found" }, 404);
+    return json({ error: "published package upstream unavailable" }, 502);
   }
-  const body = await upstream.text();
+  const body = await upstream.arrayBuffer();
+  const digest = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", body)), b => b.toString(16).padStart(2,"0")).join("");
+  if (digest !== entry.sha256) return json({ error: "published package hash mismatch" }, 502);
   // 成功透传才计数；waitUntil 让计数在响应返回后完成，不增加延迟。
   ctx.waitUntil(bumpCount(env, `${owner}/${slug}`));
   return new Response(body, {

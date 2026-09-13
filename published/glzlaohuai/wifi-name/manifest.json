@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "Wi-Fi 名称", "en": "Wi-Fi Name" },
+  "summaries": {
+    "zh-Hans": "一键查看当前连接的 Wi-Fi 网络名称，简单 shell 动作示例。",
+    "en": "Show the name of the Wi-Fi network you are connected to, in one click."
+  },
+  "descriptions": {
+    "zh-Hans": "最小可用的 shell 动作示例：\n\n- 点击后用 macOS 自带的 `networksetup -getairportnetwork en0` 查询当前 Wi-Fi\n- 结果经 `notch_result --summary` 显示在刘海反馈里，详情里保留原始输出\n- 未连接时显示「未连接 Wi-Fi」\n\n也适合当作学习动作脚本契约（环境变量 + `notch_result`）的起点。",
+    "en": "A minimal shell action example:\n\n- On click, queries the current Wi-Fi via the built-in `networksetup -getairportnetwork en0`\n- Reports the result through `notch_result --summary`, keeping the raw output in the details\n- Shows a \"not connected\" summary when there is no Wi-Fi\n\nAlso a good starting point for learning the action script contract (environment variables + `notch_result`)."
+  },
+  "version": "1.0.0",
+  "tags": ["network", "example"],
+  "license": "MIT"
+}

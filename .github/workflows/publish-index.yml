@@ -5,9 +5,16 @@ on:
     branches: [main]
     paths:
       - "packages/**"
+  workflow_dispatch:
+
+concurrency:
+  group: market-publication
+  cancel-in-progress: false
 
 permissions:
   contents: write
+  pull-requests: write
+  actions: write
 
 jobs:
   publish:
@@ -15,23 +22,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: 生成 index
-        run: node scripts/build-index.mjs
+      - name: 校验并准备已发布快照
+        run: node scripts/publish-approved.mjs
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_ACTOR_ID: ${{ github.actor_id }}
+          MARKET_API_BASE: ${{ vars.MARKET_API_BASE }}
+          MARKET_INTERNAL_HMAC_SECRET: ${{ secrets.MARKET_INTERNAL_HMAC_SECRET }}
 
-      - name: 提交 index（有变化时）
-        run: |
-          if git diff --quiet -- index/v1/index.json; then
-            echo "index 无变化，跳过提交"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index/v1/index.json
-          git commit -m "chore: 重新生成 index [skip ci]"
-          git push
+      - name: 创建受控发布 PR 并调度合入前检查
+        run: node scripts/open-publication-pr.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

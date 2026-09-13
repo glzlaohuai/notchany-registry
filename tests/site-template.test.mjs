@@ -102,6 +102,74 @@ test("package deep links include a local download fallback", () => {
   assert.doesNotMatch(html, /id="launch-help"/);
 });
 
+test("detail renders sanitized PR release notes and display-only history", () => {
+  const history = {
+    releases: [{
+      version: "1.2.0",
+      merged_at: "2026-09-10T00:00:00Z",
+      source_commit: "abc123",
+      sha256: "0".repeat(64),
+      pr: {
+        number: 42,
+        url: "https://github.com/example/repo/pull/42",
+        title: "Ship <img src=x onerror=alert(1)>",
+        body: "**Fixed** `<unsafe>`\n\n- [safe](https://example.com/a)\n- [blocked](javascript:alert(1))\n\n<script>alert(1)</script>",
+      },
+      contributors: [{ github_user_id: "20", login: "helper", avatar_url: null }],
+    }],
+    contributors: [{ github_user_id: "20", login: "helper", avatar_url: null }],
+  };
+  const html = detailPage({
+    lang: "en",
+    item: packages[0],
+    packages,
+    history,
+    marketAPIBase: "https://account.notchany.com",
+    countsURL: "",
+    css: "",
+    js: "",
+  });
+
+  assert.match(html, /class="history-section"/);
+  assert.match(html, /v1\.2\.0/);
+  assert.match(html, /Ship &lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.match(html, /<strong>Fixed<\/strong>/);
+  assert.match(html, /<code>&lt;unsafe&gt;<\/code>/);
+  assert.match(html, /href="https:\/\/example\.com\/a" target="_blank" rel="noopener"/);
+  assert.match(html, /\[blocked\]\(javascript:alert\(1\)\)/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(html, /<script>alert\(1\)<\/script>/);
+  assert.match(html, /data-github-user-id="20"/);
+  assert.doesNotMatch(html, /rollback|install-version|download-version/);
+});
+
+test("community display distinguishes unclaimed packages and replaces failed avatars", () => {
+  const template = detailPage({
+    lang: "zh",
+    item: packages[0],
+    packages,
+    marketAPIBase: "https://account.notchany.com",
+    countsURL: "",
+    css: "",
+    js: "",
+  });
+  const source = readFileSync(new URL("../site/store.js", import.meta.url), "utf8");
+
+  assert.match(template, /"unclaimed":"待认领"/);
+  assert.match(source, /if \(body\.owner\)/);
+  assert.match(source, /unclaimed\.textContent = text\.unclaimed/);
+  assert.match(source, /avatar\.naturalWidth === 0/);
+  assert.match(source, /currentAvatar\?\.replaceWith\(image\)/);
+});
+
+test("mobile detail grids keep long content inside the viewport", () => {
+  const source = readFileSync(new URL("../site/styles.css", import.meta.url), "utf8");
+
+  assert.match(source, /\.detail-title \{ min-width: 0; \}/);
+  assert.match(source, /\.detail-hero \{ grid-template-columns: 70px minmax\(0, 1fr\); gap: 16px; \}/);
+  assert.match(source, /\.detail-layout \{ grid-template-columns: minmax\(0, 1fr\); gap: 38px; \}/);
+});
+
 test("notch intro is session-scoped and does not schedule repeating cycles", () => {
   const source = readFileSync(new URL("../site/store.js", import.meta.url), "utf8");
 

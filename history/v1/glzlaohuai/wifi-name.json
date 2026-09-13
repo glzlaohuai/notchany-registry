@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/wifi-name",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "4fd2c49208d2d46957251a081166d0288fe1bb3d593a63f41d4a765e0f41e1e0",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-01T11:47:32+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}

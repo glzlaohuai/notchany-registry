@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "内存占用", "en": "Memory Usage" },
+  "summaries": {
+    "zh-Hans": "实时显示内存占用的托盘小组件（active + wired + compressor），同内置内存件。",
+    "en": "Tray widget showing live memory usage (active + wired + compressor pages)."
+  },
+  "descriptions": {
+    "zh-Hans": "指标风格的内存占用小组件：\n\n- 数据源用 `vm_stat` 统计 active + wired + compressor 页数 × 页大小，除以物理内存\n- 详情行显示「已用 / 总量 GB」\n- 可见时每秒刷新，收起自动停表；阈值配色与内置件一致\n\n源码与内置内存件同款，导入后可自由改造。",
+    "en": "Metric-style memory usage widget:\n\n- Data source sums active + wired + compressor pages from `vm_stat`, multiplied by page size, divided by physical memory\n- Detail line shows used / total in GB\n- Refreshes every second while visible, pauses when hidden; same threshold colors as the built-in widget\n\nSame source as the built-in memory widget; customize freely after importing."
+  },
+  "version": "1.0.0",
+  "tags": ["monitor", "system", "widget"],
+  "license": "MIT"
+}

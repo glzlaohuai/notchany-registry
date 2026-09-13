@@ -19,10 +19,13 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
+import { verifyPublished } from "./publication-lib.mjs";
 
 const ROOT = process.cwd();
-const PACKAGES_DIR = join(ROOT, "packages");
-const INDEX_PATH = join(ROOT, "index", "v1", "index.json");
+const PACKAGES_DIR = join(ROOT, "published");
+const publication = verifyPublished(ROOT);
+const V1_INDEX_PATH = join(ROOT, "index", "v1", "index.json");
+const V2_INDEX_PATH = join(ROOT, "index", "v2", "index.json");
 
 function git(...args) {
   try {
@@ -59,7 +62,9 @@ function fail(message) {
 const entries = [];
 for (const owner of listDirs(PACKAGES_DIR)) {
   for (const slug of listDirs(join(PACKAGES_DIR, owner))) {
-    const relativeDir = `packages/${owner}/${slug}`;
+    const relativeDir = `published/${owner}/${slug}`;
+    const approved = publication.packages[`${owner}/${slug}`];
+    if (!approved?.active) fail(`${relativeDir} is not approved`);
     const packageDir = join(PACKAGES_DIR, owner, slug);
     const packagePath = join(packageDir, "package.notchany.json");
     const manifestPath = join(packageDir, "manifest.json");
@@ -86,17 +91,19 @@ for (const owner of listDirs(PACKAGES_DIR)) {
 
     const bytes = readFileSync(packagePath);
     const sha256 = createHash("sha256").update(bytes).digest("hex");
+    if (sha256 !== approved.release.sha256 || manifest.version !== approved.release.version) fail(`${relativeDir} approved release mismatch`);
 
     // 截图：实际存在的 .png/.jpg 文件，按文件名排序。
     const screenshotsDir = join(packageDir, "screenshots");
     const screenshots = existsSync(screenshotsDir)
       ? readdirSync(screenshotsDir, { withFileTypes: true })
-          .filter((entry) => entry.isFile() && /\.(png|jpg)$/.test(entry.name))
+          .filter((entry) => entry.isFile() && /\.(png|jpe?g)$/.test(entry.name))
           .map((entry) => `${relativeDir}/screenshots/${entry.name}`)
           .sort()
       : [];
 
-    const { published, updated } = commitTimes(relativeDir);
+    const published = approved.first_published_at || approved.release.published_at || null;
+    const updated = approved.release.published_at || approved.release.merged_at || null;
 
     // manifest 人写字段在前，推导字段在后。
     const entry = {
@@ -107,6 +114,8 @@ for (const owner of listDirs(PACKAGES_DIR)) {
       ...(manifest.tags !== undefined && { tags: manifest.tags }),
       ...(manifest.homepage !== undefined && { homepage: manifest.homepage }),
       license: manifest.license,
+      ...(manifest.derived_from && { derived_from: manifest.derived_from }),
+      ...(approved.release.approved_by?.length && { approved_by: approved.release.approved_by }),
       ...(manifest.min_app_version !== undefined && {
         min_app_version: manifest.min_app_version,
       }),
@@ -123,6 +132,10 @@ for (const owner of listDirs(PACKAGES_DIR)) {
       requires: Array.isArray(action.requires) ? action.requires : [],
       has_parameters: Array.isArray(action.parameters) && action.parameters.length > 0,
       has_notification: action.notification !== undefined && action.notification !== null,
+      ...(action.widget?.wants_text_input === true && { has_text_input: true }),
+      ...(action.accepts != null && { accepts: action.accepts }),
+      ...(action.dependency_hints && { dependency_hints: action.dependency_hints }),
+      ...(action.env_requires?.length && { env_requires: action.env_requires }),
       ...(action.kind === "shell" && { interpreter: action.interpreter ?? "shell" }),
       screenshots,
       published_at: published,
@@ -140,6 +153,17 @@ const index = {
   packages: entries,
 };
 
+const v2Index = {
+  index_schema: 2,
+  generated_at: headTime,
+  packages: entries.map((entry) => ({
+    ...entry,
+    history_path: `history/v1/${entry.package_id}.json`,
+  })),
+};
+
 mkdirSync(join(ROOT, "index", "v1"), { recursive: true });
-writeFileSync(INDEX_PATH, JSON.stringify(index, null, 2) + "\n");
-console.log(`已生成 index/v1/index.json（${entries.length} 个包，generated_at=${index.generated_at}）`);
+mkdirSync(join(ROOT, "index", "v2"), { recursive: true });
+writeFileSync(V1_INDEX_PATH, JSON.stringify(index, null, 2) + "\n");
+writeFileSync(V2_INDEX_PATH, JSON.stringify(v2Index, null, 2) + "\n");
+console.log(`已生成 index/v1 与 index/v2（${entries.length} 个包，generated_at=${index.generated_at}）`);

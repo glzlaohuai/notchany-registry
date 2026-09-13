@@ -1,6 +1,6 @@
 {
   "index_schema": 1,
-  "generated_at": "2026-09-09T15:38:20+08:00",
+  "generated_at": "2026-09-09T07:38:34Z",
   "packages": [
     {
       "names": {
@@ -25,8 +25,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/agent-task-monitor",
-      "path": "packages/glzlaohuai/agent-task-monitor/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/agent-task-monitor/icon.png",
+      "path": "published/glzlaohuai/agent-task-monitor/package.notchany.json",
+      "icon_path": "published/glzlaohuai/agent-task-monitor/icon.png",
       "id": "notchany.custom.shell.2818b1d1-1fb9-4ccc-a148-2c3487025a1b",
       "kind": "widget",
       "action_kind": "shell",
@@ -39,8 +39,8 @@
       "has_notification": true,
       "interpreter": "python",
       "screenshots": [
-        "packages/glzlaohuai/agent-task-monitor/screenshots/1.png",
-        "packages/glzlaohuai/agent-task-monitor/screenshots/2.png"
+        "published/glzlaohuai/agent-task-monitor/screenshots/1.png",
+        "published/glzlaohuai/agent-task-monitor/screenshots/2.png"
       ],
       "published_at": "2026-09-02T20:22:12+08:00",
       "updated_at": "2026-09-02T20:22:12+08:00"
@@ -68,8 +68,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/apple-music",
-      "path": "packages/glzlaohuai/apple-music/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/apple-music/icon.png",
+      "path": "published/glzlaohuai/apple-music/package.notchany.json",
+      "icon_path": "published/glzlaohuai/apple-music/icon.png",
       "id": "notchany.custom.shell.221661f8-89c6-4627-be5c-14add4fa4800",
       "kind": "widget",
       "action_kind": "shell",
@@ -82,9 +82,9 @@
       "has_notification": true,
       "interpreter": "python",
       "screenshots": [
-        "packages/glzlaohuai/apple-music/screenshots/1-lyrics-zh.png",
-        "packages/glzlaohuai/apple-music/screenshots/2-artwork-en.png",
-        "packages/glzlaohuai/apple-music/screenshots/3-permission-en.png"
+        "published/glzlaohuai/apple-music/screenshots/1-lyrics-zh.png",
+        "published/glzlaohuai/apple-music/screenshots/2-artwork-en.png",
+        "published/glzlaohuai/apple-music/screenshots/3-permission-en.png"
       ],
       "published_at": "2026-09-03T11:29:23+08:00",
       "updated_at": "2026-09-03T11:29:23+08:00"
@@ -111,8 +111,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/clipboard-to-file",
-      "path": "packages/glzlaohuai/clipboard-to-file/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/clipboard-to-file/icon.png",
+      "path": "published/glzlaohuai/clipboard-to-file/package.notchany.json",
+      "icon_path": "published/glzlaohuai/clipboard-to-file/icon.png",
       "id": "notchany.custom.shell.1080d5f4-11b5-4087-99ec-809aabf8835d",
       "kind": "action",
       "action_kind": "shell",
@@ -149,8 +149,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/cpu-monitor",
-      "path": "packages/glzlaohuai/cpu-monitor/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/cpu-monitor/icon.png",
+      "path": "published/glzlaohuai/cpu-monitor/package.notchany.json",
+      "icon_path": "published/glzlaohuai/cpu-monitor/icon.png",
       "id": "notchany.custom.shell.b9986988-9d50-4a0f-ad50-3d5f0e17c7d0",
       "kind": "widget",
       "action_kind": "shell",
@@ -163,7 +163,7 @@
       "has_notification": false,
       "interpreter": "shell",
       "screenshots": [
-        "packages/glzlaohuai/cpu-monitor/screenshots/market-detail.jpg"
+        "published/glzlaohuai/cpu-monitor/screenshots/market-detail.jpg"
       ],
       "published_at": "2026-08-31T11:36:29+08:00",
       "updated_at": "2026-09-01T11:47:32+08:00"
@@ -189,8 +189,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/disk-monitor",
-      "path": "packages/glzlaohuai/disk-monitor/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/disk-monitor/icon.png",
+      "path": "published/glzlaohuai/disk-monitor/package.notchany.json",
+      "icon_path": "published/glzlaohuai/disk-monitor/icon.png",
       "id": "notchany.custom.shell.99befc86-e9a7-47cf-82a5-3c5688ed7544",
       "kind": "widget",
       "action_kind": "shell",
@@ -227,8 +227,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/image-to-jpg",
-      "path": "packages/glzlaohuai/image-to-jpg/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/image-to-jpg/icon.png",
+      "path": "published/glzlaohuai/image-to-jpg/package.notchany.json",
+      "icon_path": "published/glzlaohuai/image-to-jpg/icon.png",
       "id": "notchany.custom.shell.ffec896b-fcd4-4587-9ab9-bb2d70486386",
       "kind": "action",
       "action_kind": "shell",
@@ -243,7 +243,7 @@
       "has_notification": false,
       "interpreter": "shell",
       "screenshots": [
-        "packages/glzlaohuai/image-to-jpg/screenshots/market-detail.jpg"
+        "published/glzlaohuai/image-to-jpg/screenshots/market-detail.jpg"
       ],
       "published_at": "2026-08-31T11:36:29+08:00",
       "updated_at": "2026-09-01T11:47:32+08:00"
@@ -269,8 +269,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/memory-monitor",
-      "path": "packages/glzlaohuai/memory-monitor/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/memory-monitor/icon.png",
+      "path": "published/glzlaohuai/memory-monitor/package.notchany.json",
+      "icon_path": "published/glzlaohuai/memory-monitor/icon.png",
       "id": "notchany.custom.shell.3ee5260c-6c30-46f3-88ee-3cb0beb6617e",
       "kind": "widget",
       "action_kind": "shell",
@@ -306,8 +306,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/metric-template",
-      "path": "packages/glzlaohuai/metric-template/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/metric-template/icon.png",
+      "path": "published/glzlaohuai/metric-template/package.notchany.json",
+      "icon_path": "published/glzlaohuai/metric-template/icon.png",
       "id": "notchany.custom.shell.167f568a-fc11-4ecf-995a-0234b49f9995",
       "kind": "widget",
       "action_kind": "shell",
@@ -343,8 +343,8 @@
       ],
       "license": "MIT",
       "package_id": "glzlaohuai/wifi-name",
-      "path": "packages/glzlaohuai/wifi-name/package.notchany.json",
-      "icon_path": "packages/glzlaohuai/wifi-name/icon.png",
+      "path": "published/glzlaohuai/wifi-name/package.notchany.json",
+      "icon_path": "published/glzlaohuai/wifi-name/icon.png",
       "id": "notchany.custom.shell.30ee7201-ea59-4280-8666-c9e71c2292c1",
       "kind": "action",
       "action_kind": "shell",
@@ -357,7 +357,7 @@
       "has_notification": false,
       "interpreter": "shell",
       "screenshots": [
-        "packages/glzlaohuai/wifi-name/screenshots/market-detail.jpg"
+        "published/glzlaohuai/wifi-name/screenshots/market-detail.jpg"
       ],
       "published_at": "2026-08-31T11:36:29+08:00",
       "updated_at": "2026-09-01T11:47:32+08:00"

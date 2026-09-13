@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/agent-task-monitor",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "681a56913112beb6b1553d9f83c4f30c3032b864697408b6963bc1380deb9296",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-02T20:22:12+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}

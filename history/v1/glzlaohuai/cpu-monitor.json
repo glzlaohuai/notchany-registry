@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/cpu-monitor",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "e7129b441c6601fbf5b28f5eeeaaaec5c002e9c41a0ddad8c04b2a5556ebeb33",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-01T11:47:32+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}

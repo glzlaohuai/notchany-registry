@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/memory-monitor",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "ae96034cd92cd1406b16f3c9c21b1e47bfc168a2f1cf6b586f4979ff376d8c7a",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-01T11:47:32+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}

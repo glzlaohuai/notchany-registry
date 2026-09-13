@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+  "index_v1_sha256": "dacd5fb69a7fea419572afe315fe5acce927e9e0c4491e4b2f73a6768b0bc136",
+  "verification": "Pinned online v1 index and every listed package matched the fixed commit bytes; no workspace packages included.",
+  "package_count": 9
+}

@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "baseline_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+  "packages": {
+    "glzlaohuai/agent-task-monitor": {
+      "active": true,
+      "tree_hash": "5563ebb1250a26d1af0192dab92e8f122d0f0838a222d33637a54e647eaf008d",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-09-02T20:22:12+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "681a56913112beb6b1553d9f83c4f30c3032b864697408b6963bc1380deb9296",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-02T20:22:12+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/apple-music": {
+      "active": true,
+      "tree_hash": "f823e06eef9825b31ee39d3c5cc923fc8eb62fbafed41d7fcc7e2638521bebe1",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-09-03T11:29:23+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "d01e67eed5a91c1b595346d958c705f6d37b50e6bf548a6bcc8b922eb9b7fc87",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-03T11:29:23+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/clipboard-to-file": {
+      "active": true,
+      "tree_hash": "84c98dea80f15887792b245e7b15299f2c9ec4a6587497e4ea7ff261d49a7ee8",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-09-09T15:38:20+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "490259ee8acf19f001fb6fb1a7ddbbbcdeb95edd186234b7a806e2d73e4d510d",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-09T15:38:20+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/cpu-monitor": {
+      "active": true,
+      "tree_hash": "59195ab1ef9d827f47e5342ef96ed2ef4cbeec42221f8a8f0ad386aa47b75b6f",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-08-31T11:36:29+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "e7129b441c6601fbf5b28f5eeeaaaec5c002e9c41a0ddad8c04b2a5556ebeb33",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-01T11:47:32+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/disk-monitor": {
+      "active": true,
+      "tree_hash": "fdf962c97ec9b481492683fe2cc970fb573dd622a2a8663a0244a923e3efc49c",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-08-31T11:36:29+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "1112976ba0ed883cdd13cc7e006f3a4f3b57e0ab778512dccf7477db7e0952e8",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-01T11:47:32+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/image-to-jpg": {
+      "active": true,
+      "tree_hash": "842896e39531b8e9161948cc87b37cdcd9481364ae4af9050a7a0b7e50e3520c",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-08-31T11:36:29+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "22d28576e0dd9ad3c3647ea60124b6906e82c69932864ed39635919625538903",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-01T11:47:32+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/memory-monitor": {
+      "active": true,
+      "tree_hash": "d8d9b8e1953e29fc18ecc17e55bc03d077289471491c138691e72706938ca9af",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-08-31T11:36:29+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "ae96034cd92cd1406b16f3c9c21b1e47bfc168a2f1cf6b586f4979ff376d8c7a",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-01T11:47:32+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/metric-template": {
+      "active": true,
+      "tree_hash": "7d4d229147d2a27d45731ca043626b16ab7d059d435d4f7093713b4cdb08e256",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-08-31T11:36:29+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "aaf683455e853408d1fa8cc689f7b5c8cf02b3e412083d37db0074c23c8f6f88",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-01T11:47:32+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    },
+    "glzlaohuai/wifi-name": {
+      "active": true,
+      "tree_hash": "e5999f6ec6d388256e238baef1f5f75bfaa89481b77442d864e825bd392338fe",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "first_published_at": "2026-08-31T11:36:29+08:00",
+      "release": {
+        "version": "1.0.0",
+        "sha256": "4fd2c49208d2d46957251a081166d0288fe1bb3d593a63f41d4a765e0f41e1e0",
+        "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+        "published_at": "2026-09-01T11:47:32+08:00",
+        "merged_at": null,
+        "pr": null,
+        "contributors": []
+      }
+    }
+  },
+  "decisions": []
+}

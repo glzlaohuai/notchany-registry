@@ -9,11 +9,14 @@
 // - 本地模式：CHANGED_FILES 缺席时扫描全部包（跳过变更范围/作者/版本递增检查）。
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync, lstatSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 
 import { readPngDimensions } from "./png.mjs";
+import { signedMarketPost } from "./market-client.mjs";
+import { tree, hash } from "./publication-lib.mjs";
+import { packageContractProblems } from "./package-contract.mjs";
 
 const ROOT = process.cwd();
 const PACKAGES_DIR = join(ROOT, "packages");
@@ -72,6 +75,7 @@ const MANIFEST_KEYS = new Set([
   "homepage",
   "license",
   "min_app_version",
+  "derived_from",
 ]);
 
 function validateManifest(manifest, label) {
@@ -169,9 +173,7 @@ function validatePackageFile(envelope, label) {
     return;
   }
   const version = envelope.notchany_export;
-  if (!Number.isInteger(version) || version < 2 || version > 6) {
-    violate(`${label}：notchany_export 必须是 2–6 的整数（现 ${JSON.stringify(version)}）`);
-  }
+  for (const problem of packageContractProblems(envelope)) violate(`${label}：${problem}`);
   const action = envelope.action;
   if (typeof action !== "object" || action === null || Array.isArray(action)) {
     violate(`${label}：action 必须是对象`);
@@ -219,8 +221,8 @@ function validateScreenshots(packageDir, label) {
     violate(`${label}：截图最多 ${MAX_SCREENSHOTS} 张（现 ${files.length} 张）`);
   }
   for (const file of files) {
-    if (!/\.(png|jpg)$/.test(file.name)) {
-      violate(`${label}：截图 ${file.name} 只允许 .png/.jpg`);
+    if (!/\.(png|jpe?g)$/.test(file.name)) {
+      violate(`${label}：截图 ${file.name} 只允许 PNG/JPEG`);
       continue;
     }
     const size = statSync(join(dir, file.name)).size;
@@ -294,6 +296,8 @@ function validatePackage(owner, slug, { checkVersionBump }) {
   }
   validateScreenshots(packageDir, label);
   validateIcon(packageDir, label);
+  try { validateIdentityAndSource(`${owner}/${slug}`, packageDir, envelope); }
+  catch (error) { violate(`${label}: ${error.message}`); }
 
   // 版本递增（仅 PR 模式）：origin/main 上已有同名包时，新 version 必须严格大于旧值。
   if (checkVersionBump) {
@@ -327,10 +331,57 @@ function validatePackage(owner, slug, { checkVersionBump }) {
   }
 }
 
+function validateIdentityAndSource(id, directory, envelope) {
+  const historyRoot = process.env.TRUSTED_HISTORY_ROOT || join(ROOT,"history/v1");
+  const manifest = readJSON(join(directory,"manifest.json"));
+  function regularFiles(dir) {
+    for (const entry of readdirSync(dir,{ withFileTypes: true })) {
+      const path = join(dir,entry.name);
+      if (lstatSync(path).isSymbolicLink()) throw new Error("不允许符号链接");
+      if (entry.isDirectory()) regularFiles(path);
+      else if (!entry.isFile()) throw new Error("只允许普通文件");
+    }
+  }
+  regularFiles(directory);
+  const ownPath = join(historyRoot,`${id}.json`);
+  const own = existsSync(ownPath) ? readJSON(ownPath) : null;
+  const previous = own?.releases?.[0];
+  if (previous) {
+    const old = tree(previous.source_commit,`packages/${id}`);
+    if (JSON.parse(old["package.notchany.json"]).action.id !== envelope.action.id) throw new Error("原包动作 ID 不可更改");
+    const original = JSON.parse(old["manifest.json"]).derived_from;
+    if (JSON.stringify(original) !== JSON.stringify(manifest.derived_from)) throw new Error("衍生来源不可更改");
+  }
+  for (const ownerEntry of existsSync(historyRoot) ? readdirSync(historyRoot,{ withFileTypes: true }) : []) {
+    if (!ownerEntry.isDirectory()) continue;
+    for (const name of readdirSync(join(historyRoot,ownerEntry.name)).filter(n => n.endsWith(".json"))) {
+      const other = readJSON(join(historyRoot,ownerEntry.name,name));
+      if (other.package_id === id) continue;
+      for (const release of other.releases || []) {
+        const bytes = tree(release.source_commit,`packages/${other.package_id}`)["package.notchany.json"];
+        if (!bytes || hash(bytes) !== release.sha256) throw new Error("无法验证保留的动作身份");
+        if (JSON.parse(bytes).action.id === envelope.action.id) throw new Error("动作 ID 已被市场历史保留");
+      }
+    }
+  }
+  const source = manifest.derived_from;
+  if (!source) return;
+  if (Object.keys(source).sort().join(",") !== "package_id,sha256,version" || !/^[A-Za-z0-9-]+\/[a-z0-9-]+$/.test(source.package_id) || !/^[a-f0-9]{64}$/.test(source.sha256)) throw new Error("无效的 derived_from");
+  const history = readJSON(join(historyRoot,`${source.package_id}.json`));
+  const release = history.releases.find(r => r.version === source.version && r.sha256 === source.sha256);
+  if (!release) throw new Error("衍生来源不在已发布历史中");
+  const files = tree(release.source_commit,`packages/${source.package_id}`);
+  if (hash(files["package.notchany.json"]) !== source.sha256) throw new Error("来源摘要不匹配");
+  const original = JSON.parse(files["manifest.json"]);
+  if (manifest.license !== original.license || !["MIT","Apache-2.0","GPL-3.0-only","BSD-2-Clause","Unlicense"].includes(original.license)) throw new Error("license_review_required");
+  const attribution = Object.keys(files).filter(p => /(^|\/)(LICENSE|COPYING|NOTICE|AUTHORS|ATTRIBUTION)(\.|$)/i.test(p));
+  if (!attribution.some(p => /(^|\/)(LICENSE|COPYING)(\.|$)/i.test(p))) throw new Error("缺少来源许可证材料");
+  for (const path of attribution) if (!existsSync(join(directory,path)) || hash(readFileSync(join(directory,path))) !== hash(files[path])) throw new Error(`未保留署名文件 ${path}`);
+}
+
 // ---------- 入口 ----------
 
 const changedFilesEnv = process.env.CHANGED_FILES;
-const prAuthor = process.env.PR_AUTHOR;
 const targets = new Map(); // "owner/slug" -> {owner, slug}
 
 if (changedFilesEnv !== undefined) {
@@ -353,18 +404,46 @@ if (changedFilesEnv !== undefined) {
     const [, owner, slug] = parts;
     targets.set(`${owner}/${slug}`, { owner, slug });
   }
-  // 作者校验：PR_AUTHOR 必须与 owner 目录一致（MAINTAINERS 豁免）。
-  if (prAuthor !== undefined && !maintainers().has(prAuthor.toLowerCase())) {
-    for (const { owner } of targets.values()) {
-      if (owner.toLowerCase() !== prAuthor.toLowerCase()) {
-        violate(`packages/${owner}：PR 作者 ${prAuthor} 只能改动 packages/${prAuthor}/ 下自己的包`);
-      }
-    }
+  if (targets.size > 1) {
+    violate(`一个 PR 只能修改一个包（当前涉及 ${[...targets.keys()].join("、")}）`);
   }
   for (const { owner, slug } of targets.values()) {
     // 整目录被删除的包视为下架请求，内容检查自然跳过。
     if (!existsSync(join(PACKAGES_DIR, owner, slug))) continue;
     validatePackage(owner, slug, { checkVersionBump: true });
+  }
+  if (targets.size === 1 && process.env.SKIP_MARKET_AUTH !== "1") {
+    const packageID = [...targets.keys()][0];
+    const actorGitHubUserID = process.env.PR_AUTHOR_ID;
+    const currentPath = join(PACKAGES_DIR, packageID);
+    let existedOnBase = true;
+    try {
+      execFileSync("git", ["cat-file", "-e", `origin/main:packages/${packageID}/manifest.json`], {
+        cwd: ROOT,
+        stdio: "ignore",
+      });
+    } catch {
+      existedOnBase = false;
+    }
+    const hasHistory = existsSync(join(ROOT, "history", "v1", `${packageID}.json`));
+    const operation = !existsSync(currentPath)
+      ? "unlist" : existedOnBase || hasHistory ? "update" : "create";
+    if (!actorGitHubUserID || !/^\d{1,20}$/.test(actorGitHubUserID)) {
+      violate("PR_AUTHOR_ID 缺失或不是 GitHub 数字用户 ID");
+    } else {
+      try {
+        const authorization = await signedMarketPost("/internal/market/pr-authorize", {
+          package_id: packageID,
+          actor_github_user_id: actorGitHubUserID,
+          operation,
+        });
+        if (authorization.allowed !== true) {
+          violate(`Market 拒绝 ${operation} ${packageID}：${authorization.reason || "forbidden"}`);
+        }
+      } catch (error) {
+        violate(`Market 权限服务不可用，按 fail closed 拒绝：${error.message}`);
+      }
+    }
   }
 } else {
   // 本地全量模式：扫描全部包（跳过变更范围/作者/版本递增检查）。

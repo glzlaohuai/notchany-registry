@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/image-to-jpg",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "22d28576e0dd9ad3c3647ea60124b6906e82c69932864ed39635919625538903",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-01T11:47:32+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}

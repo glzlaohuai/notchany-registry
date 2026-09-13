@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "指标模板", "en": "Metric Template" },
+  "summaries": {
+    "zh-Hans": "指标风格小组件起手模板：换掉数据脚本即可做出自己的百分比指标件。",
+    "en": "Starter template for metric widgets: swap the data script to build your own."
+  },
+  "descriptions": {
+    "zh-Hans": "做自己的指标小组件的起手模板，视觉对齐内置 CPU/内存/系统盘件：\n\n- HTML/CSS/JS 即官方指标模板（趋势条、阈值配色、container query 响应式）\n- 数据脚本是占位示例，把它换成你的采集逻辑，经 `notch_result --widget-json` 回传 `{\"fraction\": 0.42, \"detail\": \"说明文字\", \"name\": \"可选标题\", \"trend\": [0.1, 0.5]}` 即可\n- `fraction`（0–1）驱动百分比与进度条；`trend` 数组驱动趋势条；都可省略",
+    "en": "Starter template for building your own metric widget, visually aligned with the built-in CPU/memory/disk widgets:\n\n- HTML/CSS/JS is the official metric template (trend bars, threshold colors, responsive container queries)\n- The data script is a placeholder: replace it with your own collector and report `{\"fraction\": 0.42, \"detail\": \"caption\", \"name\": \"optional title\", \"trend\": [0.1, 0.5]}` via `notch_result --widget-json`\n- `fraction` (0-1) drives the percentage and progress bar; the `trend` array drives the trend bars; both are optional"
+  },
+  "version": "1.0.0",
+  "tags": ["template", "widget"],
+  "license": "MIT"
+}

@@ -1,0 +1,24 @@
+{
+  "descriptions": {
+    "en": "An Apple Music control panel in the notch — artwork, lyrics, seek and volume in one card, without switching back to Music.app.\n\n**The card**\n\n- The album artwork's dominant color tints the card background, and follows every track change\n- Title / artist / album on three lines, with long titles truncated\n- Embedded lyrics scroll line by line with the current line highlighted; with no lyrics it switches to a large-artwork layout instead of leaving a blank gap\n\n**Controls**\n\n- Previous / play-pause / next, with the tray chip icon switching between ▶︎ and ⏸ to match the player state\n- Draggable seek bar, and a volume slider wired to Music's application volume\n- \"Previous\" resets the play position to zero first — Music otherwise follows the \"restart the current track if more than ~2s in\" convention, so without it the button never actually changes track\n\n**Notifications**\n\nWhile playing, an ongoing notification (title + artist) sits in the notch extension area; it flips to paused when you pause and ends when playback stops.\n\n**Performance**\n\nThe script only runs on track change, play-state change and a 5s fallback sync; progress and the active lyric line advance locally against the wall clock instead of calling AppleScript once a second.\n\n**Requirements**\n\n- Apple Music only (the built-in macOS Music.app) — Spotify and other third-party players are not supported\n- Needs Automation access on first use: System Settings › Privacy & Security › Automation › NotchAny › enable \"Music\". Without it the widget shows guidance rather than an error\n- When Music.app isn't running it offers an \"Open Music\" button instead of launching it behind your back\n\n**About lyrics**: only lyrics embedded in the audio file are read, with **no network access at all**. Apple Music streaming tracks almost never carry embedded lyrics, so the large-artwork layout is what you'll normally see; imported local files are the ones that may have line-by-line lyrics.\n\n**Privacy**: no network requests whatsoever — everything comes from the local Music.app and nothing leaves the machine.",
+    "zh-Hans": "刘海里的 Apple Music 控制盘：封面、歌词、进度、音量一屏搞定，不用切回 Music.app。\n\n**卡片**\n\n- 专辑封面取主色渲染卡片底色，换曲自动跟着换\n- 曲名 / 艺人 / 专辑三行元信息，长曲名自动截断\n- 有内嵌歌词时逐行滚动、当前行高亮；没有歌词自动切到「大封面」版式，不留空白\n\n**控制**\n\n- 上一曲 / 播放暂停 / 下一曲，托盘芯片图标跟着播放态在 ▶︎ 与 ⏸ 之间切换\n- 进度条可拖动跳转，音量条直接改 Music 的应用音量\n- 「上一曲」会先把播放位置归零再切——Music 默认「播放超过 2 秒就重播当前曲」，不这么做按了不换曲\n\n**通知**\n\n正在播放时在刘海延伸区挂一条持续通知（曲名 + 艺人），暂停转为暂停态，停止播放即结束。\n\n**性能**\n\n脚本只在换曲、播放态变化和 5 秒兜底时跑；进度与歌词行由组件按墙钟本地推进，不是每秒调一次 AppleScript。\n\n**前置条件**\n\n- 只支持 Apple Music（macOS 自带 Music.app），不支持 Spotify 等第三方播放器\n- 首次使用需要授权自动化：系统设置 › 隐私与安全性 › 自动化 › NotchAny › 勾选「音乐」。未授权时组件会显示引导而不是报错\n- Music.app 没运行时显示「打开 Music」按钮，不会自作主张启动它\n\n**歌词说明**：只读音频文件里的内嵌歌词，**完全不联网**。Apple Music 的流媒体曲目基本读不到内嵌歌词，所以平时走的是大封面版式；自己导入的本地文件才可能有逐行歌词。\n\n**隐私**：无任何网络请求，全部数据来自本机 Music.app，不出网。"
+  },
+  "license": "MIT",
+  "manifest_version": 1,
+  "names": {
+    "en": "Music",
+    "zh-Hans": "音乐"
+  },
+  "summaries": {
+    "en": "Apple Music in the notch: artwork tint, embedded lyrics, seek and volume.",
+    "zh-Hans": "刘海里的 Apple Music 控制盘：封面取色、内嵌歌词滚动、进度与音量。"
+  },
+  "tags": [
+    "music",
+    "apple-music",
+    "player",
+    "lyrics",
+    "widget"
+  ],
+  "version": "1.0.0"
+}
