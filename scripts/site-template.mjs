@@ -80,6 +80,7 @@ function formatBytes(bytes) {
 }
 
 function date(value, lang) {
+  if (!value) return "";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.valueOf())) return "—";
   return new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(parsed);
@@ -105,7 +106,8 @@ function historySections(history, copy, lang) {
     const linkedTitle = release.pr?.url
       ? `<a href="${escapeHTML(release.pr.url)}">${escapeHTML(title)}</a>`
       : escapeHTML(title);
-    return `<article class="release"><div class="release-marker" aria-hidden="true"></div><div class="release-copy"><div class="release-heading"><h3>${linkedTitle}</h3><span>v${escapeHTML(release.version)}</span></div><time datetime="${escapeHTML(release.merged_at)}">${date(release.merged_at, lang)}</time><div class="release-notes">${body}</div>${release.contributors?.length ? `<div class="release-contributors">${release.contributors.map((user) => identity(user, copy.contributors, copy)).join("")}</div>` : ""}</div></article>`;
+    const timestamp = release.merged_at ? `<time datetime="${escapeHTML(release.merged_at)}">${date(release.merged_at, lang)}</time>` : "";
+    return `<article class="release"><div class="release-marker" aria-hidden="true"></div><div class="release-copy"><div class="release-heading"><h3>${linkedTitle}</h3><span>v${escapeHTML(release.version)}</span></div>${timestamp}<div class="release-notes">${body}</div>${release.contributors?.length ? `<div class="release-contributors">${release.contributors.map((user) => identity(user, copy.contributors, copy)).join("")}</div>` : ""}</div></article>`;
   }).join("");
   return { contributorHTML, releasesHTML };
 }

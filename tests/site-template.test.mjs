@@ -102,6 +102,16 @@ test("package deep links include a local download fallback", () => {
   assert.doesNotMatch(html, /id="launch-help"/);
 });
 
+test("migrated releases without verified merge dates do not invent epoch dates", () => {
+  for (const lang of ["zh", "en"]) {
+    const html = detailPage({ lang, item: packages[0], packages,
+      history: { releases: [{ version: "1.0.0", merged_at: null, pr: null, contributors: [] }] },
+      countsURL: "", css: "", js: "" });
+    assert.doesNotMatch(html, /1970|datetime="null"/);
+    assert.match(html, /class="release"/);
+  }
+});
+
 test("detail renders sanitized PR release notes and display-only history", () => {
   const history = {
     releases: [{
