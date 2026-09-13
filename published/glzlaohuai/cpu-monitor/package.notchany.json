@@ -1,0 +1,29 @@
+{
+  "action": {
+    "default_locale": "zh-Hans",
+    "icon_type": "symbol",
+    "icon_value": "cpu",
+    "id": "notchany.custom.shell.b9986988-9d50-4a0f-ad50-3d5f0e17c7d0",
+    "input_kind": "none",
+    "kind": "shell",
+    "locales": [
+      "zh-Hans",
+      "en"
+    ],
+    "names": {
+      "en": "CPU Usage",
+      "zh-Hans": "CPU 占用"
+    },
+    "presentation_mode": "widget",
+    "script": "# 数据源示例：CPU 占用（近似：全进程 %cpu 求和 / 核数）\ncores=$(sysctl -n hw.ncpu)\nfraction=$(ps -A -o %cpu | awk -v n=\"$cores\" 'NR>1 {s+=$1} END {printf \"%.2f\", s/n/100}')\nnotch_result --summary \"已刷新\" --widget-json \"{\\\"fraction\\\":$fraction,\\\"detail\\\":\\\"${cores} 核\\\"}\"",
+    "timeout_seconds": 10,
+    "widget": {
+      "cols": 2,
+      "css": ":root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, sans-serif; container-type: size; }\n* { box-sizing: border-box; }\nhtml, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: transparent; }\n.metric { width: 100%; height: 100%; padding: 7px 9px; border-radius: 13px; background: rgba(255,255,255,.09); color: rgba(255,255,255,.92); display: flex; flex-direction: column; justify-content: space-between; }\n.metric-head { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,.52); }\nbutton { width: 18px; height: 18px; padding: 0; border: 0; background: transparent; color: rgba(255,255,255,.42); font: 12px -apple-system; cursor: pointer; }\nbutton:hover { color: rgba(255,255,255,.86); }\n.metric-main { display: flex; align-items: end; justify-content: space-between; gap: 7px; min-width: 0; }\n.metric-value { font: 600 17px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0; white-space: nowrap; }\n.metric-trend { display: none; height: 17px; flex: 1; align-items: end; gap: 2px; opacity: .48; }\n.metric-trend i { flex: 1; min-width: 1px; max-width: 4px; border-radius: 1px 1px 0 0; background: currentColor; }\n.metric-detail { display: none; font-size: 9px; color: rgba(255,255,255,.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n.metric-track { height: 2px; border-radius: 1px; background: rgba(255,255,255,.12); overflow: hidden; }\n.metric-track i { display: block; width: 0; height: 100%; background: rgba(255,255,255,.72); transition: width .24s ease, background .24s ease; }\n@container (max-width: 70px) { button, .metric-track { display: none; } .metric { padding: 8px 7px; } .metric-value { font-size: 15px; } }\n@container (min-width: 96px) { .metric-trend { display: flex; } }\n@container (min-width: 150px) { .metric-detail { display: block; } }",
+      "html": "<div class=\"metric\">\n  <div class=\"metric-head\"><span id=\"name\">(name)</span><button id=\"refresh\" aria-label=\"刷新\">↻</button></div>\n  <div class=\"metric-main\"><div class=\"metric-value\" id=\"value\">--%</div><div class=\"metric-trend\" id=\"trend\"></div></div>\n  <div class=\"metric-detail\" id=\"detail\"></div>\n  <div class=\"metric-track\"><i id=\"bar\"></i></div>\n</div>",
+      "javascript": "const value = document.getElementById('value');\nconst name = document.getElementById('name');\nconst detail = document.getElementById('detail');\nconst trend = document.getElementById('trend');\nconst bar = document.getElementById('bar');\nfunction render(result) {\n  if (!result?.ok || !result.state) return false;\n  const percent = Math.round(Math.max(0, Math.min(1, result.state.fraction)) * 100);\n  name.textContent = result.state.name || window.__notchWidget.name;\n  value.textContent = percent + '%';\n  detail.textContent = result.state.detail || '';\n  trend.replaceChildren(...(result.state.trend || []).map(point => {\n    const bar = document.createElement('i');\n    bar.style.height = Math.max(2, Math.round(point * 17)) + 'px';\n    return bar;\n  }));\n  bar.style.width = percent + '%';\n  bar.style.background = percent >= 90 ? 'rgba(255,115,96,.9)' : percent >= 75 ? 'rgba(236,190,92,.9)' : 'rgba(255,255,255,.72)';\n  return true;\n}\nasync function refresh() {\n  const result = await notchany.invoke('refresh', null);\n  if (!render(result) && !notchany.state) value.textContent = '--%';\n}\ndocument.getElementById('refresh').addEventListener('click', refresh);\nlet timer;\nconst interval = 1000;\nnotchany.addEventListener('visibilitychange', () => {\n  clearInterval(timer);\n  if (notchany.visible) { refresh(); timer = setInterval(refresh, interval); }\n});\nnotchany.addEventListener('statechange', event => render(event.state));\nif (notchany.state) render(notchany.state);\nif (notchany.visible) { refresh(); timer = setInterval(refresh, interval); }",
+      "rows": 1
+    }
+  },
+  "notchany_export": 2
+}

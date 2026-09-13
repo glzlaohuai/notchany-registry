@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/disk-monitor",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "1112976ba0ed883cdd13cc7e006f3a4f3b57e0ab778512dccf7477db7e0952e8",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-01T11:47:32+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}

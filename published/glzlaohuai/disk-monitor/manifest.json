@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "系统盘占用", "en": "System Disk Usage" },
+  "summaries": {
+    "zh-Hans": "显示系统盘已用百分比的托盘小组件，5 秒一刷，同内置系统盘件。",
+    "en": "Tray widget showing system disk usage percentage, refreshed every 5 seconds."
+  },
+  "descriptions": {
+    "zh-Hans": "指标风格的系统盘占用小组件：\n\n- 数据源用 `df -k /` 取根分区已用百分比（零依赖）\n- 磁盘变化慢，可见时 5 秒一刷即可，收起自动停表\n- 阈值配色与内置件一致（≥75% 变黄、≥90% 变红）\n\n源码与内置系统盘件同款，把脚本里的挂载点换掉即可监控其它磁盘。",
+    "en": "Metric-style system disk usage widget:\n\n- Data source reads the root partition usage percentage via `df -k /` (zero dependencies)\n- Disks change slowly, so it refreshes every 5 seconds while visible and pauses when hidden\n- Same threshold colors as the built-in widget (yellow at 75%, red at 90%)\n\nSame source as the built-in disk widget; change the mount point in the script to watch another disk."
+  },
+  "version": "1.0.0",
+  "tags": ["monitor", "system", "widget"],
+  "license": "MIT"
+}

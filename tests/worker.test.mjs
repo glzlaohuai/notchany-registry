@@ -1,7 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 
 import { createWorker } from "../worker/worker.js";
+
+function upstream({ legacy = false, mismatch = false, path, status = 200 } = {}) {
+  const digest = createHash("sha256").update("package").digest("hex");
+  return async url => {
+    if (legacy && url.endsWith("/index/v2/index.json")) return new Response(null, { status: 404 });
+    if (/\/index\/v[12]\/index.json$/.test(url)) return Response.json({ index_schema: legacy ? 1 : 2, packages: [{
+      package_id: "alice/cpu", path: path ?? `${legacy ? "packages" : "published"}/alice/cpu/package.notchany.json`, sha256: digest,
+    }] });
+    return new Response(mismatch ? "modified" : "package", { status });
+  };
+}
 
 class MemoryKV {
   constructor(entries = {}, shouldThrow = false) {
@@ -32,7 +44,7 @@ function context() {
 
 test("successful package proxy increments its package count", async () => {
   const kv = new MemoryKV();
-  const worker = createWorker(async () => new Response("package", { status: 200 }));
+  const worker = createWorker(upstream());
   const ctx = context();
   const response = await worker.fetch(new Request("https://market.test/pkg/alice/cpu"), { COUNTS: kv }, ctx);
   assert.equal(response.status, 200);
@@ -43,10 +55,10 @@ test("successful package proxy increments its package count", async () => {
 
 test("upstream failure does not increment", async () => {
   const kv = new MemoryKV();
-  const worker = createWorker(async () => new Response("missing", { status: 404 }));
+  const worker = createWorker(upstream({ status: 503 }));
   const ctx = context();
   const response = await worker.fetch(new Request("https://market.test/pkg/alice/cpu"), { COUNTS: kv }, ctx);
-  assert.equal(response.status, 404);
+  assert.equal(response.status, 502);
   assert.equal(ctx.pending.length, 0);
 });
 
@@ -66,7 +78,7 @@ test("upstream network errors return CORS-safe 502 without incrementing", async 
 });
 
 test("KV failure never blocks a successful package response", async () => {
-  const worker = createWorker(async () => new Response("package", { status: 200 }));
+  const worker = createWorker(upstream());
   const ctx = context();
   const response = await worker.fetch(
     new Request("https://market.test/pkg/alice/cpu"),
@@ -75,6 +87,23 @@ test("KV failure never blocks a successful package response", async () => {
   );
   assert.equal(response.status, 200);
   await Promise.all(ctx.pending);
+});
+
+test("legacy v1 remains installable during migration with matching hashes", async () => {
+  const worker = createWorker(upstream({ legacy: true }));
+  const response = await worker.fetch(new Request("https://market.test/pkg/alice/cpu"), { COUNTS: new MemoryKV() }, context());
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), "package");
+});
+
+test("unpublished paths and checksum mismatches cannot escape the published index", async () => {
+  for (const options of [{ mismatch: true }, { path: "packages/alice/cpu/package.notchany.json" }]) {
+    const ctx = context();
+    const worker = createWorker(upstream(options));
+    const response = await worker.fetch(new Request("https://market.test/pkg/alice/cpu"), { COUNTS: new MemoryKV() }, ctx);
+    assert.equal(response.status, 502);
+    assert.equal(ctx.pending.length, 0);
+  }
 });
 
 test("counts are returned in stable package id order", async () => {

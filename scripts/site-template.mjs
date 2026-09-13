@@ -21,6 +21,8 @@ const COPY = {
     about: "关于这个包", safety: "运行与安全", safety_shell: "此包包含可执行脚本。NotchAny 会在安装前展示完整脚本，并要求你确认；请只运行你已阅读并信任的内容。",
     safety_plain: "安装前可检查包内容，NotchAny 仍会要求你确认安装。", screenshots: "实际界面", no_screenshot: "该包尚未提供界面截图",
     info: "包信息", package_id: "包 ID", source_code: "查看包源码", report: "反馈问题", improve: "提出改进", related: "你可能也需要",
+    community: "协作与贡献", owner: "Owner", maintainers: "共同维护者", contributors: "贡献者", verified: "已绑定 NotchAny", unclaimed: "待认领", community_unavailable: "协作身份暂不可用",
+    history: "版本记录", release_fallback: "版本 {version}", release_empty: "暂无版本说明",
   },
   en: {
     browse: "Browse library", submit: "Submit a package", github: "GitHub source", language: "中文", language_menu: "Change language", download_app: "Download App", featured: "Featured", featured_note: "Three starting points for different workflows.",
@@ -38,6 +40,8 @@ const COPY = {
     about: "About this package", safety: "Runtime and safety", safety_shell: "This package contains an executable script. NotchAny shows the full script and asks for confirmation before installation. Run only code you have read and trust.",
     safety_plain: "You can inspect the package before installing, and NotchAny still asks you to confirm.", screenshots: "Actual interface", no_screenshot: "No interface screenshot has been provided yet",
     info: "Package information", package_id: "Package ID", source_code: "View package source", report: "Report an issue", improve: "Suggest an improvement", related: "You may also need",
+    community: "Collaboration & contributions", owner: "Owner", maintainers: "Maintainers", contributors: "Contributors", verified: "Linked to NotchAny", unclaimed: "Unclaimed", community_unavailable: "Collaboration identity unavailable",
+    history: "Version history", release_fallback: "Version {version}", release_empty: "No release notes",
   },
 };
 
@@ -79,6 +83,31 @@ function date(value, lang) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.valueOf())) return "—";
   return new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(parsed);
+}
+
+function identity(identity, role, copy) {
+  if (!identity) return "";
+  const avatar = identity.avatar_url
+    ? `<img src="${escapeHTML(identity.avatar_url)}" alt="" width="30" height="30">`
+    : `<span class="identity-avatar" aria-hidden="true"></span>`;
+  return `<div class="identity" data-github-user-id="${escapeHTML(identity.github_user_id)}">${avatar}<span><strong data-identity-login>@${escapeHTML(identity.login)}</strong><small>${escapeHTML(role)}<span data-identity-verified hidden> · ${copy.verified}</span></small></span></div>`;
+}
+
+function historySections(history, copy, lang) {
+  const releases = Array.isArray(history?.releases) ? history.releases : [];
+  const contributors = Array.isArray(history?.contributors) ? history.contributors : [];
+  const contributorHTML = contributors.length
+    ? `<div class="identity-list contributor-list">${contributors.map((user) => identity(user, copy.contributors, copy)).join("")}</div>`
+    : "";
+  const releasesHTML = releases.map((release) => {
+    const title = release.pr?.title || copy.release_fallback.replace("{version}", release.version);
+    const body = release.pr?.body ? renderMarkdown(release.pr.body) : `<p>${copy.release_empty}</p>`;
+    const linkedTitle = release.pr?.url
+      ? `<a href="${escapeHTML(release.pr.url)}">${escapeHTML(title)}</a>`
+      : escapeHTML(title);
+    return `<article class="release"><div class="release-marker" aria-hidden="true"></div><div class="release-copy"><div class="release-heading"><h3>${linkedTitle}</h3><span>v${escapeHTML(release.version)}</span></div><time datetime="${escapeHTML(release.merged_at)}">${date(release.merged_at, lang)}</time><div class="release-notes">${body}</div>${release.contributors?.length ? `<div class="release-contributors">${release.contributors.map((user) => identity(user, copy.contributors, copy)).join("")}</div>` : ""}</div></article>`;
+  }).join("");
+  return { contributorHTML, releasesHTML };
 }
 
 function kindLabel(item, lang) {
@@ -307,7 +336,7 @@ ${footer({ lang, root })}
 </body></html>`;
 }
 
-export function detailPage({ lang, item, packages, countsURL, css, js }) {
+export function detailPage({ lang, item, packages, history = { releases: [], contributors: [] }, marketAPIBase = "", countsURL, css, js }) {
   const copy = COPY[lang];
   const root = lang === "zh" ? "../../../" : "../../../../";
   const path = `${lang === "zh" ? "" : "/en"}/packages/${item.package_id}/`;
@@ -325,6 +354,7 @@ export function detailPage({ lang, item, packages, countsURL, css, js }) {
   const home = `${root}${lang === "en" ? "en/" : ""}`;
   const download = `${root}${lang === "en" ? "en/" : ""}download/`;
   const description = pick(item.descriptions, lang) || summary;
+  const historyHTML = historySections(history, copy, lang);
   return `${pageHead({ lang, title: `${name} · NotchAny Store`, description: summary, canonicalPath: path, alternatePath: alternate, imagePath: `assets/${item.icon_path || "app-icon.png"}`, css })}
 <body>
 ${nav({ lang, root, detailPackageID: item.package_id })}
@@ -338,6 +368,8 @@ ${nav({ lang, root, detailPackageID: item.package_id })}
   <div class="detail-layout"><article>
     <section aria-labelledby="screenshots-title"><h2 id="screenshots-title">${copy.screenshots}</h2><div class="screenshots">${screenshots}</div></section>
     <div class="prose"><h2>${copy.about}</h2>${renderMarkdown(description)}<h2>${copy.safety}</h2><p class="risk-note"><strong>${item.action_kind === "shell" ? copy.safety_shell : copy.safety_plain}</strong></p></div>
+    <section class="community-section" data-community-package="${escapeHTML(item.package_id)}" data-market-api="${escapeHTML(marketAPIBase)}"><h2>${copy.community}</h2><div class="community-role"><span>${copy.owner}</span><div data-community-owner><span class="community-status">${copy.community_unavailable}</span></div></div><div class="community-role"><span>${copy.maintainers}</span><div class="identity-list" data-community-maintainers></div></div>${historyHTML.contributorHTML ? `<div class="community-role"><span>${copy.contributors}</span>${historyHTML.contributorHTML}</div>` : ""}</section>
+    ${historyHTML.releasesHTML ? `<section class="history-section"><h2>${copy.history}</h2><div class="release-list">${historyHTML.releasesHTML}</div></section>` : ""}
   </article>
   <aside class="side-info" aria-label="${copy.info}">
     <div class="info-group"><span class="info-label">${copy.package_id}</span><code class="info-value">${escapeHTML(item.package_id)}</code></div>

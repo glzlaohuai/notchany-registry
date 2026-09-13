@@ -380,6 +380,104 @@
     addEventListener("pagehide", cancel, { once: true });
   });
 
+  const identityAvatarFallback = () => Object.assign(document.createElement("span"), {
+    className: "identity-avatar",
+  });
+  const watchIdentityAvatar = (avatar) => {
+    const fail = () => avatar.replaceWith(identityAvatarFallback());
+    avatar.addEventListener("error", fail, { once: true });
+    if (avatar.complete && avatar.naturalWidth === 0) fail();
+  };
+  document.querySelectorAll(".identity img").forEach(watchIdentityAvatar);
+
+  const community = document.querySelector("[data-community-package]");
+  if (community?.dataset.marketApi) {
+    const profileElement = (profile, role) => {
+      const node = document.createElement("div");
+      node.className = "identity";
+      node.dataset.githubUserId = profile.github_user_id;
+      const avatar = document.createElement(profile.avatar_url ? "img" : "span");
+      avatar.className = profile.avatar_url ? "" : "identity-avatar";
+      if (profile.avatar_url) {
+        avatar.src = profile.avatar_url;
+        avatar.alt = "";
+        avatar.width = 30;
+        avatar.height = 30;
+        watchIdentityAvatar(avatar);
+      }
+      const copy = document.createElement("span");
+      const login = document.createElement("strong");
+      login.dataset.identityLogin = "";
+      login.textContent = `@${profile.login}`;
+      const meta = document.createElement("small");
+      meta.textContent = `${role}${profile.notchany_verified ? ` · ${text.verified}` : ""}`;
+      copy.append(login, meta);
+      node.append(avatar, copy);
+      return node;
+    };
+
+    const updateSnapshots = (profiles) => {
+      const byGitHubID = new Map(profiles.map((profile) => [profile.github_user_id, profile]));
+      document.querySelectorAll("[data-github-user-id]").forEach((node) => {
+        const profile = byGitHubID.get(node.dataset.githubUserId);
+        if (!profile) return;
+        const login = node.querySelector("[data-identity-login]");
+        if (login) login.textContent = `@${profile.login}`;
+        const verified = node.querySelector("[data-identity-verified]");
+        if (verified) verified.hidden = !profile.notchany_verified;
+        const currentAvatar = node.querySelector("img, .identity-avatar");
+        if (profile.avatar_url) {
+          let image = node.querySelector("img");
+          if (!image) {
+            image = document.createElement("img");
+            image.alt = "";
+            image.width = 30;
+            image.height = 30;
+            currentAvatar?.replaceWith(image);
+            watchIdentityAvatar(image);
+          }
+          image.src = profile.avatar_url;
+        } else if (currentAvatar?.tagName === "IMG") {
+          currentAvatar.replaceWith(identityAvatarFallback());
+        }
+      });
+    };
+
+    const loadCommunity = async () => {
+      try {
+        const base = community.dataset.marketApi.replace(/\/+$/, "");
+        const packageID = community.dataset.communityPackage;
+        const parts = packageID.split("/").map(encodeURIComponent);
+        const communityResponse = await fetch(`${base}/v1/market/packages/${parts[0]}/${parts[1]}/community`);
+        if (!communityResponse.ok) throw new Error(`HTTP ${communityResponse.status}`);
+        const body = await communityResponse.json();
+        const owner = community.querySelector("[data-community-owner]");
+        const maintainers = community.querySelector("[data-community-maintainers]");
+        if (body.owner) {
+          owner.replaceChildren(profileElement(body.owner, text.owner));
+        } else {
+          const unclaimed = document.createElement("span");
+          unclaimed.className = "community-status";
+          unclaimed.textContent = text.unclaimed;
+          owner.replaceChildren(unclaimed);
+        }
+        const memberProfiles = Array.isArray(body.maintainers) ? body.maintainers : [];
+        maintainers.replaceChildren(...memberProfiles.map((profile) => profileElement(profile, text.maintainers)));
+
+        const ids = [...new Set([...document.querySelectorAll("[data-github-user-id]")]
+          .map((node) => node.dataset.githubUserId)
+          .filter(Boolean))];
+        if (ids.length) {
+          const profilesResponse = await fetch(`${base}/v1/market/github-profiles?ids=${encodeURIComponent(ids.join(","))}`);
+          if (profilesResponse.ok) updateSnapshots((await profilesResponse.json()).profiles || []);
+        }
+      } catch {
+        // Registry 快照仍可用；Owner/维护者保留明确的服务不可用状态。
+      }
+    };
+    loadCommunity();
+  }
+
   render();
   loadCounts();
 })();

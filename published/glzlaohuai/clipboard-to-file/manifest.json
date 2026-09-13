@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "剪贴板存为文件", "en": "Clipboard to File" },
+  "summaries": {
+    "zh-Hans": "点一下把最近复制的文本存成文件，首行自动做文件名，同名不覆盖。",
+    "en": "One click saves the latest copied text to a file, named from its first line."
+  },
+  "descriptions": {
+    "zh-Hans": "无输入的 shell 动作：点击芯片即读取剪贴板文本并落盘。\n\n- 用 `pbpaste` 取最近一次复制的文本，**原样**写入文件，不加不减\n- 文件名默认取文本首行：清掉 `/` `:` 与换行制表符、trim 空白、截到 40 字；首行为空时回落 `剪贴板-年月日-时分秒`\n- 同名不覆盖，自动加 `-1` `-2`\n- 剪贴板为空、只有空白、或只有图片时报失败，不会产生空文件\n- 产物经 `notch_result --output` 上报，可直接从刘海反馈里拖走\n\n参数：\n\n| 参数 | 默认 | 说明 |\n| --- | --- | --- |\n| 保存到 | `~/Desktop` | 留空则用 App 解析的输出位置（`$NOTCH_OUTPUT_DIR`），再回落桌面 |\n| 文件后缀 | `txt` | `txt` 或 `md` |\n| 用首行文本做文件名 | 开 | 关掉则一律用时间戳命名 |\n\n零第三方依赖，只用 macOS 自带的 `pbpaste`。\n\n> 提示：脚本里目标路径变量刻意叫 `dest` 而不是 `path`——zsh 的 `path` 与 `$PATH` 双向绑定，给它赋值会让后续所有外部命令 `command not found`。",
+    "en": "A no-input shell action: click the chip to read the clipboard and write it to a file.\n\n- Reads the latest copied text with `pbpaste` and writes it **verbatim**, byte for byte\n- The filename defaults to the first line: `/`, `:`, newlines and tabs stripped, whitespace trimmed, truncated to 40 characters; falls back to a `剪贴板-YYYYMMDD-HHMMSS` timestamp when the first line is empty\n- Never overwrites: name clashes get an auto `-1`, `-2` suffix\n- Fails cleanly (no empty file) when the clipboard is empty, whitespace-only, or holds no text\n- The product is reported via `notch_result --output`, ready to drag away from the notch feedback\n\nParameters:\n\n| Parameter | Default | Notes |\n| --- | --- | --- |\n| Save to | `~/Desktop` | Leave empty to use the output location resolved by NotchAny (`$NOTCH_OUTPUT_DIR`), then the Desktop |\n| Extension | `txt` | `txt` or `md` |\n| Name from first line | on | Turn off to always use a timestamp |\n\nNo third-party dependencies — only the built-in `pbpaste`.\n\n**Note:** this action declares `zh-Hans` only, so its chip name, parameter labels and feedback text are in Chinese."
+  },
+  "version": "1.0.0",
+  "tags": ["clipboard", "text", "files", "utility"],
+  "license": "MIT"
+}

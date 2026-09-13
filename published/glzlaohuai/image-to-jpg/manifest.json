@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "names": { "zh-Hans": "图片转 JPG", "en": "Image to JPG" },
+  "summaries": {
+    "zh-Hans": "把拖进刘海的图片批量转成 JPEG，用 macOS 自带 sips，零第三方依赖。",
+    "en": "Convert images dropped on the notch to JPEG with the built-in sips tool."
+  },
+  "descriptions": {
+    "zh-Hans": "带文件输入的 shell 动作示例：\n\n- `input_kind` 为 filesOnly——把图片拖到刘海投放到本动作即可\n- 用 macOS 自带的 `sips` 转为 JPEG，写入 NotchAny 解析的输出目录（`$NOTCH_OUTPUT_DIR`），重名自动加序号\n- 产物经 `notch_result --output` 逐个上报，完成后可直接在反馈里拖走\n- 支持多文件批量转换\n\n配合拖放规则（match: kinds=image）可以做到「拖图片进刘海自动转 JPG」。",
+    "en": "A shell action example with file input:\n\n- `input_kind` is filesOnly: drop images onto the notch and route them to this action\n- Converts to JPEG with the built-in `sips`, writing into the output directory resolved by NotchAny (`$NOTCH_OUTPUT_DIR`) and auto-suffixing on name clashes\n- Each product is reported via `notch_result --output`, ready to drag away from the feedback\n- Handles multiple files in one drop\n\nPair it with a drop rule (match: kinds=image) to convert any dropped image automatically."
+  },
+  "version": "1.0.0",
+  "tags": ["files", "image", "example"],
+  "license": "MIT"
+}

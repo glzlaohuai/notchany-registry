@@ -1,0 +1,22 @@
+{
+  "action": {
+    "default_locale": "zh-Hans",
+    "icon_type": "symbol",
+    "icon_value": "wifi",
+    "id": "notchany.custom.shell.30ee7201-ea59-4280-8666-c9e71c2292c1",
+    "input_kind": "none",
+    "kind": "shell",
+    "locales": [
+      "zh-Hans",
+      "en"
+    ],
+    "names": {
+      "en": "Wi-Fi Name",
+      "zh-Hans": "Wi-Fi 名称"
+    },
+    "presentation_mode": "button",
+    "script": "# 显示当前 Wi-Fi 网络名称（en0 为内置无线网卡）\noutput=$(networksetup -getairportnetwork en0 2>&1)\nif [[ \"$output\" == *\": \"* ]]; then\n  name=\"${output#*: }\"\n  notch_result --summary \"$name\" --details \"$output\"\nelse\n  notch_result --summary \"未连接 Wi-Fi\" --details \"$output\"\nfi",
+    "timeout_seconds": 10
+  },
+  "notchany_export": 2
+}

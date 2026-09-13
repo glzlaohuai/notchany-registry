@@ -1,0 +1,16 @@
+{
+  "history_schema": 1,
+  "package_id": "glzlaohuai/apple-music",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "sha256": "d01e67eed5a91c1b595346d958c705f6d37b50e6bf548a6bcc8b922eb9b7fc87",
+      "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
+      "published_at": "2026-09-03T11:29:23+08:00",
+      "merged_at": null,
+      "pr": null,
+      "contributors": []
+    }
+  ],
+  "contributors": []
+}
