@@ -454,7 +454,7 @@
         const owner = community.querySelector("[data-community-owner]");
         const maintainers = community.querySelector("[data-community-maintainers]");
         if (body.owner) {
-          owner.replaceChildren(profileElement(body.owner, text.owner));
+          owner.replaceChildren(profileElement(body.owner, body.state === "unclaimed" ? text.unclaimed : text.owner));
         } else {
           const unclaimed = document.createElement("span");
           unclaimed.className = "community-status";
