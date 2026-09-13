@@ -349,7 +349,7 @@ export function detailPage({ lang, item, packages, history = { releases: [], con
     ? item.screenshots.map((shot) => `<img class="screenshot" src="${root}assets/${shot}" alt="${escapeHTML(`${name} · ${copy.screenshots}`)}">`).join("")
     : `<div class="screenshot-placeholder">${copy.no_screenshot}</div>`;
   const requirements = item.requires?.length ? item.requires.map(escapeHTML).join(", ") : copy.none;
-  const sourceURL = `${REPO_URL}/tree/main/packages/${item.package_id}`;
+  const sourceURL = `${REPO_URL}/tree/main/published/${item.package_id}`;
   const issueURL = `${REPO_URL}/issues/new?title=${encodeURIComponent(`[${item.package_id}] `)}`;
   const home = `${root}${lang === "en" ? "en/" : ""}`;
   const download = `${root}${lang === "en" ? "en/" : ""}download/`;
