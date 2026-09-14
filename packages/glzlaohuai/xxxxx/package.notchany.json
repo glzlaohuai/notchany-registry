@@ -1,0 +1,44 @@
+{
+  "action" : {
+    "default_locale" : "en",
+    "icon_type" : "symbol",
+    "icon_value" : "square.grid.2x2",
+    "id" : "notchany.custom.shell.8446d9e6-250b-416d-82d7-7c4175b00ec0",
+    "input_kind" : "none",
+    "kind" : "shell",
+    "locales" : [
+      "zh-Hans",
+      "en"
+    ],
+    "names" : {
+      "en" : "xxxxx",
+      "zh-Hans" : "wgatasd"
+    },
+    "parameters" : [
+      {
+        "default" : "a",
+        "key" : "key1",
+        "labels" : {
+          "en" : "xxxx",
+          "zh-Hans" : "xxxxx"
+        },
+        "options" : [
+          "a",
+          "b"
+        ],
+        "type" : "choice"
+      }
+    ],
+    "presentation_mode" : "widget",
+    "script" : "# 小组件数据源：把要展示的状态以 JSON 写回（JS 侧 notchany.invoke('refresh') 可取到）\nnotch_result --summary \"已刷新\" --widget-json '{\"summary\":\"你好，小组件\"}'",
+    "timeout_seconds" : 60,
+    "widget" : {
+      "cols" : 2,
+      "css" : "* { box-sizing: border-box; }\nhtml, body { width: 100%; height: 100%; margin: 0; background: transparent; color: rgba(255,255,255,.88); font: 11px -apple-system; }\n.widget { width: 100%; height: 100%; padding: 9px 10px; border-radius: 13px; background: rgba(255,255,255,.09); display: flex; flex-direction: column; justify-content: space-between; }\nbutton { border: 0; padding: 0 8px; color: rgba(255,255,255,.62); background: transparent; font: inherit; }",
+      "html" : "<div class=\"widget\">\n  <span id=\"status\">等待刷新<\/span>\n  <div><button id=\"refresh\">刷新<\/button><button id=\"run\">执行<\/button><\/div>\n<\/div>",
+      "javascript" : "const status = document.getElementById('status');\nlet timer;\nfunction render(result) {\n  if (result?.ok) status.textContent = result.state?.summary || '已刷新';\n}\nasync function refresh() {\n  const result = await notchany.invoke('refresh', null);\n  if (result.ok) render(result); else if (!notchany.state) status.textContent = result.error.message;\n}\nnotchany.addEventListener('visibilitychange', () => {\n  clearInterval(timer);\n  if (notchany.visible) { refresh(); timer = setInterval(refresh, 1000); }\n});\nnotchany.addEventListener('statechange', event => render(event.state));\nif (notchany.state) render(notchany.state);\ndocument.getElementById('refresh').onclick = refresh;\ndocument.getElementById('run').onclick = async () => {\n  const result = await notchany.execute('run', null);\n  status.textContent = result.ok ? '已执行' : result.error.message;\n};",
+      "rows" : 1
+    }
+  },
+  "notchany_export" : 2
+}
