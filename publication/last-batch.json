@@ -1,0 +1,28 @@
+{
+  "payload": {
+    "schema": 1,
+    "candidate_commit": "47049c226b954471d996ec6f138466fb6cc04941",
+    "decision_id": "173bb88e-946d-4b26-b673-6b6edc9c396c",
+    "requests": [
+      {
+        "repository": "glzlaohuai/notchany-registry",
+        "pr_number": 10,
+        "head_sha": "7e04ef5300b2da15fc8d4d19adbe62ca45bd330e",
+        "base_sha": "a83c7989333b284796c84d848bb2c9b675039b0f",
+        "package_id": "glzlaohuai/image-to-jpg",
+        "operation": "update",
+        "actor_github_user_id": "2596885",
+        "reviews": []
+      }
+    ],
+    "artifacts": {
+      "history/v1/glzlaohuai/image-to-jpg.json": "24c0bd9f78ed4c8497c9fcbac2ff698fdf5869ad27189096f6ce8485acb3ddcb",
+      "index/v1/index.json": "20f409e7c3f3393787b3c3ac1e0230d81b87a16e1ae510948b974984b6f73401",
+      "index/v2/index.json": "3ec77f5c5983db488b4da28aa21e4d375a85ea4fdfe743f73f5dd8a259455148",
+      "published/glzlaohuai/image-to-jpg/manifest.json": "08537292bb3df4f763761265aad392948d27596d4cc63ecad53155065016a364",
+      "published/glzlaohuai/image-to-jpg/package.notchany.json": "4a9163baf8dc66da222d0400eef000d3c5a1abbb8668628b5fe305dbfca39585",
+      "published/state.json": "477a2f795f6d8f5f4d08f438fac478f1783208a37c116c7e73ca65a2580cfd38"
+    }
+  },
+  "signature": "9fd4474062c50adcf65cef855d0d509b714a15f4fcb9ddfcbcad5d960465386a"
+}
