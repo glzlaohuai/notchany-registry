@@ -3,6 +3,32 @@
   "package_id": "glzlaohuai/image-to-jpg",
   "releases": [
     {
+      "version": "1.0.1",
+      "sha256": "4a9163baf8dc66da222d0400eef000d3c5a1abbb8668628b5fe305dbfca39585",
+      "source_commit": "47049c226b954471d996ec6f138466fb6cc04941",
+      "merged_at": "2026-09-14T10:37:29Z",
+      "published_at": "2026-09-14T18:37:29+08:00",
+      "pr": {
+        "number": 10,
+        "url": "https://github.com/glzlaohuai/notchany-registry/pull/10",
+        "title": "添加action规则",
+        "body": "补全动作规则",
+        "author": {
+          "github_user_id": "2596885",
+          "login": "glzlaohuai",
+          "avatar_url": "https://avatars.githubusercontent.com/u/2596885?v=4"
+        }
+      },
+      "contributors": [
+        {
+          "github_user_id": "2596885",
+          "login": "glzlaohuai",
+          "avatar_url": "https://avatars.githubusercontent.com/u/2596885?v=4"
+        }
+      ],
+      "approved_by": []
+    },
+    {
       "version": "1.0.0",
       "sha256": "22d28576e0dd9ad3c3647ea60124b6906e82c69932864ed39635919625538903",
       "source_commit": "523960ae00a2c4eb17003c93e8bd596f0c792ffb",
@@ -12,5 +38,11 @@
       "contributors": []
     }
   ],
-  "contributors": []
+  "contributors": [
+    {
+      "github_user_id": "2596885",
+      "login": "glzlaohuai",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2596885?v=4"
+    }
+  ]
 }
