@@ -88,7 +88,7 @@
       <div class="row-copy">
         <div class="row-title"><h3>${escapeHTML(item.name)}</h3><span class="kind-mark">${escapeHTML(item.kind_label)}</span></div>
         <p class="row-summary">${escapeHTML(item.summary)}</p>
-        <div class="row-meta"><span>${escapeHTML(item.owner)}</span>${count === undefined ? "" : `<span>${formatCount(count)} ${escapeHTML(text.downloads)}</span>`}</div>
+        <div class="row-meta"><a href="${escapeHTML(new URL('authors/' + encodeURIComponent(item.owner) + '/', document.querySelector('.brand').href).href)}">${escapeHTML(item.owner)}</a>${count === undefined ? "" : `<span>${formatCount(count)} ${escapeHTML(text.downloads)}</span>`}</div>
       </div>
       <a class="open-button" href="${item.href}" aria-label="${escapeHTML(`${text.open} ${item.name}`)}">${escapeHTML(text.open)}</a>
     </article>`;
@@ -393,8 +393,9 @@
   const community = document.querySelector("[data-community-package]");
   if (community?.dataset.marketApi) {
     const profileElement = (profile, role) => {
-      const node = document.createElement("div");
+      const node = document.createElement("a");
       node.className = "identity";
+      node.href = new URL("contributors/?id=" + encodeURIComponent(profile.github_user_id), document.querySelector(".brand").href).href;
       node.dataset.githubUserId = profile.github_user_id;
       const avatar = document.createElement(profile.avatar_url ? "img" : "span");
       avatar.className = profile.avatar_url ? "" : "identity-avatar";

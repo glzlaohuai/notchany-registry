@@ -1,6 +1,7 @@
 import { pick, relatedPackages, searchText } from "./site-lib.mjs";
 
-const SITE_URL = "https://glzlaohuai.github.io/notchany-registry";
+const SITE_URL = (process.env.NOTCHANY_SITE_URL || "https://glzlaohuai.github.io/notchany-registry").replace(/\/+$/, "");
+const ACCOUNT_URL = process.env.NOTCHANY_ACCOUNT_URL || "https://account.notchany.com/account";
 const REPO_URL = "https://github.com/glzlaohuai/notchany-registry";
 const APP_URL = "https://github.com/glzlaohuai/NotchAny";
 
@@ -91,7 +92,7 @@ function identity(identity, role, copy) {
   const avatar = identity.avatar_url
     ? `<img src="${escapeHTML(identity.avatar_url)}" alt="" width="30" height="30">`
     : `<span class="identity-avatar" aria-hidden="true"></span>`;
-  return `<div class="identity" data-github-user-id="${escapeHTML(identity.github_user_id)}">${avatar}<span><strong data-identity-login>@${escapeHTML(identity.login)}</strong><small>${escapeHTML(role)}<span data-identity-verified hidden> · ${copy.verified}</span></small></span></div>`;
+  return `<a class="identity" href="${SITE_URL}/${copy === COPY.en ? "en/" : ""}contributors/?id=${encodeURIComponent(identity.github_user_id)}" data-github-user-id="${escapeHTML(identity.github_user_id)}">${avatar}<span><strong data-identity-login>@${escapeHTML(identity.login)}</strong><small>${escapeHTML(role)}<span data-identity-verified hidden> · ${copy.verified}</span></small></span></a>`;
 }
 
 function historySections(history, copy, lang) {
@@ -164,6 +165,7 @@ function nav({ lang, root, detailPackageID = "", sectionPath = "" }) {
       <a class="nav-icon-button" href="${home}#catalog" aria-label="${copy.browse}" title="${copy.browse}">${NAV_ICONS.browse}</a>
       <a class="nav-icon-button optional" href="${REPO_URL}#%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E5%8C%85" aria-label="${copy.submit}" title="${copy.submit}">${NAV_ICONS.submit}</a>
       <a class="nav-icon-button optional" href="${REPO_URL}" aria-label="${copy.github}" title="${copy.github}">${NAV_ICONS.github}</a>
+      <a class="nav-account-button" data-account-link href="${escapeHTML(ACCOUNT_URL)}?lang=${lang}" aria-label="${lang === "zh" ? "我的账号" : "My account"}" title="${lang === "zh" ? "我的账号" : "My account"}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></svg></a>
       <div class="language-menu" id="language-menu">
         <button class="nav-icon-button" id="language-toggle" type="button" aria-label="${copy.language_menu}" title="${copy.language_menu}" aria-haspopup="menu" aria-expanded="false">${NAV_ICONS.language}</button>
         <div class="language-popover" id="language-popover" role="menu" hidden>
@@ -184,6 +186,71 @@ function footer({ lang }) {
 function icon(item, root, className = "package-icon") {
   if (item.icon_path) return `<img class="${className}" src="${root}assets/${item.icon_path}" alt="" width="54" height="54">`;
   return `<span class="${className} fallback" aria-hidden="true">${item.kind === "widget" ? "▦" : "▶"}</span>`;
+}
+
+// 旧 App 按首发命名空间链接；不可借第一个包的现任 Owner 推断整页身份。
+export function authorPage({ lang, namespace, packages, css, js, histories = {}, marketAPIBase = "" }) {
+  const copy = COPY[lang];
+  const root = lang === "zh" ? "../../" : "../../../";
+  const sectionPath = `authors/${encodeURIComponent(namespace)}/`;
+  const path = `/${lang === "en" ? "en/" : ""}${sectionPath}`;
+  const alternate = `/${lang === "zh" ? "en/" : ""}${sectionPath}`;
+  const home = `${root}${lang === "en" ? "en/" : ""}`;
+  const label = lang === "zh" ? "发布作品" : "Published packages";
+  const description = lang === "zh"
+    ? `${namespace} 命名空间下的已发布小组件与动作。`
+    : `Published widgets and actions in the ${namespace} namespace.`;
+  const rows = packages.map(item => `<article class="package-row">
+    ${icon(item, root)}<div class="row-copy"><div class="row-title"><h3>${escapeHTML(pick(item.names, lang))}</h3><span class="kind-mark">${escapeHTML(kindLabel(item, lang))}</span></div>
+    <p class="row-summary">${escapeHTML(pick(item.summaries, lang))}</p><div class="row-meta"><span>v${escapeHTML(item.version)}</span></div></div>
+    <a class="open-button" href="${root}${lang === "en" ? "en/" : ""}packages/${item.package_id}/">${copy.open}</a>
+  </article>`).join("");
+  return `${pageHead({ lang, title: `@${namespace} · NotchAny Store`, description,
+    canonicalPath: path, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
+<body>${nav({ lang, root, sectionPath })}
+<main class="shell detail-main" data-profile-page><div class="breadcrumbs"><a href="${home}">${copy.back}</a></div>
+  <header class="detail-hero"><span class="package-icon fallback" aria-hidden="true">@</span><div class="detail-title">
+    <h1 style="overflow-wrap:anywhere">${escapeHTML(namespace)}</h1><p>${escapeHTML(description)}</p>
+    <div class="detail-meta"><span>${packages.length} ${lang === "zh" ? "个作品" : "packages"}</span>
+    <a href="https://github.com/${encodeURIComponent(namespace)}">${lang === "zh" ? "GitHub 主页" : "GitHub profile"}</a></div>
+  </div></header>
+  ${profileControls(lang)}
+  <section class="section profile-library"><div class="section-head"><h2>${label}</h2></div><div class="catalog-list" id="profile-packages">${rows || `<p>${lang === "zh" ? "暂无已发布作品" : "No published packages"}</p>`}</div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p></section>
+</main>${footer({ lang })}
+<script>window.__NOTCHANY_STORE__=${inlineJSON({ language: lang, copy, packages: [], counts_url: "", profile: { namespace, packages: packages.map(item => profilePackage(item, lang, root)), histories, market_api: marketAPIBase } })};</script><script>${js}</script></body></html>`;
+}
+
+function profilePackage(item, lang, root) {
+  return { ...packageClientData(item, lang, root), version: item.version,
+    screenshot: item.screenshots?.[0] ? `${root}assets/${item.screenshots[0]}` : null };
+}
+
+function profileControls(lang) {
+  const zh = lang === "zh";
+  return `<div class="profile-tools"><div class="profile-tabs" role="tablist" aria-label="${zh ? "贡献者内容" : "Contributor content"}"><button role="tab" data-profile-tab="packages" aria-selected="true">${zh ? "作品" : "Packages"}</button><button role="tab" data-profile-tab="contributions" aria-selected="false">${zh ? "参与贡献" : "Contributions"}</button></div><div class="profile-filters"><input id="profile-search" type="search" placeholder="${zh ? "搜索作品" : "Search packages"}" aria-label="${zh ? "搜索作品" : "Search packages"}"><select id="profile-kind" aria-label="${zh ? "作品类型" : "Package type"}"><option value="all">${zh ? "全部类型" : "All types"}</option><option value="widget">${zh ? "小组件" : "Widgets"}</option><option value="action">${zh ? "动作" : "Actions"}</option></select></div></div>`;
+}
+
+export function contributorPage({ lang, packages, histories, marketAPIBase, css, js }) {
+  const root = lang === "zh" ? "../" : "../../";
+  const copy = COPY[lang];
+  return `${pageHead({ lang, title: `${copy.contributors} · NotchAny Store`, description: copy.community,
+    canonicalPath: `/${lang === "en" ? "en/" : ""}contributors/`, alternatePath: `/${lang === "zh" ? "en/" : ""}contributors/`, imagePath: "assets/app-icon.png", css })}
+<body>${nav({ lang, root, sectionPath: "contributors/" })}<main class="shell detail-main" data-profile-page>
+<div class="breadcrumbs"><a href="${root}${lang === "en" ? "en/" : ""}">${copy.back}</a></div>
+<header class="detail-hero"><span class="package-icon fallback" id="profile-avatar" aria-hidden="true">@</span><div class="detail-title"><h1 id="profile-name">${copy.contributors}</h1><p id="profile-description">${copy.community}</p><div class="detail-meta"><a id="profile-github" hidden>GitHub</a><span id="profile-verified" hidden>${copy.verified}</span><a id="profile-manage" href="${ACCOUNT_URL}?section=packages" hidden>${lang === "zh" ? "管理作品" : "Manage packages"}</a></div></div></header>
+${profileControls(lang)}<section class="section profile-library"><div id="profile-directory"></div><div class="catalog-list" id="profile-packages"></div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p><button id="profile-retry" type="button" class="open-button" hidden>${copy.retry}</button></section>
+</main>${footer({ lang })}<script>window.__NOTCHANY_STORE__=${inlineJSON({ language: lang, copy, packages: [], counts_url: "", profile: { packages: packages.map(item => profilePackage(item, lang, root)), histories, market_api: marketAPIBase } })};</script><script>${js}</script></body></html>`;
+}
+
+export function notFoundPage({ css }) {
+  return `<!doctype html><html lang="zh-Hans"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>页面不存在 · NotchAny Store</title><style>${css}</style></head><body>
+<main class="shell detail-main"><div class="breadcrumbs"><a href="${SITE_URL}/">NotchAny Store</a></div>
+<header class="detail-hero"><img class="package-icon" src="${SITE_URL}/assets/app-icon.png" alt="" width="54" height="54">
+<div class="detail-title"><h1>页面不存在</h1><p>地址可能已失效。请返回 Store 查找作品。</p><p lang="en">Page not found. Return to the Store to browse packages.</p>
+<div class="detail-meta"><a href="${SITE_URL}/">返回 Store</a><a href="${SITE_URL}/en/" lang="en">Browse in English</a></div></div></header>
+</main></body></html>`;
 }
 
 const KEYBOARD_ROWS = [
@@ -364,7 +431,7 @@ ${nav({ lang, root, detailPackageID: item.package_id })}
   <div class="breadcrumbs"><a href="${home}">${copy.back}</a></div>
   <header class="detail-hero">
     ${icon(item, root)}
-    <div class="detail-title"><h1>${escapeHTML(name)}</h1><p>${escapeHTML(summary)}</p><div class="detail-meta"><span>${copy.by} ${escapeHTML(owner)}</span><span data-download-count="${escapeHTML(item.package_id)}"></span></div></div>
+    <div class="detail-title"><h1>${escapeHTML(name)}</h1><p>${escapeHTML(summary)}</p><div class="detail-meta"><span>${copy.by} <a href="${home}authors/${encodeURIComponent(owner)}/">${escapeHTML(owner)}</a></span><span data-download-count="${escapeHTML(item.package_id)}"></span></div></div>
     <div class="detail-action"><a class="primary-button" id="open-in-notchany" href="notchany://market/package/${escapeHTML(item.package_id)}" data-fallback-url="${download}">${copy.open_app}</a></div>
   </header>
   <div class="detail-layout"><article>
