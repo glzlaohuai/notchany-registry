@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import process from "node:process";
 
 import { validateCuration } from "./site-lib.mjs";
-import { detailPage, downloadPage, homePage } from "./site-template.mjs";
+import { authorPage, contributorPage, detailPage, downloadPage, homePage, notFoundPage } from "./site-template.mjs";
 import { verifyPublishedIndex } from "./publication-lib.mjs";
 
 const ROOT = process.cwd();
@@ -16,7 +16,8 @@ const INDEX_PATH = join(ROOT, "index", "v2", "index.json");
 const CURATION_PATH = join(ROOT, "site", "curation.json");
 const COUNTS_URL = process.env.NOTCHANY_COUNTS_URL?.trim() || "";
 const APP_DOWNLOAD_URL = process.env.NOTCHANY_APP_DOWNLOAD_URL?.trim() || "";
-const MARKET_API_BASE = process.env.NOTCHANY_MARKET_API_BASE?.trim().replace(/\/+$/, "") || "";
+const marketAPI = process.env.NOTCHANY_MARKET_API_BASE?.trim() || "";
+const MARKET_API_BASE = marketAPI === "/" ? "/" : marketAPI.replace(/\/+$/, "");
 
 function fail(message) {
   console.error(`build-site: ${message}`);
@@ -43,7 +44,7 @@ try {
   fail(error.message);
 }
 const css = readFileSync(join(ROOT, "site", "styles.css"), "utf8");
-const js = readFileSync(join(ROOT, "site", "store.js"), "utf8");
+const js = readFileSync(join(ROOT, "site", "store.js"), "utf8") + "\n" + readFileSync(join(ROOT, "site", "profile.js"), "utf8");
 
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(join(DIST, "assets"), { recursive: true });
@@ -67,6 +68,7 @@ copyFileSync(
   join(ROOT, "site", "assets", "macos-desktop-wallpaper.webp"),
   join(DIST, "assets", "macos-desktop-wallpaper.webp")
 );
+const histories = {};
 for (const item of packages) {
   if (item.icon_path) copy(item.icon_path);
   for (const screenshot of item.screenshots || []) copy(screenshot);
@@ -80,10 +82,24 @@ for (const item of packages) {
   const history = item.history_path && existsSync(join(ROOT, item.history_path))
     ? readJSON(join(ROOT, item.history_path), item.history_path)
     : { releases: [], contributors: [] };
+  histories[item.package_id] = history;
   write(`packages/${item.package_id}/index.html`, detailPage({ lang: "zh", item, packages, history, marketAPIBase: MARKET_API_BASE, countsURL: COUNTS_URL, css, js }));
   write(`en/packages/${item.package_id}/index.html`, detailPage({ lang: "en", item, packages, history, marketAPIBase: MARKET_API_BASE, countsURL: COUNTS_URL, css, js }));
 }
 
+const authors = Map.groupBy(packages, (item) => item.package_id.split("/")[0]);
+for (const [namespace, authorPackages] of authors) {
+  for (const lang of ["zh", "en"]) {
+    write(`${lang === "en" ? "en/" : ""}authors/${namespace}/index.html`,
+      authorPage({ lang, namespace, packages: authorPackages, histories, marketAPIBase: MARKET_API_BASE, css, js }));
+  }
+}
+
+for (const lang of ["zh", "en"]) {
+  write(`${lang === "en" ? "en/" : ""}contributors/index.html`, contributorPage({ lang, packages, histories, marketAPIBase: MARKET_API_BASE, css, js }));
+}
+
 write(".nojekyll", "");
-write("404.html", homePage({ lang: "zh", packages, featuredIDs, countsURL: COUNTS_URL, css, js }));
+if (process.env.NOTCHANY_SITE_URL === "https://notchany.com") write("CNAME", "notchany.com\n");
+write("404.html", notFoundPage({ css }));
 console.log(`已生成 site/dist（2 个首页，2 个下载页，${packages.length * 2} 个详情页，counts=${COUNTS_URL || "未配置"}，app=${APP_DOWNLOAD_URL || "未配置"}）`);

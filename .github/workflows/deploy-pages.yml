@@ -30,6 +30,7 @@ jobs:
       - name: 构建静态站
         run: node scripts/build-site.mjs
         env:
+          NOTCHANY_SITE_URL: https://notchany.com
           NOTCHANY_COUNTS_URL: ${{ vars.NOTCHANY_COUNTS_URL }}
           NOTCHANY_APP_DOWNLOAD_URL: ${{ vars.NOTCHANY_APP_DOWNLOAD_URL }}
           NOTCHANY_MARKET_API_BASE: ${{ vars.MARKET_API_BASE }}
