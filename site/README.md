@@ -23,9 +23,52 @@ python3 -m http.server 4173 --directory site/dist
   刷新 GitHub 快照和绑定标识；请求失败时保留 Registry history 快照，版本与安装不受影响。
 - `site/curation.json` 由维护者配置最多 3 个精选包，构建时拒绝未知、重复和超量 ID。
 
-## 部署到 GitHub Pages
+## 本地预览
 
-`.github/workflows/deploy-pages.yml` 在 `main` push 后现场重建 index、构建站点并发布。
+普通静态预览：
+
+```bash
+npm run build:site
+python3 -m http.server 4173 --directory site/dist
+```
+
+验证 Cloudflare Worker 的真实 404、缓存与响应头：
+
+```bash
+npm run dev:store
+```
+
+## 部署到 Cloudflare Store Worker
+
+`store-worker/wrangler.toml` 定义独立 `notchany-store` Worker。构建会先用
+`published/state.json` 校验 v2 index、history 与素材来自同一正式快照，再上传 `site/dist/`；
+候选 `packages/` 不会成为线上路径或安装来源。
+
+GitHub Actions 需要：
+
+- Secret `CLOUDFLARE_API_TOKEN`：最小化到该账号的 Workers Scripts 编辑权限。
+- Secret `CLOUDFLARE_ACCOUNT_ID`。
+- Variables `NOTCHANY_COUNTS_URL`、`NOTCHANY_APP_DOWNLOAD_URL`、`MARKET_API_BASE`。
+
+`deploy-store-cloudflare.yml` 固定 checkout commit 与 Wrangler `4.127.1`，部署后回读
+`/.well-known/notchany-store.json` 核对 commit。影子地址为
+`https://notchany-store.glzlaohuai.workers.dev`。生产 DNS/custom domain 只在该地址完成桌面、移动、
+深浅色与数据一致性验收后单独切换。
+
+手动部署影子站：
+
+```bash
+NOTCHANY_SITE_URL=https://notchany.com \
+NOTCHANY_ACCOUNT_URL=https://account.notchany.com/account \
+NOTCHANY_MARKET_API_BASE=https://account.notchany.com \
+NOTCHANY_COUNTS_URL=https://notchany-market.glzlaohuai.workers.dev/counts.json \
+npm run deploy:store
+```
+
+## GitHub Pages 兼容部署
+
+`.github/workflows/deploy-pages.yml` 在 `main` push 后构建站点并发布。迁移期保留它作为当前生产与
+快速回滚入口；Store Worker 稳定运行并完成 DNS 切换前不要停用。
 Worker 部署后，在仓库 Actions variables 设置：
 
 ```bash

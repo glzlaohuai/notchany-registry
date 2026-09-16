@@ -108,13 +108,14 @@ npm run build:index            # 重建 v1/v2 index 与 history（maintainer 用
 ## Web 市场
 
 `scripts/build-site.mjs`（零依赖，Node ≥18）读取 index、`site/curation.json` 与包素材，
-生成中文根路径和 `/en/` 英文镜像到 `site/dist/`。首页包含精选、搜索、全部/最新/热门、
+生成中文根路径和 `/en/` 英文镜像到 `site/dist/`。生产由独立的 Cloudflare
+`notchany-store` Worker + Static Assets 交付，GitHub Pages 在迁移期保留兼容部署。首页包含精选、搜索、全部/最新/热门、
 类型/标签筛选与查询参数恢复；详情页包含真实截图、依赖、脚本风险、Owner/维护者/贡献者、
 只读版本时间线、源码/反馈和相关推荐。
 全站「下载 App」进入下载提示页，正式下载地址通过 `NOTCHANY_APP_DOWNLOAD_URL` 构建变量注入；
 未配置时显示准备中，不输出空链接。「在 NotchAny 中打开」只定位 App 详情页，未唤起时自动
-进入下载提示页，安装仍需用户确认。构建与 GitHub Pages
-部署说明见 [site/README.md](site/README.md)。精选配置最多 3 个，未知/重复 ID 会让构建失败。
+进入下载提示页，安装仍需用户确认。Cloudflare 主部署与 GitHub Pages 兼容部署说明见
+[site/README.md](site/README.md)。精选配置最多 3 个，未知/重复 ID 会让构建失败。
 
 ## CI 与 Market 配置
 
@@ -126,6 +127,10 @@ PR 授权、release 登记和 reconciliation 都使用带 5 分钟时间窗的 H
 默认分支必需状态为 `market/content-and-permission`，并要求分支与 main 同步。普通包 PR、生成发布 PR、仓库维护 PR 分别校验包权限、签名清单及当前管理员身份；维护 PR 不得夹带包或生成产物。
 `pr-validate.yml` 只运行 main 上的可信脚本；PR 内容作为数据。Review 事件通过无凭据工作流通知可信工作流；每五分钟重验公开 PR，覆盖撤回 Review、撤权及身份解绑。
 Actions 需允许创建 PR，并赋发布工作流 contents、pull-requests、statuses、actions 写权限。机器人创建 PR 后显式调度 `validate-publication.yml`，成功合入后显式调度 `deploy-pages.yml`，不依赖机器人触发 push 事件。
+
+Cloudflare 影子部署还需要仓库 secrets `CLOUDFLARE_API_TOKEN`（只授予 `notchany-store` Worker
+编辑权限）与 `CLOUDFLARE_ACCOUNT_ID`。正式快照合入后会同时显式调度
+`deploy-store-cloudflare.yml`；Pages 在 DNS 切换完成并观察至少一轮发布前不移除。
 
 `Reconcile Market` workflow 可手动或每日运行，修复合并成功但回调失败造成的状态漂移。首次回填会
 调用 GitHub API 将 namespace 解析为数字 ID；workflow 使用内置 `GITHUB_TOKEN`，本地执行可传
