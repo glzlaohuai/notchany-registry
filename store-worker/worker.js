@@ -17,9 +17,10 @@ const HTML_CSP = [
 ].join("; ");
 
 function cacheControl(response, contentType) {
-  if (response.status >= 400) return "public, max-age=60";
+  const noTransform = contentType.includes("text/html") ? ", no-transform" : "";
+  if (response.status >= 400) return `public, max-age=60${noTransform}`;
   if (contentType.includes("text/html")) {
-    return "public, max-age=300, stale-while-revalidate=86400";
+    return "public, max-age=300, stale-while-revalidate=86400, no-transform";
   }
   return "public, max-age=3600, stale-while-revalidate=86400";
 }
