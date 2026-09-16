@@ -38,6 +38,8 @@ test("home hero renders an interactive Mac desktop with live clock targets", () 
   }
   assert.equal((html.match(/class="demo-tray-item"/g) || []).length, 3);
   assert.equal((html.match(/class="mac-key"/g) || []).length, 77);
+  assert.match(html, /<link rel="canonical" href="https:\/\/notchany\.com\/">/);
+  assert.match(html, /href="https:\/\/account\.notchany\.com\/account\?lang=zh"/);
 });
 
 test("each hero tray icon links to its package detail page", () => {

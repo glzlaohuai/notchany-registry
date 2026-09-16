@@ -1,6 +1,6 @@
 import { pick, relatedPackages, searchText } from "./site-lib.mjs";
 
-const SITE_URL = (process.env.NOTCHANY_SITE_URL || "https://glzlaohuai.github.io/notchany-registry").replace(/\/+$/, "");
+const SITE_URL = (process.env.NOTCHANY_SITE_URL || "https://notchany.com").replace(/\/+$/, "");
 const ACCOUNT_URL = process.env.NOTCHANY_ACCOUNT_URL || "https://account.notchany.com/account";
 const REPO_URL = "https://github.com/glzlaohuai/notchany-registry";
 const APP_URL = "https://github.com/glzlaohuai/NotchAny";
@@ -247,7 +247,7 @@ export function notFoundPage({ css }) {
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>页面不存在 · NotchAny Store</title><style>${css}</style></head><body>
 <main class="shell detail-main"><div class="breadcrumbs"><a href="${SITE_URL}/">NotchAny Store</a></div>
-<header class="detail-hero"><img class="package-icon" src="${SITE_URL}/assets/app-icon.png" alt="" width="54" height="54">
+<header class="detail-hero"><img class="package-icon" src="/assets/app-icon.png" alt="" width="54" height="54">
 <div class="detail-title"><h1>页面不存在</h1><p>地址可能已失效。请返回 Store 查找作品。</p><p lang="en">Page not found. Return to the Store to browse packages.</p>
 <div class="detail-meta"><a href="${SITE_URL}/">返回 Store</a><a href="${SITE_URL}/en/" lang="en">Browse in English</a></div></div></header>
 </main></body></html>`;

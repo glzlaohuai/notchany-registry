@@ -18,6 +18,7 @@ const COUNTS_URL = process.env.NOTCHANY_COUNTS_URL?.trim() || "";
 const APP_DOWNLOAD_URL = process.env.NOTCHANY_APP_DOWNLOAD_URL?.trim() || "";
 const marketAPI = process.env.NOTCHANY_MARKET_API_BASE?.trim() || "";
 const MARKET_API_BASE = marketAPI === "/" ? "/" : marketAPI.replace(/\/+$/, "");
+const BUILD_COMMIT = process.env.NOTCHANY_BUILD_COMMIT?.trim() || "";
 
 function fail(message) {
   console.error(`build-site: ${message}`);
@@ -34,6 +35,7 @@ function readJSON(path, label) {
 
 if (!existsSync(INDEX_PATH)) fail("缺少 index/v2/index.json，请先运行 build:index");
 if (!existsSync(CURATION_PATH)) fail("缺少 site/curation.json");
+if (BUILD_COMMIT && !/^[a-f0-9]{40}$/.test(BUILD_COMMIT)) fail("NOTCHANY_BUILD_COMMIT 必须是完整 Git commit");
 const index = readJSON(INDEX_PATH, "index/v2/index.json");
 verifyPublishedIndex(index, ROOT);
 const packages = Array.isArray(index.packages) ? index.packages : [];
@@ -100,6 +102,9 @@ for (const lang of ["zh", "en"]) {
 }
 
 write(".nojekyll", "");
+if (BUILD_COMMIT) {
+  write(".well-known/notchany-store.json", `${JSON.stringify({ registry_commit: BUILD_COMMIT })}\n`);
+}
 if (process.env.NOTCHANY_SITE_URL === "https://notchany.com") write("CNAME", "notchany.com\n");
 write("404.html", notFoundPage({ css }));
 console.log(`已生成 site/dist（2 个首页，2 个下载页，${packages.length * 2} 个详情页，counts=${COUNTS_URL || "未配置"}，app=${APP_DOWNLOAD_URL || "未配置"}）`);
