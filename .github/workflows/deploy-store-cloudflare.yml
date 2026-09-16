@@ -50,6 +50,14 @@ jobs:
           NOTCHANY_MARKET_API_BASE: ${{ vars.MARKET_API_BASE }}
       - name: 核对影子站部署提交
         run: |
-          curl --fail --retry 5 --retry-delay 2 \
-            https://notchany-store.glzlaohuai.workers.dev/.well-known/notchany-store.json \
-            | grep --fixed-strings '"registry_commit":"${{ github.sha }}"'
+          for attempt in {1..12}; do
+            marker="$(curl --fail --silent --show-error \
+              "https://notchany-store.glzlaohuai.workers.dev/.well-known/notchany-store.json?commit=${{ github.sha }}&attempt=${attempt}" \
+              || true)"
+            if grep --fixed-strings --quiet '"registry_commit":"${{ github.sha }}"' <<<"${marker}"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "影子站在等待窗口内未返回本次 Registry commit" >&2
+          exit 1

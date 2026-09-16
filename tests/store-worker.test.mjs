@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import worker from "../store-worker/worker.js";
 
@@ -65,4 +66,11 @@ test("静态站拒绝写方法", async () => {
   );
   assert.equal(response.status, 405);
   assert.equal(response.headers.get("Allow"), "GET, HEAD");
+});
+
+test("部署校验轮询 commit 标记并穿透旧静态资源缓存", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/deploy-store-cloudflare.yml", import.meta.url), "utf8");
+  assert.match(workflow, /for attempt in \{1\.\.12\}/);
+  assert.match(workflow, /notchany-store\.json\?commit=\$\{\{ github\.sha \}\}&attempt=\$\{attempt\}/);
+  assert.match(workflow, /sleep 5/);
 });
