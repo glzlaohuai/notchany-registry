@@ -23,7 +23,7 @@ test("HTML 响应保留正文并设置短缓存与安全响应头", async () => 
   assert.equal(response.status, 200);
   assert.equal(await response.text(), "<h1>Store</h1>");
   assert.equal(response.headers.get("ETag"), '"v1"');
-  assert.equal(response.headers.get("Cache-Control"), "public, max-age=300, stale-while-revalidate=86400");
+  assert.equal(response.headers.get("Cache-Control"), "public, max-age=300, stale-while-revalidate=86400, no-transform");
   assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
   assert.equal(response.headers.get("X-Frame-Options"), "DENY");
   assert.match(response.headers.get("Content-Security-Policy") ?? "", /frame-ancestors 'none'/);
@@ -47,7 +47,7 @@ test("未知路径保持真实 404 且不长时间缓存", async () => {
   );
   assert.equal(response.status, 404);
   assert.equal(await response.text(), "not found");
-  assert.equal(response.headers.get("Cache-Control"), "public, max-age=60");
+  assert.equal(response.headers.get("Cache-Control"), "public, max-age=60, no-transform");
 });
 
 test("www 永久跳转到规范根域并保留路径与查询", async () => {
