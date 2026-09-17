@@ -55,7 +55,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           NOTCHANY_BUILD_COMMIT: ${{ github.sha }}
           NOTCHANY_SITE_URL: https://notchany.com
-          NOTCHANY_ACCOUNT_URL: https://notchany.com/account
+          NOTCHANY_ACCOUNT_URL: ${{ env.TARGET == 'production' && 'https://notchany.com/account' || 'https://notchany-store-preview.glzlaohuai.workers.dev/account' }}
           NOTCHANY_COUNTS_URL: ${{ vars.NOTCHANY_COUNTS_URL }}
           NOTCHANY_APP_DOWNLOAD_URL: ${{ vars.NOTCHANY_APP_DOWNLOAD_URL }}
           NOTCHANY_MARKET_API_BASE: ${{ vars.MARKET_API_BASE }}

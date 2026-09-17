@@ -103,6 +103,13 @@ test("home header is the shared shell snapshot", () => {
   assert.equal(rendered, snapshot);
 });
 
+test("shared shell keeps fixed Cloudflare preview navigation isolated", () => {
+  const shell = readFileSync(new URL("../site/shell.js", import.meta.url), "utf8");
+  assert.match(shell, /notchany-store-preview\.glzlaohuai\.workers\.dev/);
+  assert.match(shell, /\[data-account-link\].*\/account/s);
+  assert.match(shell, /data-shell-label="download".*\/download\//s);
+});
+
 test("detail navigation language menu preserves the package route", () => {
   const html = detailPage({ lang: "en", item: packages[0], packages, countsURL: "", css: "", js: "" });
 

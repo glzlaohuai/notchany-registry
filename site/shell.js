@@ -6,6 +6,9 @@
   const requested = params.get("lang");
   const english = requested === "en" || (requested !== "zh" && document.documentElement.lang.startsWith("en"));
   const lang = english ? "en" : "zh";
+  const previewOrigin = location.hostname === "notchany-store-preview.glzlaohuai.workers.dev"
+    ? location.origin
+    : null;
   const copy = {
     zh: { nav: "主导航", browse: "浏览内容库", submit: "提交作品", github: "GitHub 源码", account: "我的账号", language: "切换语言", download: "下载 App" },
     en: { nav: "Main navigation", browse: "Browse library", submit: "Submit a package", github: "GitHub source", account: "My account", language: "Change language", download: "Download App" },
@@ -21,6 +24,19 @@
   });
   const download = header.querySelector("[data-shell-download]");
   if (download) download.textContent = copy.download;
+
+  if (previewOrigin) {
+    const previewLinks = [
+      [".brand", "/"],
+      ['[data-shell-label="browse"]', "/#catalog"],
+      ["[data-account-link]", "/account"],
+      ['[data-shell-label="download"]', "/download/"],
+    ];
+    previewLinks.forEach(([selector, path]) => {
+      const link = header.querySelector(selector);
+      if (link) link.href = new URL(path, previewOrigin).href;
+    });
+  }
 
   if (header.dataset.dynamicLanguage === "true") {
     header.querySelectorAll("[data-shell-language]").forEach((link) => {

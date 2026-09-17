@@ -160,6 +160,8 @@ test("部署工作流区分预览与生产并轮询 commit 标记", () => {
   const workflow = readFileSync(new URL("../.github/workflows/deploy-store-cloudflare.yml", import.meta.url), "utf8");
   assert.match(workflow, /target:/);
   assert.match(workflow, /notchany-store-preview\.glzlaohuai\.workers\.dev/);
+  assert.match(workflow, /env\.TARGET == 'production'.*https:\/\/notchany\.com\/account/);
+  assert.match(workflow, /https:\/\/notchany-store-preview\.glzlaohuai\.workers\.dev\/account/);
   assert.match(workflow, /for attempt in \{1\.\.12\}/);
   assert.match(workflow, /notchany-store\.json\?commit=\$\{\{ github\.sha \}\}&attempt=\$\{attempt\}/);
   assert.match(workflow, /sleep 5/);
