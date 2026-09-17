@@ -153,6 +153,17 @@ test("detail renders sanitized PR release notes and display-only history", () =>
   assert.doesNotMatch(html, /<script>alert\(1\)<\/script>/);
   assert.match(html, /data-github-user-id="20"/);
   assert.doesNotMatch(html, /rollback|install-version|download-version/);
+
+  const asideStart = html.indexOf('<aside class="side-info"');
+  const article = html.slice(html.indexOf("<article>"), asideStart);
+  const aside = html.slice(asideStart, html.indexOf("</aside>") + "</aside>".length);
+  assert.doesNotMatch(article, /data-community-package|Collaboration & contributions/);
+  assert.match(aside, /<section class="side-community"[^>]+data-community-package="owner\/cpu"/);
+  assert.match(aside, /<h2>Collaboration & contributions<\/h2>/);
+  assert.match(aside, /data-community-owner/);
+  assert.match(aside, /data-community-maintainers/);
+  assert.match(aside, /data-github-user-id="20"[\s\S]*?<small>Contributors/);
+  assert.ok(aside.indexOf("side-community") < aside.indexOf("side-details"));
 });
 
 test("community display distinguishes unclaimed packages and replaces failed avatars", () => {
@@ -180,6 +191,9 @@ test("mobile detail grids keep long content inside the viewport", () => {
   assert.match(source, /\.detail-title \{ min-width: 0; \}/);
   assert.match(source, /\.detail-hero \{ grid-template-columns: 70px minmax\(0, 1fr\); gap: 16px; \}/);
   assert.match(source, /\.detail-layout \{ grid-template-columns: minmax\(0, 1fr\); gap: 38px; \}/);
+  assert.match(source, /\.contributor-roster \{ display: grid; gap: 14px; \}/);
+  assert.match(source, /\.side-community \.identity-list \{ display: grid; gap: 14px; \}/);
+  assert.match(source, /\.profile-sidebar \.profile-avatar \{ width: 88px; height: 88px; border-radius: 50%; \}/);
 });
 
 test("notch intro is session-scoped and does not schedule repeating cycles", () => {

@@ -25,6 +25,7 @@
   const directory = document.getElementById('profile-directory');
   let selectedPackages = state.namespace ? state.packages : [];
   let activeTab = 'packages';
+  let activeKind = 'all';
   const roles = new Map();
   const el = (tag, className, text) => {
     const node = document.createElement(tag); if (className) node.className = className;
@@ -38,34 +39,29 @@
     document.getElementById('profile-description').textContent = '@' + user.login;
     const github = document.getElementById('profile-github');
     github.href = 'https://github.com/' + encodeURIComponent(user.login); github.hidden = false;
-    document.getElementById('profile-verified').hidden = !user.notchany_verified;
     const avatar = document.getElementById('profile-avatar');
     avatar.textContent = user.login.slice(0, 1).toUpperCase();
     if (/^https:\/\/avatars\.githubusercontent\.com\//.test(user.avatar_url || '')) {
-      const image = el('img'); image.src = user.avatar_url; image.alt = ''; image.width = 64; image.height = 64;
+      const image = el('img'); image.src = user.avatar_url; image.alt = ''; image.width = 184; image.height = 184;
       image.addEventListener('error', () => avatar.replaceChildren(document.createTextNode(user.login.slice(0, 1).toUpperCase())));
       avatar.replaceChildren(image);
     }
   }
   function matches(item) {
     const q = document.getElementById('profile-search').value.trim().toLocaleLowerCase();
-    const kind = document.getElementById('profile-kind').value;
-    return (!q || (item.search || item.name).toLocaleLowerCase().includes(q)) && (kind === 'all' || kind === item.kind);
+    return (!q || (item.search || item.name).toLocaleLowerCase().includes(q)) && (activeKind === 'all' || activeKind === item.kind);
   }
   function packageCard(item) {
-    const card = el('article', 'profile-work');
-    if (item.screenshot) {
-      const preview = el('a', 'profile-preview'); preview.href = item.href; preview.setAttribute('aria-label', item.name);
-      const image = el('img'); image.src = item.screenshot; image.alt = item.name; image.loading = 'lazy';
-      image.addEventListener('error', () => preview.remove()); preview.append(image); card.append(preview);
-    }
-    const row = el('div', 'package-row');
+    const row = el('article', 'package-row profile-package-row');
     const image = el('img', 'package-icon'); image.src = item.icon; image.alt = ''; image.width = 54; image.height = 54;
     const content = el('div', 'row-copy');
-    const heading = el('div', 'row-title'); heading.append(el('h3', '', item.name), el('span', 'kind-mark', item.kind_label));
+    const heading = el('div', 'row-title');
+    const title = el('h3'); const detail = el('a', 'row-detail-link', item.name); detail.href = item.href;
+    title.append(detail); heading.append(title, el('span', 'kind-mark', item.kind_label));
     content.append(heading, el('p', 'row-summary', item.summary), el('div', 'row-meta', 'v' + item.version + (roles.has(item.package_id) ? ' · ' + roles.get(item.package_id) : '')));
-    const link = el('a', 'open-button', zh ? '打开' : 'Open'); link.href = item.href; link.setAttribute('aria-label', (zh ? '打开 ' : 'Open ') + item.name);
-    row.append(image, content, link); card.append(row); return card;
+    const install = el('a', 'open-button install-button', zh ? '安装' : 'Install'); install.href = item.install_href;
+    install.dataset.fallbackUrl = item.download_href; install.setAttribute('aria-label', (zh ? '安装 ' : 'Install ') + item.name);
+    row.append(image, content, install); return row;
   }
   function render() {
     const packages = document.getElementById('profile-packages');
@@ -101,7 +97,11 @@
     render();
   }));
   document.getElementById('profile-search').addEventListener('input', render);
-  document.getElementById('profile-kind').addEventListener('change', render);
+  document.querySelectorAll('[data-profile-kind]').forEach(button => button.addEventListener('click', () => {
+    activeKind = button.dataset.profileKind;
+    document.querySelectorAll('[data-profile-kind]').forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+    render();
+  }));
   if (state.namespace) {
     document.querySelector('[data-profile-tab="contributions"]').textContent = zh ? '版本贡献' : 'Version contributions';
     render(); return;
