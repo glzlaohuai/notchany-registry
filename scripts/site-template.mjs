@@ -11,7 +11,7 @@ const COPY = {
     hero_kicker: "为 macOS 刘海而生", hero_title: "NotchAny Store", hero_body: "发现小组件与动作，把常用信息和工作流放进刘海。每个包都可检查、可调整、由你确认安装。",
     search: "搜索名称、简介、作者、包 ID 或标签", all_packages: "内容库", all_packages_note: "浏览社区发布的小组件与动作。",
     sort: "排序", all: "全部", recent: "最新", popular: "热门", type: "类型", widget: "小组件", action: "动作", tags: "标签",
-    clear: "清除条件", result: "找到 {count} 个包", downloads: "下载", open: "打开", retry: "重试",
+    clear: "清除条件", result: "找到 {count} 个包", downloads: "下载", installs: "下载安装次数", count_value: "{count} 次", count_inline: "下载安装 {count} 次", count_loading: "正在读取…", count_unavailable: "暂不可用", open: "打开", install: "安装", retry: "重试",
     popular_loading: "正在读取下载量…", popular_unavailable: "热门排序暂不可用。", popular_unavailable_title: "暂时无法读取热门排序", popular_unavailable_body: "下载计数服务没有响应。你仍可使用全部、最新、搜索和筛选。",
     empty_title: "没有匹配的包", empty_body: "换个关键词，或清除一项筛选条件。", featured_kind: "精选",
     footer: "NotchAny Store", source: "源码", privacy: "隐私与发布规则",
@@ -20,17 +20,18 @@ const COPY = {
     download_kicker: "NotchAny for Mac", download_title: "先安装 NotchAny", download_body: "NotchAny Store 中的小组件与动作需要通过 Mac App 查看和安装。安装完成后，返回 Store 再次打开即可。",
     download_now: "下载 NotchAny", download_pending: "下载地址准备中", download_pending_note: "正式版本开放下载后，此按钮会直接提供最新版 App。", download_requirement: "需要 macOS 15 Sequoia 或更高版本",
     about: "关于这个包", safety: "运行与安全", safety_shell: "此包包含可执行脚本。NotchAny 会在安装前展示完整脚本，并要求你确认；请只运行你已阅读并信任的内容。",
-    safety_plain: "安装前可检查包内容，NotchAny 仍会要求你确认安装。", screenshots: "实际界面", no_screenshot: "该包尚未提供界面截图",
+    safety_plain: "安装前可检查包内容，NotchAny 仍会要求你确认安装。",
     info: "包信息", package_id: "包 ID", source_code: "查看包源码", report: "反馈问题", improve: "提出改进", related: "你可能也需要",
     community: "协作与贡献", owner: "Owner", maintainers: "共同维护者", contributors: "贡献者", verified: "已绑定 NotchAny", unclaimed: "待认领", community_unavailable: "协作身份暂不可用",
     history: "版本记录", release_fallback: "版本 {version}", release_empty: "暂无版本说明",
+    author_title: "作者", author_creator: "NotchAny Store 创作者", author_works: "作品", author_packages: "{count} 个包", author_github: "GitHub 主页", author_note: "这位作者发布的小组件与动作。", author_empty: "暂无该类型作品",
   },
   en: {
     browse: "Browse library", submit: "Submit a package", github: "GitHub source", language: "中文", language_menu: "Change language", download_app: "Download App", featured: "Featured", featured_note: "Three starting points for different workflows.",
     hero_kicker: "Built for the macOS notch", hero_title: "NotchAny Store", hero_body: "Discover widgets and actions that put useful information and workflows in the notch. Every package stays inspectable, editable, and yours to approve.",
     search: "Search names, descriptions, authors, package IDs, or tags", all_packages: "Library", all_packages_note: "Browse community widgets and actions.",
     sort: "Sort", all: "All", recent: "Latest", popular: "Popular", type: "Type", widget: "Widgets", action: "Actions", tags: "Tags",
-    clear: "Clear filters", result: "{count} packages", downloads: "downloads", open: "Open", retry: "Retry",
+    clear: "Clear filters", result: "{count} packages", downloads: "downloads", installs: "Downloads & installs", count_value: "{count}", count_inline: "{count} downloads & installs", count_loading: "Loading…", count_unavailable: "Unavailable", open: "Open", install: "Install", retry: "Retry",
     popular_loading: "Loading download counts…", popular_unavailable: "Popular sorting is unavailable.", popular_unavailable_title: "Popular sorting is temporarily unavailable", popular_unavailable_body: "The download-count service did not respond. All, Latest, search, and filters still work.",
     empty_title: "No matching packages", empty_body: "Try another term or clear one of the filters.", featured_kind: "Featured",
     footer: "NotchAny Store", source: "Source", privacy: "Privacy and publishing rules",
@@ -39,10 +40,11 @@ const COPY = {
     download_kicker: "NotchAny for Mac", download_title: "Install NotchAny first", download_body: "Widgets and actions from NotchAny Store are viewed and installed through the Mac app. Once installed, return to the Store and open the package again.",
     download_now: "Download NotchAny", download_pending: "Download coming soon", download_pending_note: "This button will provide the latest app as soon as the release is available.", download_requirement: "Requires macOS 15 Sequoia or later",
     about: "About this package", safety: "Runtime and safety", safety_shell: "This package contains an executable script. NotchAny shows the full script and asks for confirmation before installation. Run only code you have read and trust.",
-    safety_plain: "You can inspect the package before installing, and NotchAny still asks you to confirm.", screenshots: "Actual interface", no_screenshot: "No interface screenshot has been provided yet",
+    safety_plain: "You can inspect the package before installing, and NotchAny still asks you to confirm.",
     info: "Package information", package_id: "Package ID", source_code: "View package source", report: "Report an issue", improve: "Suggest an improvement", related: "You may also need",
     community: "Collaboration & contributions", owner: "Owner", maintainers: "Maintainers", contributors: "Contributors", verified: "Linked to NotchAny", unclaimed: "Unclaimed", community_unavailable: "Collaboration identity unavailable",
     history: "Version history", release_fallback: "Version {version}", release_empty: "No release notes",
+    author_title: "Author", author_creator: "NotchAny Store creator", author_works: "Packages", author_packages: "{count} packages", author_github: "GitHub profile", author_note: "Widgets and actions published by this author.", author_empty: "No packages of this type",
   },
 };
 
@@ -188,6 +190,18 @@ function icon(item, root, className = "package-icon") {
   return `<span class="${className} fallback" aria-hidden="true">${item.kind === "widget" ? "▦" : "▶"}</span>`;
 }
 
+function profilePackageRow(item, lang, root) {
+  const copy = COPY[lang];
+  const name = pick(item.names, lang);
+  const detailURL = `${root}${lang === "en" ? "en/" : ""}packages/${item.package_id}/`;
+  const downloadURL = `${root}${lang === "en" ? "en/" : ""}download/`;
+  return `<article class="package-row profile-package-row" data-profile-kind="${escapeHTML(item.kind)}">
+    ${icon(item, root)}<div class="row-copy"><div class="row-title"><h3><a class="row-detail-link" href="${detailURL}">${escapeHTML(name)}</a></h3><span class="kind-mark">${escapeHTML(kindLabel(item, lang))}</span></div>
+    <p class="row-summary">${escapeHTML(pick(item.summaries, lang))}</p><div class="row-meta"><span>v${escapeHTML(item.version)}</span></div></div>
+    <a class="open-button install-button" href="notchany://market/package/${escapeHTML(item.package_id)}" data-fallback-url="${downloadURL}" aria-label="${escapeHTML(`${copy.install} ${name}`)}">${copy.install}</a>
+  </article>`;
+}
+
 // 旧 App 按首发命名空间链接；不可借第一个包的现任 Owner 推断整页身份。
 export function authorPage({ lang, namespace, packages, css, js, histories = {}, marketAPIBase = "" }) {
   const copy = COPY[lang];
@@ -195,39 +209,37 @@ export function authorPage({ lang, namespace, packages, css, js, histories = {},
   const sectionPath = `authors/${encodeURIComponent(namespace)}/`;
   const path = `/${lang === "en" ? "en/" : ""}${sectionPath}`;
   const alternate = `/${lang === "zh" ? "en/" : ""}${sectionPath}`;
-  const home = `${root}${lang === "en" ? "en/" : ""}`;
   const label = lang === "zh" ? "发布作品" : "Published packages";
   const description = lang === "zh"
     ? `${namespace} 命名空间下的已发布小组件与动作。`
     : `Published widgets and actions in the ${namespace} namespace.`;
-  const rows = packages.map(item => `<article class="package-row">
-    ${icon(item, root)}<div class="row-copy"><div class="row-title"><h3>${escapeHTML(pick(item.names, lang))}</h3><span class="kind-mark">${escapeHTML(kindLabel(item, lang))}</span></div>
-    <p class="row-summary">${escapeHTML(pick(item.summaries, lang))}</p><div class="row-meta"><span>v${escapeHTML(item.version)}</span></div></div>
-    <a class="open-button" href="${root}${lang === "en" ? "en/" : ""}packages/${item.package_id}/">${copy.open}</a>
-  </article>`).join("");
+  const rows = packages.map(item => profilePackageRow(item, lang, root)).join("");
   return `${pageHead({ lang, title: `@${namespace} · NotchAny Store`, description,
     canonicalPath: path, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
 <body>${nav({ lang, root, sectionPath })}
-<main class="shell detail-main" data-profile-page><div class="breadcrumbs"><a href="${home}">${copy.back}</a></div>
-  <header class="detail-hero"><span class="package-icon fallback" aria-hidden="true">@</span><div class="detail-title">
-    <h1 style="overflow-wrap:anywhere">${escapeHTML(namespace)}</h1><p>${escapeHTML(description)}</p>
-    <div class="detail-meta"><span>${packages.length} ${lang === "zh" ? "个作品" : "packages"}</span>
-    <a href="https://github.com/${encodeURIComponent(namespace)}">${lang === "zh" ? "GitHub 主页" : "GitHub profile"}</a></div>
-  </div></header>
-  ${profileControls(lang)}
-  <section class="section profile-library"><div class="section-head"><h2>${label}</h2></div><div class="catalog-list" id="profile-packages">${rows || `<p>${lang === "zh" ? "暂无已发布作品" : "No published packages"}</p>`}</div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p></section>
+<main class="shell profile-main" data-profile-page><div class="profile-layout">
+  <aside class="profile-sidebar"><span class="profile-avatar fallback" aria-hidden="true">@</span><div class="profile-identity">
+    <h1>@${escapeHTML(namespace)}</h1><p>${lang === "zh" ? "NotchAny Store 命名空间" : "NotchAny Store namespace"}</p></div>
+    <div class="profile-stats"><span>${packages.length} ${lang === "zh" ? "个作品" : "packages"}</span></div>
+    <a class="profile-github-link" href="https://github.com/${encodeURIComponent(namespace)}" aria-label="${copy.author_github}" title="${copy.author_github}">${NAV_ICONS.github}</a>
+  </aside>
+  <section class="profile-content"><div class="profile-section-head"><h2>${label}</h2></div>${profileControls(lang)}
+    <div class="profile-package-list" id="profile-packages">${rows || `<p class="profile-empty">${lang === "zh" ? "暂无已发布作品" : "No published packages"}</p>`}</div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p>
+  </section>
+</div>
 </main>${footer({ lang })}
 <script>window.__NOTCHANY_STORE__=${inlineJSON({ language: lang, copy, packages: [], counts_url: "", profile: { namespace, packages: packages.map(item => profilePackage(item, lang, root)), histories, market_api: marketAPIBase } })};</script><script>${js}</script></body></html>`;
 }
 
 function profilePackage(item, lang, root) {
   return { ...packageClientData(item, lang, root), version: item.version,
-    screenshot: item.screenshots?.[0] ? `${root}assets/${item.screenshots[0]}` : null };
+    install_href: `notchany://market/package/${item.package_id}`,
+    download_href: `${root}${lang === "en" ? "en/" : ""}download/` };
 }
 
 function profileControls(lang) {
   const zh = lang === "zh";
-  return `<div class="profile-tools"><div class="profile-tabs" role="tablist" aria-label="${zh ? "贡献者内容" : "Contributor content"}"><button role="tab" data-profile-tab="packages" aria-selected="true">${zh ? "作品" : "Packages"}</button><button role="tab" data-profile-tab="contributions" aria-selected="false">${zh ? "参与贡献" : "Contributions"}</button></div><div class="profile-filters"><input id="profile-search" type="search" placeholder="${zh ? "搜索作品" : "Search packages"}" aria-label="${zh ? "搜索作品" : "Search packages"}"><select id="profile-kind" aria-label="${zh ? "作品类型" : "Package type"}"><option value="all">${zh ? "全部类型" : "All types"}</option><option value="widget">${zh ? "小组件" : "Widgets"}</option><option value="action">${zh ? "动作" : "Actions"}</option></select></div></div>`;
+  return `<div class="profile-tools"><div class="profile-tabs" role="tablist" aria-label="${zh ? "贡献者内容" : "Contributor content"}"><button role="tab" data-profile-tab="packages" aria-selected="true">${zh ? "作品" : "Packages"}</button><button role="tab" data-profile-tab="contributions" aria-selected="false">${zh ? "参与贡献" : "Contributions"}</button></div><div class="profile-filters"><input id="profile-search" type="search" placeholder="${zh ? "搜索作品" : "Search packages"}" aria-label="${zh ? "搜索作品" : "Search packages"}"><div class="segment profile-kind-filter" role="group" aria-label="${zh ? "作品类型" : "Package type"}"><button type="button" data-profile-kind="all" aria-pressed="true">${zh ? "全部" : "All"}</button><button type="button" data-profile-kind="widget" aria-pressed="false">${zh ? "小组件" : "Widgets"}</button><button type="button" data-profile-kind="action" aria-pressed="false">${zh ? "动作" : "Actions"}</button></div></div></div>`;
 }
 
 export function contributorPage({ lang, packages, histories, marketAPIBase, css, js }) {
@@ -235,10 +247,9 @@ export function contributorPage({ lang, packages, histories, marketAPIBase, css,
   const copy = COPY[lang];
   return `${pageHead({ lang, title: `${copy.contributors} · NotchAny Store`, description: copy.community,
     canonicalPath: `/${lang === "en" ? "en/" : ""}contributors/`, alternatePath: `/${lang === "zh" ? "en/" : ""}contributors/`, imagePath: "assets/app-icon.png", css })}
-<body>${nav({ lang, root, sectionPath: "contributors/" })}<main class="shell detail-main" data-profile-page>
-<div class="breadcrumbs"><a href="${root}${lang === "en" ? "en/" : ""}">${copy.back}</a></div>
-<header class="detail-hero"><span class="package-icon fallback" id="profile-avatar" aria-hidden="true">@</span><div class="detail-title"><h1 id="profile-name">${copy.contributors}</h1><p id="profile-description">${copy.community}</p><div class="detail-meta"><a id="profile-github" hidden>GitHub</a><span id="profile-verified" hidden>${copy.verified}</span><a id="profile-manage" href="${ACCOUNT_URL}?section=packages" hidden>${lang === "zh" ? "管理作品" : "Manage packages"}</a></div></div></header>
-${profileControls(lang)}<section class="section profile-library"><div id="profile-directory"></div><div class="catalog-list" id="profile-packages"></div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p><button id="profile-retry" type="button" class="open-button" hidden>${copy.retry}</button></section>
+<body>${nav({ lang, root, sectionPath: "contributors/" })}<main class="shell profile-main" data-profile-page>
+<div class="profile-layout"><aside class="profile-sidebar"><span class="profile-avatar fallback" id="profile-avatar" aria-hidden="true">@</span><div class="profile-identity"><h1 id="profile-name">${copy.contributors}</h1><p id="profile-description">${copy.community}</p></div><div class="profile-actions"><a class="profile-github-link" id="profile-github" aria-label="${copy.author_github}" title="${copy.author_github}" hidden>${NAV_ICONS.github}</a><a id="profile-manage" href="${ACCOUNT_URL}?section=packages" hidden>${lang === "zh" ? "管理作品" : "Manage packages"}</a></div></aside>
+<section class="profile-content"><div class="profile-section-head"><h2>${copy.author_works}</h2></div>${profileControls(lang)}<div id="profile-directory"></div><div class="profile-package-list" id="profile-packages"></div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p><button id="profile-retry" type="button" class="open-button" hidden>${copy.retry}</button></section></div>
 </main>${footer({ lang })}<script>window.__NOTCHANY_STORE__=${inlineJSON({ language: lang, copy, packages: [], counts_url: "", profile: { packages: packages.map(item => profilePackage(item, lang, root)), histories, market_api: marketAPIBase } })};</script><script>${js}</script></body></html>`;
 }
 
@@ -414,13 +425,9 @@ export function detailPage({ lang, item, packages, history = { releases: [], con
   const summary = pick(item.summaries, lang);
   const owner = item.package_id.split("/")[0];
   const related = relatedPackages(item, packages).map((other) => `<a class="related-item" href="${root}${lang === "en" ? "en/" : ""}packages/${other.package_id}/">${icon(other, root)}<span><strong>${escapeHTML(pick(other.names, lang))}</strong><span>${kindLabel(other, lang)}</span></span></a>`).join("");
-  const screenshots = item.screenshots?.length
-    ? item.screenshots.map((shot) => `<img class="screenshot" src="${root}assets/${shot}" alt="${escapeHTML(`${name} · ${copy.screenshots}`)}">`).join("")
-    : `<div class="screenshot-placeholder">${copy.no_screenshot}</div>`;
   const requirements = item.requires?.length ? item.requires.map(escapeHTML).join(", ") : copy.none;
   const sourceURL = `${REPO_URL}/tree/main/published/${item.package_id}`;
   const issueURL = `${REPO_URL}/issues/new?title=${encodeURIComponent(`[${item.package_id}] `)}`;
-  const home = `${root}${lang === "en" ? "en/" : ""}`;
   const download = `${root}${lang === "en" ? "en/" : ""}download/`;
   const description = pick(item.descriptions, lang) || summary;
   const historyHTML = historySections(history, copy, lang);
@@ -428,26 +435,26 @@ export function detailPage({ lang, item, packages, history = { releases: [], con
 <body>
 ${nav({ lang, root, detailPackageID: item.package_id })}
 <main class="shell detail-main">
-  <div class="breadcrumbs"><a href="${home}">${copy.back}</a></div>
-  <header class="detail-hero">
+  <header class="detail-hero package-hero">
     ${icon(item, root)}
-    <div class="detail-title"><h1>${escapeHTML(name)}</h1><p>${escapeHTML(summary)}</p><div class="detail-meta"><span>${copy.by} <a href="${home}authors/${encodeURIComponent(owner)}/">${escapeHTML(owner)}</a></span><span data-download-count="${escapeHTML(item.package_id)}"></span></div></div>
+    <div class="detail-title"><h1>${escapeHTML(name)}</h1><p>${escapeHTML(summary)}</p><div class="detail-meta"><span>${copy.by} <a href="${root}${lang === "en" ? "en/" : ""}authors/${encodeURIComponent(owner)}/">${escapeHTML(owner)}</a></span><span class="detail-install-meta" data-download-count="${escapeHTML(item.package_id)}" data-count-style="installs-inline">${copy.count_loading}</span></div></div>
     <div class="detail-action"><a class="primary-button" id="open-in-notchany" href="notchany://market/package/${escapeHTML(item.package_id)}" data-fallback-url="${download}">${copy.open_app}</a></div>
   </header>
   <div class="detail-layout"><article>
-    <section aria-labelledby="screenshots-title"><h2 id="screenshots-title">${copy.screenshots}</h2><div class="screenshots">${screenshots}</div></section>
     <div class="prose"><h2>${copy.about}</h2>${renderMarkdown(description)}<h2>${copy.safety}</h2><p class="risk-note"><strong>${item.action_kind === "shell" ? copy.safety_shell : copy.safety_plain}</strong></p></div>
-    <section class="community-section" data-community-package="${escapeHTML(item.package_id)}" data-market-api="${escapeHTML(marketAPIBase)}"><h2>${copy.community}</h2><div class="community-role"><span>${copy.owner}</span><div data-community-owner><span class="community-status">${copy.community_unavailable}</span></div></div><div class="community-role"><span>${copy.maintainers}</span><div class="identity-list" data-community-maintainers></div></div>${historyHTML.contributorHTML ? `<div class="community-role"><span>${copy.contributors}</span>${historyHTML.contributorHTML}</div>` : ""}</section>
     ${historyHTML.releasesHTML ? `<section class="history-section"><h2>${copy.history}</h2><div class="release-list">${historyHTML.releasesHTML}</div></section>` : ""}
   </article>
   <aside class="side-info" aria-label="${copy.info}">
-    <div class="info-group"><span class="info-label">${copy.package_id}</span><code class="info-value">${escapeHTML(item.package_id)}</code></div>
-    <div class="info-group"><span class="info-label">${copy.version}</span><span class="info-value">${escapeHTML(item.version)}</span></div>
-    <div class="info-group"><span class="info-label">${copy.updated}</span><span class="info-value">${date(item.updated_at, lang)}</span></div>
-    <div class="info-group"><span class="info-label">${copy.size}</span><span class="info-value">${formatBytes(item.size_bytes)}</span></div>
-    <div class="info-group"><span class="info-label">${copy.license}</span><span class="info-value">${escapeHTML(item.license)}</span></div>
-    <div class="info-group"><span class="info-label">${copy.requirements}</span><span class="info-value">${requirements}</span></div>
-    <div class="info-group"><a class="info-link" href="${sourceURL}">${copy.source_code}</a><a class="info-link" href="${issueURL}">${copy.report}</a><a class="info-link" href="${issueURL}">${copy.improve}</a></div>
+    <section class="side-community" data-community-package="${escapeHTML(item.package_id)}" data-market-api="${escapeHTML(marketAPIBase)}"><h2>${copy.community}</h2><div class="contributor-roster"><div class="identity-list" data-community-owner><span class="community-status">${copy.community_unavailable}</span></div><div class="identity-list" data-community-maintainers></div>${historyHTML.contributorHTML}</div></section>
+    <div class="side-details">
+      <div class="info-group"><span class="info-label">${copy.package_id}</span><code class="info-value">${escapeHTML(item.package_id)}</code></div>
+      <div class="info-group"><span class="info-label">${copy.version}</span><span class="info-value">${escapeHTML(item.version)}</span></div>
+      <div class="info-group"><span class="info-label">${copy.updated}</span><span class="info-value">${date(item.updated_at, lang)}</span></div>
+      <div class="info-group"><span class="info-label">${copy.size}</span><span class="info-value">${formatBytes(item.size_bytes)}</span></div>
+      <div class="info-group"><span class="info-label">${copy.license}</span><span class="info-value">${escapeHTML(item.license)}</span></div>
+      <div class="info-group"><span class="info-label">${copy.requirements}</span><span class="info-value">${requirements}</span></div>
+      <div class="info-group"><a class="info-link" href="${sourceURL}">${copy.source_code}</a><a class="info-link" href="${issueURL}">${copy.report}</a><a class="info-link" href="${issueURL}">${copy.improve}</a></div>
+    </div>
   </aside></div>
   ${related ? `<section class="related"><h2>${copy.related}</h2><div class="related-list">${related}</div></section>` : ""}
 </main>

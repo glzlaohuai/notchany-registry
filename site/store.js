@@ -95,10 +95,23 @@
   }
 
   function renderDetailCount() {
-    const target = document.querySelector("[data-download-count]");
-    if (!target) return;
-    const count = counts?.[target.dataset.downloadCount];
-    target.textContent = count === undefined ? "" : `${formatCount(count)} ${text.downloads}`;
+    const targets = [...document.querySelectorAll("[data-download-count]")];
+    if (!targets.length) return;
+    for (const target of targets) {
+      const count = counts?.[target.dataset.downloadCount];
+      if (count === undefined) {
+        target.textContent = target.dataset.countStyle?.startsWith("installs")
+          ? (countsStatus === "loading" ? text.count_loading : text.count_unavailable)
+          : "";
+      } else {
+        const formatted = formatCount(count);
+        target.textContent = target.dataset.countStyle === "installs"
+          ? text.count_value.replace("{count}", formatted)
+          : target.dataset.countStyle === "installs-inline"
+            ? text.count_inline.replace("{count}", formatted)
+            : `${formatted} ${text.downloads}`;
+      }
+    }
   }
 
   function renderPagination(pageCount) {
@@ -359,8 +372,12 @@
     trackpad?.addEventListener(eventName, () => trackpad.classList.remove("pressed"));
   }
 
-  const launch = byId("open-in-notchany");
-  launch?.addEventListener("click", () => {
+  let cancelPendingLaunch = () => {};
+  document.addEventListener("click", (event) => {
+    const launch = event.target.closest("a[data-fallback-url]");
+    if (!launch) return;
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    cancelPendingLaunch();
     const fallbackURL = launch.dataset.fallbackUrl;
     if (!fallbackURL) return;
     const timer = setTimeout(() => {
@@ -374,7 +391,9 @@
       document.removeEventListener("visibilitychange", onVisibilityChange);
       removeEventListener("blur", cancel);
       removeEventListener("pagehide", cancel);
+      cancelPendingLaunch = () => {};
     };
+    cancelPendingLaunch = cancel;
     document.addEventListener("visibilitychange", onVisibilityChange);
     addEventListener("blur", cancel, { once: true });
     addEventListener("pagehide", cancel, { once: true });
