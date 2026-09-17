@@ -2,6 +2,15 @@ name: deploy-store-cloudflare
 
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: Store 部署环境
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
   push:
     branches: [main]
     paths:
@@ -20,15 +29,17 @@ permissions:
   contents: read
 
 concurrency:
-  group: cloudflare-store-preview
+  group: store-${{ github.event_name == 'workflow_dispatch' && inputs.target || 'preview' }}
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: cloudflare-store-preview
-      url: https://notchany-store.glzlaohuai.workers.dev
+      name: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'production' && 'store-production' || 'cloudflare-store-preview' }}
+      url: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'production' && 'https://notchany.com' || 'https://notchany-store-preview.glzlaohuai.workers.dev' }}
+    env:
+      TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'preview' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -37,22 +48,27 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-      - name: 校验正式快照并部署 Store 影子站
-        run: npm run deploy:store
+      - name: 校验正式快照并部署 Store
+        run: npm run deploy:store:${TARGET}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           NOTCHANY_BUILD_COMMIT: ${{ github.sha }}
           NOTCHANY_SITE_URL: https://notchany.com
-          NOTCHANY_ACCOUNT_URL: https://account.notchany.com/account
+          NOTCHANY_ACCOUNT_URL: https://notchany.com/account
           NOTCHANY_COUNTS_URL: ${{ vars.NOTCHANY_COUNTS_URL }}
           NOTCHANY_APP_DOWNLOAD_URL: ${{ vars.NOTCHANY_APP_DOWNLOAD_URL }}
           NOTCHANY_MARKET_API_BASE: ${{ vars.MARKET_API_BASE }}
-      - name: 核对影子站部署提交
+      - name: 核对 Store 部署提交
         run: |
+          if [[ "$TARGET" == "production" ]]; then
+            store_origin="https://notchany.com"
+          else
+            store_origin="https://notchany-store-preview.glzlaohuai.workers.dev"
+          fi
           for attempt in {1..12}; do
             marker="$(curl --fail --silent --show-error \
-              "https://notchany-store.glzlaohuai.workers.dev/.well-known/notchany-store.json?commit=${{ github.sha }}&attempt=${attempt}" \
+              "${store_origin}/.well-known/notchany-store.json?commit=${{ github.sha }}&attempt=${attempt}" \
               || true)"
             if grep --fixed-strings --quiet '"registry_commit":"${{ github.sha }}"' <<<"${marker}"; then
               exit 0

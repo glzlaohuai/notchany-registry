@@ -1,13 +1,16 @@
-# 固定预览环境：不声明生产 route，只绑定隔离的 Commercial staging Worker/D1。
-name = "notchany-store-preview"
+# 生产 Store：公开内容由 Static Assets 交付，Account/Auth 只经 Commercial binding。
+name = "notchany-store"
 main = "worker.js"
 compatibility_date = "2026-09-16"
-workers_dev = true
-preview_urls = true
+workers_dev = false
+
+routes = [
+  { pattern = "notchany.com", custom_domain = true },
+]
 
 [[services]]
 binding = "COMMERCIAL"
-service = "notchany-commercial-staging"
+service = "notchany-commercial"
 
 [assets]
 directory = "../site/dist"

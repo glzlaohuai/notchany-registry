@@ -1,5 +1,5 @@
-// 公开 Store 的交付层。页面内容只来自构建好的 Static Assets；Worker 只负责
-// 规范域名、方法约束、缓存和安全响应头，不读取 Registry 候选目录或商业数据。
+// 公开 Store 的交付层。页面内容只来自构建好的 Static Assets；账号与认证请求
+// 原样进入 Commercial service binding，业务 API 在根域明确拒绝。
 
 const STORE_ORIGIN = "https://notchany.com";
 
@@ -50,16 +50,53 @@ function redirectToCanonical(url) {
   }));
 }
 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    if (url.hostname.toLowerCase() === "www.notchany.com") return redirectToCanonical(url);
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      return hardened(new Response("Method Not Allowed", {
-        status: 405,
-        headers: { Allow: "GET, HEAD", "Content-Type": "text/plain; charset=utf-8" },
-      }));
-    }
-    return hardened(await env.ASSETS.fetch(request));
-  },
-};
+export function isCommercialPath(pathname) {
+  return pathname === "/account" || pathname.startsWith("/account/") || pathname.startsWith("/auth/");
+}
+
+export function isRestrictedBackendPath(pathname) {
+  return pathname === "/v1" || pathname.startsWith("/v1/") ||
+    pathname === "/health" ||
+    pathname === "/internal" || pathname.startsWith("/internal/");
+}
+
+function privateJSON(code, status) {
+  return Response.json(
+    { code },
+    {
+      status,
+      headers: {
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    },
+  );
+}
+
+export function createStoreWorker() {
+  return {
+    async fetch(request, env) {
+      const url = new URL(request.url);
+      if (url.hostname.toLowerCase() === "www.notchany.com") return redirectToCanonical(url);
+      if (isCommercialPath(url.pathname)) {
+        try {
+          return await env.COMMERCIAL.fetch(request);
+        } catch {
+          return privateJSON("server_unavailable", 503);
+        }
+      }
+      if (isRestrictedBackendPath(url.pathname)) {
+        return privateJSON("not_found", 404);
+      }
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return hardened(new Response("Method Not Allowed", {
+          status: 405,
+          headers: { Allow: "GET, HEAD", "Content-Type": "text/plain; charset=utf-8" },
+        }));
+      }
+      return hardened(await env.ASSETS.fetch(request));
+    },
+  };
+}
+
+export default createStoreWorker();

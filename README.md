@@ -126,7 +126,7 @@ PR 授权、release 登记和 reconciliation 都使用带 5 分钟时间窗的 H
 
 默认分支必需状态为 `market/content-and-permission`，并要求分支与 main 同步。普通包 PR、生成发布 PR、仓库维护 PR 分别校验包权限、签名清单及当前管理员身份；维护 PR 不得夹带包或生成产物。
 `pr-validate.yml` 只运行 main 上的可信脚本；PR 内容作为数据。Review 事件通过无凭据工作流通知可信工作流；每五分钟重验公开 PR，覆盖撤回 Review、撤权及身份解绑。
-Actions 需允许创建 PR，并赋发布工作流 contents、pull-requests、statuses、actions 写权限。机器人创建 PR 后显式调度 `validate-publication.yml`，成功合入后显式调度 `deploy-pages.yml`，不依赖机器人触发 push 事件。
+Actions 需允许创建 PR，并赋发布工作流 contents、pull-requests、statuses、actions 写权限。机器人创建 PR 后显式调度 `validate-publication.yml`；成功合入后由固定 Registry 提交构建 Store。生产切换前 GitHub Pages 继续作为回退，Cloudflare Store Worker 使用独立部署凭据和受保护环境。
 
 Cloudflare 影子部署还需要仓库 secrets `CLOUDFLARE_API_TOKEN`（只授予 `notchany-store` Worker
 编辑权限）与 `CLOUDFLARE_ACCOUNT_ID`。正式快照合入后会同时显式调度
@@ -165,9 +165,13 @@ GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各�
 | `scripts/build-index.mjs` | index 生成脚本（Node ≥18，零依赖） |
 | `scripts/build-site.mjs` | Web 市场静态站生成脚本（Node ≥18，零依赖） |
 | `site/curation.json` | 维护者精选包配置（最多 3 个） |
-| `site/styles.css` / `site/store.js` | 构建时内联的样式与客户端交互 |
+| `site/shell.mjs` / `site/shell.js` | Store、Account、Auth 唯一共享 header 模板与导航交互 |
+| `site/styles.css` / `site/store.js` | Store 视觉令牌、页面样式与客户端交互 |
 | `site/` | 市场站部署说明（产物 `site/dist/` 不入库） |
-| `worker/` | 下载计数 Cloudflare Worker（代码 + wrangler 配置） |
+| `store-worker/worker.js` | 公开 Store Worker；只转发 Account/Auth 私有路径 |
+| `store-worker/wrangler.toml` | 隔离 Commercial staging 的固定预览部署 |
+| `store-worker/wrangler.production.toml` | 生产根域部署，必须经人工确认 |
+| `worker/worker.js` | 下载计数 Cloudflare Worker |
 | `scripts/authorize-pr.mjs` | 可信默认分支运行的单包范围与 Market 权限校验 |
 | `scripts/notify-release.mjs` | 兼容入口，按已发布快照对账 |
 | `scripts/reconcile-market.mjs` | Registry → Market 状态对账（不覆盖既有 Owner） |

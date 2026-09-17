@@ -197,23 +197,7 @@
     });
   });
 
-  const languageMenu = byId("language-menu");
-  const languageToggle = byId("language-toggle");
-  const languagePopover = byId("language-popover");
-  const languageOptions = [...(languagePopover?.querySelectorAll('[role="menuitem"]') || [])];
-  const setLanguageMenuOpen = (open, focusOption = false) => {
-    if (!languageToggle || !languagePopover) return;
-    languageToggle.setAttribute("aria-expanded", String(open));
-    languagePopover.hidden = !open;
-    if (open && focusOption) (languagePopover.querySelector('[aria-current="page"]') || languageOptions[0])?.focus();
-  };
-
   document.addEventListener("click", (event) => {
-    if (event.target.closest("#language-toggle")) {
-      setLanguageMenuOpen(languageToggle?.getAttribute("aria-expanded") !== "true");
-      return;
-    }
-    if (languageMenu && !languageMenu.contains(event.target)) setLanguageMenuOpen(false);
     const sort = event.target.closest("[data-sort]");
     if (sort) update({ sort: sort.dataset.sort, page: 1 }, "push");
     const kind = event.target.closest("[data-kind]");
@@ -229,25 +213,6 @@
     if (event.target.closest("#retry-counts")) loadCounts();
   });
   document.addEventListener("keydown", (event) => {
-    const languageMenuOpen = languageToggle?.getAttribute("aria-expanded") === "true";
-    if (event.key === "Escape" && languageMenuOpen) {
-      event.preventDefault();
-      setLanguageMenuOpen(false);
-      languageToggle.focus();
-      return;
-    }
-    if (languageToggle && document.activeElement === languageToggle && ["ArrowDown", "Enter", " "].includes(event.key)) {
-      event.preventDefault();
-      setLanguageMenuOpen(true, true);
-      return;
-    }
-    if (languageMenuOpen && languageOptions.includes(document.activeElement) && ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
-      event.preventDefault();
-      const current = languageOptions.indexOf(document.activeElement);
-      const next = event.key === "Home" ? 0 : event.key === "End" ? languageOptions.length - 1 : (current + (event.key === "ArrowDown" ? 1 : -1) + languageOptions.length) % languageOptions.length;
-      languageOptions[next]?.focus();
-      return;
-    }
     if ((event.key === "/" && !/input|textarea|select/i.test(document.activeElement?.tagName)) || ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k")) {
       event.preventDefault();
       primarySearch?.focus();

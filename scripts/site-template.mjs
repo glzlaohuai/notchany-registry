@@ -1,7 +1,8 @@
 import { pick, relatedPackages, searchText } from "./site-lib.mjs";
+import { SHELL_DOWNLOAD_ICON, siteHeader } from "../site/shell.mjs";
 
 const SITE_URL = (process.env.NOTCHANY_SITE_URL || "https://notchany.com").replace(/\/+$/, "");
-const ACCOUNT_URL = process.env.NOTCHANY_ACCOUNT_URL || "https://account.notchany.com/account";
+const ACCOUNT_URL = process.env.NOTCHANY_ACCOUNT_URL || "https://notchany.com/account";
 const REPO_URL = "https://github.com/glzlaohuai/notchany-registry";
 const APP_URL = "https://github.com/glzlaohuai/NotchAny";
 
@@ -145,37 +146,21 @@ function pageHead({ lang, title, description, canonicalPath, alternatePath, imag
 </head>`;
 }
 
-const NAV_ICONS = {
-  browse: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>',
-  submit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l3 1.71"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>',
-  github: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.91-2.78.62-3.37-1.2-3.37-1.2-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.94a9.3 9.3 0 0 1 2.5.35c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.59.69.49A10.23 10.23 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z"/></svg>',
-  language: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>',
-  download: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
-};
-
 function nav({ lang, root, detailPackageID = "", sectionPath = "" }) {
-  const copy = COPY[lang];
   const home = `${root}${lang === "en" ? "en/" : ""}`;
   const pagePath = detailPackageID ? `packages/${detailPackageID}/` : sectionPath;
   const languageLinks = { zh: `${root}${pagePath}`, en: `${root}en/${pagePath}` };
   const download = `${root}${lang === "en" ? "en/" : ""}download/`;
-  return `<header class="site-nav"><nav class="shell nav-inner" aria-label="${lang === "zh" ? "主导航" : "Main navigation"}">
-    <a class="brand" href="${home}"><img src="${root}assets/app-icon.png" alt="" width="26" height="26"><strong>NotchAny</strong><span>Store</span></a>
-    <div class="nav-links">
-      <a class="nav-icon-button" href="${home}#catalog" aria-label="${copy.browse}" title="${copy.browse}">${NAV_ICONS.browse}</a>
-      <a class="nav-icon-button optional" href="${REPO_URL}#%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E5%8C%85" aria-label="${copy.submit}" title="${copy.submit}">${NAV_ICONS.submit}</a>
-      <a class="nav-icon-button optional" href="${REPO_URL}" aria-label="${copy.github}" title="${copy.github}">${NAV_ICONS.github}</a>
-      <a class="nav-account-button" data-account-link href="${escapeHTML(ACCOUNT_URL)}?lang=${lang}" aria-label="${lang === "zh" ? "我的账号" : "My account"}" title="${lang === "zh" ? "我的账号" : "My account"}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></svg></a>
-      <div class="language-menu" id="language-menu">
-        <button class="nav-icon-button" id="language-toggle" type="button" aria-label="${copy.language_menu}" title="${copy.language_menu}" aria-haspopup="menu" aria-expanded="false">${NAV_ICONS.language}</button>
-        <div class="language-popover" id="language-popover" role="menu" hidden>
-          <a href="${languageLinks.zh}" role="menuitem" lang="zh-Hans"${lang === "zh" ? ' aria-current="page"' : ""}>中文</a>
-          <a href="${languageLinks.en}" role="menuitem" lang="en"${lang === "en" ? ' aria-current="page"' : ""}>English</a>
-        </div>
-      </div>
-      <a class="nav-download-button" href="${download}" aria-label="${copy.download_app}" title="${copy.download_app}">${NAV_ICONS.download}<span>${copy.download_app}</span></a>
-    </div>
-  </nav></header>`;
+  return siteHeader({
+    lang,
+    homeURL: home,
+    catalogURL: `${home}#catalog`,
+    accountURL: ACCOUNT_URL,
+    assetRoot: `${root}assets/`,
+    languageLinks,
+    downloadURL: download,
+    repositoryURL: REPO_URL,
+  });
 }
 
 function footer({ lang }) {
@@ -383,8 +368,8 @@ export function downloadPage({ lang, css, js, downloadURL = "" }) {
   const current = `${lang === "zh" ? "" : "/en"}/download/`;
   const alternate = `${lang === "zh" ? "/en" : ""}/download/`;
   const downloadControl = downloadURL
-    ? `<a class="primary-button download-primary" href="${escapeHTML(downloadURL)}">${NAV_ICONS.download}<span>${copy.download_now}</span></a>`
-    : `<button class="primary-button download-primary" type="button" disabled aria-disabled="true">${NAV_ICONS.download}<span>${copy.download_pending}</span></button>`;
+    ? `<a class="primary-button download-primary" href="${escapeHTML(downloadURL)}">${SHELL_DOWNLOAD_ICON}<span>${copy.download_now}</span></a>`
+    : `<button class="primary-button download-primary" type="button" disabled aria-disabled="true">${SHELL_DOWNLOAD_ICON}<span>${copy.download_pending}</span></button>`;
   return `${pageHead({ lang, title: `${copy.download_title} · NotchAny`, description: copy.download_body, canonicalPath: current, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
 <body>
 ${nav({ lang, root, sectionPath: "download/" })}

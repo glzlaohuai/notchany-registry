@@ -46,7 +46,9 @@ try {
   fail(error.message);
 }
 const css = readFileSync(join(ROOT, "site", "styles.css"), "utf8");
-const js = readFileSync(join(ROOT, "site", "store.js"), "utf8") + "\n" + readFileSync(join(ROOT, "site", "profile.js"), "utf8");
+const js = ["shell.js", "store.js", "profile.js"]
+  .map((name) => readFileSync(join(ROOT, "site", name), "utf8"))
+  .join("\n");
 
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(join(DIST, "assets"), { recursive: true });
@@ -66,6 +68,8 @@ function copy(relativePath) {
 }
 
 copyFileSync(join(ROOT, "site", "assets", "app-icon.png"), join(DIST, "assets", "app-icon.png"));
+copyFileSync(join(ROOT, "site", "styles.css"), join(DIST, "assets", "store.css"));
+copyFileSync(join(ROOT, "site", "shell.js"), join(DIST, "assets", "shell.js"));
 copyFileSync(
   join(ROOT, "site", "assets", "macos-desktop-wallpaper.webp"),
   join(DIST, "assets", "macos-desktop-wallpaper.webp")

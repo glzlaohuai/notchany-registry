@@ -55,7 +55,10 @@ try {
     if (!merged.merged) throw new Error("GitHub refused publication merge");
     await signedMarketPost("/internal/market/publication-complete", { decision_id: batch.decision_id, public_commit: merged.sha });
     await github("/actions/workflows/deploy-pages.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
-    await github("/actions/workflows/deploy-store-cloudflare.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
+    await github("/actions/workflows/deploy-store-cloudflare.yml/dispatches", {
+      method: "POST",
+      body: JSON.stringify({ ref: "main", inputs: { target: "preview" } }),
+    });
     await github("/actions/workflows/reconcile-market.yml/dispatches", { method: "POST", body: JSON.stringify({ ref: "main" }) });
     console.log(`Published ${merged.sha}`);
   }

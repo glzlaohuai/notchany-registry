@@ -33,6 +33,7 @@ test('404 has a truthful message and depth-independent return links', () => {
   assert.match(html, /name="robots" content="noindex"/);
   assert.match(html, /href="https:\/\/notchany.com\/"/);
   assert.match(html, /src="\/assets\/app-icon.png"/);
+  assert.doesNotMatch(html, /glzlaohuai\.github\.io/);
   assert.doesNotMatch(html, /class="hero-band"|__NOTCHANY_STORE__|href="\.\./);
 });
 

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 import { detailPage, downloadPage, homePage } from "../scripts/site-template.mjs";
+import { siteHeader } from "../site/shell.mjs";
 
 const packages = ["cpu", "image", "wifi"].map((slug, index) => ({
   package_id: `owner/${slug}`,
@@ -39,7 +40,7 @@ test("home hero renders an interactive Mac desktop with live clock targets", () 
   assert.equal((html.match(/class="demo-tray-item"/g) || []).length, 3);
   assert.equal((html.match(/class="mac-key"/g) || []).length, 77);
   assert.match(html, /<link rel="canonical" href="https:\/\/notchany\.com\/">/);
-  assert.match(html, /href="https:\/\/account\.notchany\.com\/account\?lang=zh"/);
+  assert.match(html, /href="https:\/\/notchany\.com\/account\?lang=zh"/);
 });
 
 test("each hero tray icon links to its package detail page", () => {
@@ -70,19 +71,43 @@ test("home navigation uses icon controls, a language menu, and two synchronized 
 
   assert.equal((html.match(/class="nav-icon-button/g) || []).length, 4);
   assert.match(html, /id="language-toggle"[^>]+aria-haspopup="menu"[^>]+aria-expanded="false"/);
-  assert.match(html, /href="" role="menuitem" lang="zh-Hans" aria-current="page">中文<\/a>/);
-  assert.match(html, /href="en\/" role="menuitem" lang="en">English<\/a>/);
+  assert.match(html, /href="" role="menuitem" lang="zh-Hans"[^>]+aria-current="page">中文<\/a>/);
+  assert.match(html, /href="en\/" role="menuitem" lang="en"[^>]*>English<\/a>/);
+  assert.match(html, /data-site-shell="1"/);
+  assert.match(html, /href="https:\/\/notchany\.com\/account\?lang=zh"/);
   assert.equal((html.match(/data-store-search/g) || []).length, 2);
   assert.match(html, /id="library-search"/);
   assert.match(html, /id="result-count" aria-live="polite"/);
   assert.match(html, /class="nav-download-button" href="download\/" aria-label="下载 App"/);
 });
 
+test("home header is the shared shell snapshot", () => {
+  const html = homePage({
+    lang: "zh",
+    packages,
+    featuredIDs: packages.map((item) => item.package_id),
+    countsURL: "",
+    css: "",
+    js: "",
+  });
+  const rendered = html.match(/<header class="site-nav"[\s\S]*?<\/header>/)?.[0];
+  const snapshot = siteHeader({
+    lang: "zh",
+    homeURL: "",
+    catalogURL: "#catalog",
+    accountURL: "https://notchany.com/account",
+    assetRoot: "assets/",
+    languageLinks: { zh: "", en: "en/" },
+    downloadURL: "download/",
+  });
+  assert.equal(rendered, snapshot);
+});
+
 test("detail navigation language menu preserves the package route", () => {
   const html = detailPage({ lang: "en", item: packages[0], packages, countsURL: "", css: "", js: "" });
 
-  assert.match(html, /href="\.\.\/\.\.\/\.\.\/\.\.\/packages\/owner\/cpu\/" role="menuitem" lang="zh-Hans">中文<\/a>/);
-  assert.match(html, /href="\.\.\/\.\.\/\.\.\/\.\.\/en\/packages\/owner\/cpu\/" role="menuitem" lang="en" aria-current="page">English<\/a>/);
+  assert.match(html, /href="\.\.\/\.\.\/\.\.\/\.\.\/packages\/owner\/cpu\/" role="menuitem" lang="zh-Hans"[^>]*>中文<\/a>/);
+  assert.match(html, /href="\.\.\/\.\.\/\.\.\/\.\.\/en\/packages\/owner\/cpu\/" role="menuitem" lang="en"[^>]+aria-current="page">English<\/a>/);
 });
 
 test("download page keeps the release control disabled until a URL is configured", () => {
@@ -94,7 +119,7 @@ test("download page keeps the release control disabled until a URL is configured
   assert.match(ready, /class="primary-button download-primary" href="https:\/\/example\.com\/NotchAny\.dmg"/);
   assert.match(ready, /Download NotchAny/);
   assert.match(ready, /href="\.\.\/\.\.\/download\/" role="menuitem" lang="zh-Hans"/);
-  assert.match(ready, /href="\.\.\/\.\.\/en\/download\/" role="menuitem" lang="en" aria-current="page"/);
+  assert.match(ready, /href="\.\.\/\.\.\/en\/download\/" role="menuitem" lang="en"[^>]+aria-current="page"/);
 });
 
 test("package deep links include a local download fallback", () => {

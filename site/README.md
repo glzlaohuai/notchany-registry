@@ -16,7 +16,8 @@ python3 -m http.server 4173 --directory site/dist
   源码/反馈、同标签推荐与 canonical/hreflang/OG
 - 全站「下载 App」进入双语下载提示页；通过 `NOTCHANY_APP_DOWNLOAD_URL` 注入正式下载地址，未配置时按钮显示准备中而不产生死链接
 - 「在 NotchAny 中打开」只打开 App 详情页，1.6 秒未唤起时自动进入下载提示页，不暗示静默安装
-- 无外部资源：CSS/JS 全部内联，系统字体栈，深浅色自适应
+- Store 页面 CSS/JS 内联，同时输出 `/assets/store.css` 与 `/assets/shell.js` 供同源 Account/Auth 使用；
+  `site/shell.mjs` 是完整 header 的唯一模板源，页面首屏不靠 JavaScript 创建导航
 - 下载计数为渐进增强：构建时通过 `NOTCHANY_COUNTS_URL` 注入 Worker 地址；失败时热门入口
   显示可重试状态，其他浏览能力不受影响。页面始终称为「下载量」。
 - Market 身份同样渐进增强：`NOTCHANY_MARKET_API_BASE` 注入 Commercial Worker 地址，页面用它
@@ -40,7 +41,10 @@ npm run dev:store
 
 ## 部署到 Cloudflare Store Worker
 
-`store-worker/wrangler.toml` 定义独立 `notchany-store` Worker。构建会先用
+Store 与 Commercial 保持独立部署。`store-worker/wrangler.toml` 定义不接管生产域的
+`notchany-store-preview` Worker，并只绑定隔离的 `notchany-commercial-staging`；
+`store-worker/wrangler.production.toml` 定义接管根域的 `notchany-store` Worker，并绑定生产
+Commercial。构建会先用
 `published/state.json` 校验 v2 index、history 与素材来自同一正式快照，再上传 `site/dist/`；
 候选 `packages/` 不会成为线上路径或安装来源。
 
@@ -50,20 +54,24 @@ GitHub Actions 需要：
 - Secret `CLOUDFLARE_ACCOUNT_ID`。
 - Variables `NOTCHANY_COUNTS_URL`、`NOTCHANY_APP_DOWNLOAD_URL`、`MARKET_API_BASE`。
 
-`deploy-store-cloudflare.yml` 固定 checkout commit 与 Wrangler `4.127.1`，部署后回读
+`deploy-store-cloudflare.yml` 固定 checkout commit 与 Wrangler `4.127.1`，默认部署 preview 并回读
 `/.well-known/notchany-store.json` 核对 commit。影子地址为
-`https://notchany-store.glzlaohuai.workers.dev`。生产 DNS/custom domain 只在该地址完成桌面、移动、
-深浅色与数据一致性验收后单独切换。
+`https://notchany-store-preview.glzlaohuai.workers.dev`。预览完成邮箱、密码、provider、四个账号栏目、
+Cookie、桌面/移动与深浅色验收后，才能在受保护的 `store-production` environment 手动选择 production。
 
 手动部署影子站：
 
 ```bash
 NOTCHANY_SITE_URL=https://notchany.com \
-NOTCHANY_ACCOUNT_URL=https://account.notchany.com/account \
+NOTCHANY_ACCOUNT_URL=https://notchany.com/account \
 NOTCHANY_MARKET_API_BASE=https://account.notchany.com \
 NOTCHANY_COUNTS_URL=https://notchany-market.glzlaohuai.workers.dev/counts.json \
-npm run deploy:store
+npm run deploy:store:preview
 ```
+
+生产配置只把 `/account`、`/account/*`、`/auth/*` 原样交给 `COMMERCIAL` service binding；
+`/v1/*`、`/health`、Webhook 和内部 Market 路径始终由 Store Worker 返回不可缓存的 404。
+binding 失败返回不可缓存的 503。生产切换前保留 GitHub Pages 作为回退，不得先停用 Pages。
 
 ## GitHub Pages 兼容部署
 
