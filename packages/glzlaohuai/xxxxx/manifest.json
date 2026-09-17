@@ -1,0 +1,20 @@
+{
+  "descriptions" : {
+    "en" : "asdasd",
+    "zh-Hans" : "asd"
+  },
+  "license" : "MIT",
+  "manifest_version" : 1,
+  "names" : {
+    "en" : "xxxxx",
+    "zh-Hans" : "wgatasd"
+  },
+  "summaries" : {
+    "en" : "asdas",
+    "zh-Hans" : "asdas"
+  },
+  "tags" : [
+    "monitor"
+  ],
+  "version" : "1.0.0"
+}
