@@ -45,7 +45,7 @@ test('404 has a truthful message and depth-independent return links', () => {
   assert.match(html, /页面不存在/);
   assert.match(html, /name="robots" content="noindex"/);
   assert.match(html, /href="https:\/\/notchany.com\/"/);
-  assert.match(html, /src="\/assets\/app-icon.png"/);
+  assert.match(html, /src="\/assets\/app-icon\.png\?v=balanced-20260925"/);
   assert.doesNotMatch(html, /class="hero-band"|__NOTCHANY_STORE__|href="\.\./);
 });
 

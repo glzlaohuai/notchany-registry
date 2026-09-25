@@ -4,6 +4,7 @@ const SITE_URL = (process.env.NOTCHANY_SITE_URL || "https://notchany.com").repla
 const ACCOUNT_URL = process.env.NOTCHANY_ACCOUNT_URL || "https://account.notchany.com/account";
 const REPO_URL = "https://github.com/glzlaohuai/notchany-registry";
 const APP_URL = "https://github.com/glzlaohuai/NotchAny";
+const APP_ICON_ASSET = "assets/app-icon.png?v=balanced-20260925";
 
 const COPY = {
   zh: {
@@ -162,7 +163,7 @@ function nav({ lang, root, detailPackageID = "", sectionPath = "" }) {
   const languageLinks = { zh: `${root}${pagePath}`, en: `${root}en/${pagePath}` };
   const download = `${root}${lang === "en" ? "en/" : ""}download/`;
   return `<header class="site-nav"><nav class="shell nav-inner" aria-label="${lang === "zh" ? "主导航" : "Main navigation"}">
-    <a class="brand" href="${home}"><img src="${root}assets/app-icon.png" alt="" width="26" height="26"><strong>NotchAny</strong><span>Store</span></a>
+    <a class="brand" href="${home}"><img src="${root}${APP_ICON_ASSET}" alt="" width="26" height="26"><strong>NotchAny</strong><span>Store</span></a>
     <div class="nav-links">
       <a class="nav-icon-button" href="${home}#catalog" aria-label="${copy.browse}" title="${copy.browse}">${NAV_ICONS.browse}</a>
       <a class="nav-icon-button optional" href="${REPO_URL}#%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E5%8C%85" aria-label="${copy.submit}" title="${copy.submit}">${NAV_ICONS.submit}</a>
@@ -215,7 +216,7 @@ export function authorPage({ lang, namespace, packages, css, js, histories = {},
     : `Published widgets and actions in the ${namespace} namespace.`;
   const rows = packages.map(item => profilePackageRow(item, lang, root)).join("");
   return `${pageHead({ lang, title: `@${namespace} · NotchAny Store`, description,
-    canonicalPath: path, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
+    canonicalPath: path, alternatePath: alternate, imagePath: APP_ICON_ASSET, css })}
 <body>${nav({ lang, root, sectionPath })}
 <main class="shell profile-main" data-profile-page><div class="profile-layout">
   <aside class="profile-sidebar"><span class="profile-avatar fallback" aria-hidden="true">@</span><div class="profile-identity">
@@ -246,7 +247,7 @@ export function contributorPage({ lang, packages, histories, marketAPIBase, css,
   const root = lang === "zh" ? "../" : "../../";
   const copy = COPY[lang];
   return `${pageHead({ lang, title: `${copy.contributors} · NotchAny Store`, description: copy.community,
-    canonicalPath: `/${lang === "en" ? "en/" : ""}contributors/`, alternatePath: `/${lang === "zh" ? "en/" : ""}contributors/`, imagePath: "assets/app-icon.png", css })}
+    canonicalPath: `/${lang === "en" ? "en/" : ""}contributors/`, alternatePath: `/${lang === "zh" ? "en/" : ""}contributors/`, imagePath: APP_ICON_ASSET, css })}
 <body>${nav({ lang, root, sectionPath: "contributors/" })}<main class="shell profile-main" data-profile-page>
 <div class="profile-layout"><aside class="profile-sidebar"><span class="profile-avatar fallback" id="profile-avatar" aria-hidden="true">@</span><div class="profile-identity"><h1 id="profile-name">${copy.contributors}</h1><p id="profile-description">${copy.community}</p></div><div class="profile-actions"><a class="profile-github-link" id="profile-github" aria-label="${copy.author_github}" title="${copy.author_github}" hidden>${NAV_ICONS.github}</a><a id="profile-manage" href="${ACCOUNT_URL}?section=packages" hidden>${lang === "zh" ? "管理作品" : "Manage packages"}</a></div></aside>
 <section class="profile-content"><div class="profile-section-head"><h2>${copy.author_works}</h2></div>${profileControls(lang)}<div id="profile-directory"></div><div class="profile-package-list" id="profile-packages"></div><div id="profile-contributions" hidden></div><p id="profile-message" role="status" hidden></p><button id="profile-retry" type="button" class="open-button" hidden>${copy.retry}</button></section></div>
@@ -258,7 +259,7 @@ export function notFoundPage({ css }) {
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>页面不存在 · NotchAny Store</title><style>${css}</style></head><body>
 <main class="shell detail-main"><div class="breadcrumbs"><a href="${SITE_URL}/">NotchAny Store</a></div>
-<header class="detail-hero"><img class="package-icon" src="/assets/app-icon.png" alt="" width="54" height="54">
+<header class="detail-hero"><img class="package-icon" src="/${APP_ICON_ASSET}" alt="" width="54" height="54">
 <div class="detail-title"><h1>页面不存在</h1><p>地址可能已失效。请返回 Store 查找作品。</p><p lang="en">Page not found. Return to the Store to browse packages.</p>
 <div class="detail-meta"><a href="${SITE_URL}/">返回 Store</a><a href="${SITE_URL}/en/" lang="en">Browse in English</a></div></div></header>
 </main></body></html>`;
@@ -315,7 +316,7 @@ function packageClientData(item, lang, root) {
     published_at: item.published_at,
     updated_at: item.updated_at,
     search: searchText(item),
-    icon: item.icon_path ? `${root}assets/${item.icon_path}` : `${root}assets/app-icon.png`,
+    icon: item.icon_path ? `${root}assets/${item.icon_path}` : `${root}${APP_ICON_ASSET}`,
     href: `${root}${lang === "en" ? "en/" : ""}packages/${item.package_id}/`,
   };
 }
@@ -335,7 +336,7 @@ export function homePage({ lang, packages, featuredIDs, countsURL, css, js }) {
     ${icon(item, root, "demo-tray-icon")}<span>${escapeHTML(pick(item.names, lang))}</span>
   </a>`).join("");
 
-  return `${pageHead({ lang, title: copy.hero_title, description: copy.hero_body, canonicalPath: current, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
+  return `${pageHead({ lang, title: copy.hero_title, description: copy.hero_body, canonicalPath: current, alternatePath: alternate, imagePath: APP_ICON_ASSET, css })}
 <body>
 ${nav({ lang, root })}
 <main>
@@ -348,7 +349,7 @@ ${nav({ lang, root })}
         <div class="mac-display">
           <div class="mac-desktop" style="--desktop-wallpaper:url('${root}assets/macos-desktop-wallpaper.webp')">
             <div class="mac-menu-bar">
-              <div class="menu-left"><img src="${root}assets/app-icon.png" alt="" width="14" height="14"><strong>NotchAny</strong><span>${lang === "zh" ? "文件" : "File"}</span><span>${lang === "zh" ? "编辑" : "Edit"}</span><span>${lang === "zh" ? "显示" : "View"}</span></div>
+              <div class="menu-left"><img src="${root}${APP_ICON_ASSET}" alt="" width="14" height="14"><strong>NotchAny</strong><span>${lang === "zh" ? "文件" : "File"}</span><span>${lang === "zh" ? "编辑" : "Edit"}</span><span>${lang === "zh" ? "显示" : "View"}</span></div>
               <div class="menu-right"><span class="menu-control" aria-hidden="true"></span><span id="mac-menu-date"></span><strong id="mac-menu-time"></strong></div>
             </div>
             <div class="notch-hot-zone" id="notch-stage">
@@ -357,7 +358,7 @@ ${nav({ lang, root })}
                 <div class="demo-tray-items">${tray}</div>
               </div>
             </div>
-            <div class="desktop-dock" aria-hidden="true"><img src="${root}assets/app-icon.png" alt=""><span class="dock-app dock-app-coral"></span><span class="dock-app dock-app-paper"></span><span class="dock-divider"></span><span class="dock-trash"></span></div>
+            <div class="desktop-dock" aria-hidden="true"><img src="${root}${APP_ICON_ASSET}" alt=""><span class="dock-app dock-app-coral"></span><span class="dock-app dock-app-paper"></span><span class="dock-divider"></span><span class="dock-trash"></span></div>
           </div>
         </div>
         <div class="mac-hinge"></div>
@@ -396,12 +397,12 @@ export function downloadPage({ lang, css, js, downloadURL = "" }) {
   const downloadControl = downloadURL
     ? `<a class="primary-button download-primary" href="${escapeHTML(downloadURL)}">${NAV_ICONS.download}<span>${copy.download_now}</span></a>`
     : `<button class="primary-button download-primary" type="button" disabled aria-disabled="true">${NAV_ICONS.download}<span>${copy.download_pending}</span></button>`;
-  return `${pageHead({ lang, title: `${copy.download_title} · NotchAny`, description: copy.download_body, canonicalPath: current, alternatePath: alternate, imagePath: "assets/app-icon.png", css })}
+  return `${pageHead({ lang, title: `${copy.download_title} · NotchAny`, description: copy.download_body, canonicalPath: current, alternatePath: alternate, imagePath: APP_ICON_ASSET, css })}
 <body>
 ${nav({ lang, root, sectionPath: "download/" })}
 <main class="download-main">
   <section class="shell download-hero">
-    <img class="download-app-icon" src="${root}assets/app-icon.png" alt="" width="96" height="96">
+    <img class="download-app-icon" src="${root}${APP_ICON_ASSET}" alt="" width="96" height="96">
     <p class="download-kicker">${copy.download_kicker}</p>
     <h1>${copy.download_title}</h1>
     <p class="download-body">${copy.download_body}</p>
@@ -431,7 +432,7 @@ export function detailPage({ lang, item, packages, history = { releases: [], con
   const download = `${root}${lang === "en" ? "en/" : ""}download/`;
   const description = pick(item.descriptions, lang) || summary;
   const historyHTML = historySections(history, copy, lang);
-  return `${pageHead({ lang, title: `${name} · NotchAny Store`, description: summary, canonicalPath: path, alternatePath: alternate, imagePath: `assets/${item.icon_path || "app-icon.png"}`, css })}
+  return `${pageHead({ lang, title: `${name} · NotchAny Store`, description: summary, canonicalPath: path, alternatePath: alternate, imagePath: item.icon_path ? `assets/${item.icon_path}` : APP_ICON_ASSET, css })}
 <body>
 ${nav({ lang, root, detailPackageID: item.package_id })}
 <main class="shell detail-main">
