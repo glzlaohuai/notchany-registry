@@ -92,8 +92,8 @@ test("publication rehearsal: rejection preserves baseline, revoked review blocks
   const log = readFileSync(logPath, "utf8").trim().split("\n").map(JSON.parse);
   assert.equal(log.filter(entry => entry.path.endsWith("/merge")).length, 1);
   assert.ok(log.some(entry => entry.path.endsWith("/publication-complete")));
-  assert.ok(log.some(entry => entry.path.endsWith("/deploy-pages.yml/dispatches")));
-  assert.ok(log.some(entry => entry.path.endsWith("/deploy-store-cloudflare.yml/dispatches")));
+  assert.ok(!log.some(entry => entry.path.includes("deploy-pages")));
+  assert.ok(!log.some(entry => entry.path.includes("deploy-store")));
   const index = JSON.parse(readFileSync(join(repo, "index/v1/index.json")));
   assert.equal(index.packages[0].version, "1.1.0");
   assert.equal(index.packages[0].path, "published/alice/example/package.notchany.json");
