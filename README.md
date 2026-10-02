@@ -1,6 +1,8 @@
 # NotchAny Registry
 
-[NotchAny](https://github.com/glzlaohuai/NotchAny)（macOS 刘海工具）的动作 / 小组件市场后端：本仓库即 registry——PR 上架、CI 校验、静态 index、公开 Web Store 与匿名下载计数。
+[NotchAny](https://github.com/glzlaohuai/NotchAny)（macOS 刘海工具）的兼容 Registry：保留社区包、正式发布快照、静态 index 与版本历史，供旧版客户端继续读取。
+
+新的社区贡献与正式发布以公开仓库 `NotchAny/notchany-registry` 为准。`notchany.com` 源码、Store Worker 与下载计数 Worker 已迁入私有仓库 `NotchAny/notchany-site`。
 
 - **索引**：`index/v1/index.json`（旧 App）与 `index/v2/index.json`（带 `history_path`）
 - **历史**：`history/v1/<namespace>/<slug>.json`（版本、PR 说明、commit、hash 与贡献者）
@@ -46,7 +48,7 @@ packages/
    `icon.png`；建议同时提供真实 NotchAny 运行界面截图。`icon.png` 与动作/小组件安装后
    的 `symbol`、文字或图片图标同源，不要另做一套市场封面。
 3. 提交 PR。CI（`scripts/check-pr.mjs`）自动校验，全绿后由 maintainer 审核合并。
-4. 合并进 main 后，可信工作流重验 Review 和维护权限，生成独立发布 PR。签名清单绑定候选提交和全部产物；合入前再次校验，成功后一次公开快照、双索引与历史，再显式调度 Web Store 建站及对账。
+4. 合并进 main 后，可信工作流重验 Review 和维护权限，生成独立发布 PR。签名清单绑定候选提交和全部产物；合入前再次校验，成功后一次公开快照、双索引与历史，再显式调度 Market 对账。
 5. 更新包 = 再次 PR 同一目录，`manifest.json` 的 `version` **必须严格递增**。
 
 每个 PR 只能改一个包且只能触及 `packages/**`。创建包要求 PR 作者已绑定 GitHub；更新允许 Owner
@@ -91,7 +93,7 @@ npm run build:index            # 重建 v1/v2 index 与 history（maintainer 用
 4. **版本可追溯**：`version` 严格递增；每版 history 固化可验证的合并时间、源 commit、当版包 sha256、
    PR 标题/正文/URL/作者和可识别的 commit 作者。裸邮箱与无法映射的作者不公开，历史不提供旧包下载。
    首次迁移从线上 v1 索引和匹配 hash 的固定提交包字节建立基线，未确认的 PR、合并时间和贡献者留空。
-5. **失败隔离**：索引、Store、Worker 与对账只读 `published/state.json` 对应的快照。失败的候选留在 `packages/`，后续建站不能带出；回退使用上次成功公开提交的发布目录、双索引与历史。
+5. **失败隔离**：索引、官网、下载服务与对账只读 `published/state.json` 对应的快照。失败的候选留在 `packages/`；回退使用上次成功公开提交的发布目录、双索引与历史。
 
 ## 身份、角色与历史
 
@@ -105,17 +107,12 @@ npm run build:index            # 重建 v1/v2 index 与 history（maintainer 用
 - App 与 Web 可用 Market 公共接口刷新用户名、头像和「已绑定 NotchAny」标识；接口失败时继续使用
   history 的发布时快照，不影响浏览、校验或安装最新版。
 
-## Web 市场
+## 官网与下载服务
 
-`scripts/build-site.mjs`（零依赖，Node ≥18）读取 index、`site/curation.json` 与包素材，
-生成中文根路径和 `/en/` 英文镜像到 `site/dist/`。生产由独立的 Cloudflare
-`notchany-store` Worker + Static Assets 交付，GitHub Pages 在迁移期保留兼容部署。首页包含精选、搜索、全部/最新/热门、
-类型/标签筛选与查询参数恢复；详情页包含真实截图、依赖、脚本风险、Owner/维护者/贡献者、
-只读版本时间线、源码/反馈和相关推荐。
-全站「下载 App」进入下载提示页，正式下载地址通过 `NOTCHANY_APP_DOWNLOAD_URL` 构建变量注入；
-未配置时显示准备中，不输出空链接。「在 NotchAny 中打开」只定位 App 详情页，未唤起时自动
-进入下载提示页，安装仍需用户确认。Cloudflare 主部署与 GitHub Pages 兼容部署说明见
-[site/README.md](site/README.md)。精选配置最多 3 个，未知/重复 ID 会让构建失败。
+官网、Store 前端、Store Worker 与匿名下载计数 Worker 位于私有仓库 `NotchAny/notchany-site`。
+该仓库从确定的公开 Registry commit 构建，只消费正式发布快照、索引与历史，不读取候选包。
+
+本公开兼容仓库不再保存官网源码、Cloudflare 部署配置或生产凭据。旧提交仍属于公开 Git 历史；本次拆分约束的是当前源码与后续发布权限，不改写社区仓库历史。
 
 ## CI 与 Market 配置
 
@@ -126,11 +123,7 @@ PR 授权、release 登记和 reconciliation 都使用带 5 分钟时间窗的 H
 
 默认分支必需状态为 `market/content-and-permission`，并要求分支与 main 同步。普通包 PR、生成发布 PR、仓库维护 PR 分别校验包权限、签名清单及当前管理员身份；维护 PR 不得夹带包或生成产物。
 `pr-validate.yml` 只运行 main 上的可信脚本；PR 内容作为数据。Review 事件通过无凭据工作流通知可信工作流；每五分钟重验公开 PR，覆盖撤回 Review、撤权及身份解绑。
-Actions 需允许创建 PR，并赋发布工作流 contents、pull-requests、statuses、actions 写权限。机器人创建 PR 后显式调度 `validate-publication.yml`，成功合入后显式调度 `deploy-pages.yml`，不依赖机器人触发 push 事件。
-
-Cloudflare 影子部署还需要仓库 secrets `CLOUDFLARE_API_TOKEN`（只授予 `notchany-store` Worker
-编辑权限）与 `CLOUDFLARE_ACCOUNT_ID`。正式快照合入后会同时显式调度
-`deploy-store-cloudflare.yml`；Pages 在 DNS 切换完成并观察至少一轮发布前不移除。
+Actions 需允许创建 PR，并赋发布工作流 contents、pull-requests、statuses、actions 写权限。机器人创建 PR 后显式调度 `validate-publication.yml`，成功合入后显式调度 `reconcile-market.yml`，不依赖机器人触发 push 事件。官网部署凭据只存在于私有 Site 仓库。
 
 `Reconcile Market` workflow 可手动或每日运行，修复合并成功但回调失败造成的状态漂移。首次回填会
 调用 GitHub API 将 namespace 解析为数字 ID；workflow 使用内置 `GITHUB_TOKEN`，本地执行可传
@@ -145,10 +138,7 @@ npm run reconcile:market
 
 ## 下载计数
 
-[worker/](worker/) 是一个 Cloudflare Worker：`GET /pkg/<namespace>/<slug>` 透传
-GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各包下载量供
-市场站展示；不记录任何请求者信息（无 IP/UA）。部署步骤见
-[worker/README.md](worker/README.md)。
+下载服务源码与 Cloudflare 配置位于私有 Site 仓库。服务只依据正式 index 定位已发布包体并校验 SHA-256；KV 只保存每个包的聚合次数，不记录请求者 IP、User-Agent 或设备信息。
 
 ## 本仓库文件
 
@@ -163,11 +153,6 @@ GitHub raw 包体并对 KV 匿名计数 +1，`GET /counts.json` 聚合返回各�
 | `schema/manifest.schema.json` | manifest 的 JSON Schema（draft-07） |
 | `scripts/check-pr.mjs` | PR / 本地校验脚本（Node ≥18，零依赖） |
 | `scripts/build-index.mjs` | index 生成脚本（Node ≥18，零依赖） |
-| `scripts/build-site.mjs` | Web 市场静态站生成脚本（Node ≥18，零依赖） |
-| `site/curation.json` | 维护者精选包配置（最多 3 个） |
-| `site/styles.css` / `site/store.js` | 构建时内联的样式与客户端交互 |
-| `site/` | 市场站部署说明（产物 `site/dist/` 不入库） |
-| `worker/` | 下载计数 Cloudflare Worker（代码 + wrangler 配置） |
 | `scripts/authorize-pr.mjs` | 可信默认分支运行的单包范围与 Market 权限校验 |
 | `scripts/notify-release.mjs` | 兼容入口，按已发布快照对账 |
 | `scripts/reconcile-market.mjs` | Registry → Market 状态对账（不覆盖既有 Owner） |
